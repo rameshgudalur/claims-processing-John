@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project John — Claims Pend Processing</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f0;min-height:100vh}
+
+/* ── Layout ── */
+.view{display:none;min-height:100vh;padding:28px 36px}
+.view.active{display:block}
+
+/* ── Hub ── */
+#hub-view{background:linear-gradient(135deg,#0a0f1a 0%,#0f172a 60%,#0a1628 100%)}
+.hub-header{text-align:center;padding:36px 0 28px}
+.hub-header h1{font-size:2rem;font-weight:700;color:#f1f5f9;letter-spacing:-0.5px}
+.hub-header p{color:#64748b;font-size:.95rem;margin-top:6px}
+.agent-chain{display:flex;align-items:center;gap:0;justify-content:center;margin:32px 0 40px;overflow-x:auto;padding:0 16px}
+.agent-chip{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px 16px;font-size:.72rem;color:#94a3b8;text-align:center;white-space:nowrap;min-width:110px;transition:all .3s;cursor:default}
+.agent-chip.active{background:#1e3a5f;border-color:#2563eb;color:#93c5fd}
+.agent-chip.focus{background:#172554;border-color:#1d4ed8;color:#60a5fa;box-shadow:0 0 0 2px rgba(37,99,235,.3);transform:scale(1.05)}
+.chain-arrow{color:#334155;font-size:1rem;padding:0 4px}
+.hub-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:820px;margin:0 auto}
+.hub-card{background:#111827;border:1px solid #1e293b;border-radius:14px;padding:24px;cursor:pointer;transition:all .3s}
+.hub-card:hover{border-color:#2563eb;background:#0f1f38;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.hub-card-icon{font-size:2rem;margin-bottom:12px}
+.hub-card h3{font-size:1.05rem;font-weight:700;color:#f1f5f9;margin-bottom:6px}
+.hub-card p{font-size:.82rem;color:#64748b;line-height:1.5}
+.hub-card .badge{display:inline-block;background:#1e3a5f;color:#60a5fa;font-size:.68rem;padding:2px 8px;border-radius:10px;margin-top:10px;font-weight:600}
+.hub-card .badge.green{background:#14532d;color:#4ade80}
+.hub-card .badge.amber{background:#451a03;color:#fb923c}
+.hub-stat-row{display:flex;gap:16px;justify-content:center;margin-top:12px}
+.hub-stat{background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:10px 20px;text-align:center}
+.hub-stat-n{font-size:1.5rem;font-weight:700;color:#3b82f6}
+.hub-stat-l{font-size:.7rem;color:#475569;margin-top:2px}
+
+/* ── Nav Bar ── */
+.nav{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.nav-back{background:#1e293b;border:1px solid #334155;color:#94a3b8;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;transition:all .2s}
+.nav-back:hover{background:#334155;color:#f1f5f9}
+.nav-title{font-size:1.05rem;font-weight:700;color:#f1f5f9}
+.nav-sub{font-size:.8rem;color:#475569;margin-left:auto}
+
+/* ── Act 1 — Pend Processing ── */
+#act1-view{background:#0a0f1a}
+.db-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:24px}
+.db-card{background:#111827;border:1px solid #1e293b;border-radius:10px;padding:13px 12px;text-align:center;transition:all .35s;cursor:pointer;position:relative}
+.db-card:hover{border-color:#334155;background:#1a2535}
+.db-card.querying{border-color:#1d4ed8;background:#0f1f38;animation:pulse-border 1s infinite}
+.db-card.done{border-color:#16a34a;background:#0a1f12}
+.db-card-icon{font-size:1.4rem;margin-bottom:6px}
+.db-card-name{font-size:.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px}
+.db-card-count{font-size:.7rem;color:#475569;margin-top:3px}
+.db-card-hits{font-size:.8rem;font-weight:700;color:#4ade80;margin-top:4px;display:none}
+.db-card.done .db-card-hits{display:block}
+@keyframes pulse-border{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}50%{box-shadow:0 0 0 4px rgba(37,99,235,.1)}}
+
+/* DB Expand panel */
+.db-expand-wrap{margin-bottom:20px;display:none}
+.db-expand-wrap.open{display:block}
+.db-expand{background:#111827;border:1px solid #1e3a5f;border-radius:12px;padding:16px;overflow:auto;max-height:260px}
+.db-expand table{width:100%;border-collapse:collapse;font-size:.72rem}
+.db-expand th{color:#60a5fa;font-weight:700;padding:6px 10px;text-align:left;border-bottom:1px solid #1e3a5f;white-space:nowrap}
+.db-expand td{padding:5px 10px;color:#cbd5e1;border-bottom:1px solid #1e293b;white-space:nowrap}
+.db-expand tr:last-child td{border-bottom:none}
+.db-expand-close{float:right;background:transparent;border:none;color:#475569;cursor:pointer;font-size:.75rem;padding:2px 6px}
+.db-expand-close:hover{color:#94a3b8}
+
+/* Processing header row */
+.processing-header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.proc-btn{background:#2563eb;color:#fff;border:none;padding:11px 24px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s}
+.proc-btn:hover{background:#1d4ed8}
+.proc-btn:disabled{background:#1e293b;color:#475569;cursor:not-allowed}
+.proc-counters{display:flex;gap:12px;margin-left:auto}
+.counter-box{background:#111827;border:1px solid #1e293b;border-radius:8px;padding:6px 14px;text-align:center;min-width:70px}
+.counter-n{font-size:1.1rem;font-weight:700}
+.counter-l{font-size:.62rem;color:#475569;text-transform:uppercase;letter-spacing:.5px}
+.counter-n.green{color:#4ade80}
+.counter-n.red{color:#f87171}
+.counter-n.yellow{color:#fbbf24}
+.counter-n.blue{color:#60a5fa}
+.counter-n.orange{color:#fb923c}
+.counter-n.purple{color:#c084fc}
+
+/* Queue table */
+.queue-wrap{background:#111827;border:1px solid #1e293b;border-radius:12px;overflow:hidden;margin-bottom:20px}
+.queue-table{width:100%;border-collapse:collapse;font-size:.75rem}
+.queue-table thead th{background:#0f172a;color:#64748b;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #1e293b;white-space:nowrap}
+.queue-table tbody tr{border-bottom:1px solid #1e293b;cursor:pointer;transition:background .15s}
+.queue-table tbody tr:hover{background:#1a2535}
+.queue-table tbody tr.processing-row{background:#0f1f38;animation:row-pulse 1s infinite}
+@keyframes row-pulse{0%,100%{background:#0f1f38}50%{background:#111e35}}
+.queue-table td{padding:8px 14px;white-space:nowrap}
+.badge-outcome{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.badge-outcome.green{background:#14532d;color:#4ade80}
+.badge-outcome.red{background:#450a0a;color:#f87171}
+.badge-outcome.yellow{background:#422006;color:#fbbf24}
+.badge-outcome.blue{background:#0c2d58;color:#60a5fa}
+.badge-outcome.orange{background:#431407;color:#fb923c}
+.badge-outcome.purple{background:#2e1065;color:#c084fc}
+.badge-outcome.gray{background:#1e293b;color:#94a3b8}
+.badge-cat{display:inline-block;background:#1e293b;color:#94a3b8;padding:2px 8px;border-radius:8px;font-size:.65rem;font-weight:600}
+.badge-hr{display:inline-block;background:#2e1065;color:#c084fc;padding:2px 7px;border-radius:8px;font-size:.62rem;font-weight:700;margin-left:4px}
+
+/* Claim Detail Panel */
+.claim-panel{display:none;background:#111827;border:1px solid #1e3a5f;border-radius:14px;padding:24px;margin-bottom:20px}
+.claim-panel.visible{display:block}
+.claim-panel-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.claim-panel-close{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.2rem;padding:2px 6px}
+.claim-panel-close:hover{color:#94a3b8}
+.cp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px}
+.cp-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.cp-box{background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px}
+.cp-box h4{font-size:.7rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.cp-field{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:.76rem}
+.cp-field-label{color:#64748b}
+.cp-field-value{color:#e2e8f0;font-weight:600;text-align:right;max-width:180px}
+.cp-field-value.green{color:#4ade80}
+.cp-field-value.red{color:#f87171}
+.cp-field-value.yellow{color:#fbbf24}
+.cp-field-value.blue{color:#60a5fa}
+.cp-field-value.purple{color:#c084fc}
+.sop-steps{list-style:none}
+.sop-step{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:.75rem;color:#94a3b8}
+.sop-step .step-num{background:#1e3a5f;color:#60a5fa;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;flex-shrink:0;margin-top:1px}
+.db-query-pill{display:inline-flex;align-items:center;gap:5px;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:4px 10px;font-size:.7rem;color:#94a3b8;margin:3px;cursor:pointer;transition:all .2s}
+.db-query-pill:hover{border-color:#2563eb;color:#60a5fa}
+.db-query-pill.hit{border-color:#16a34a;color:#4ade80;background:#0a1f12}
+.hr-box{background:#130a2e;border:1px solid #581c87;border-radius:10px;padding:14px 16px;margin-top:14px}
+.hr-box h4{color:#c084fc;font-size:.78rem;font-weight:700;margin-bottom:6px}
+.hr-box p{color:#a78bfa;font-size:.74rem;line-height:1.5}
+.hr-actions{display:flex;gap:8px;margin-top:10px}
+.hr-btn{padding:6px 14px;border-radius:6px;font-size:.74rem;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.hr-btn.approve{background:#14532d;color:#4ade80}
+.hr-btn.deny{background:#450a0a;color:#f87171}
+.hr-btn.escalate{background:#431407;color:#fb923c}
+
+/* ── Gen 2 / Gen 3 panels ── */
+.gen-tabs{display:flex;gap:8px;margin-bottom:16px}
+.gen-tab{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:7px 16px;font-size:.78rem;font-weight:700;cursor:pointer;color:#64748b;transition:all .2s}
+.gen-tab.active{background:#1e3a5f;border-color:#2563eb;color:#60a5fa}
+.gen-panel{display:none}
+.gen-panel.active{display:block}
+.gen-table-wrap{background:#111827;border:1px solid #1e293b;border-radius:12px;overflow:hidden;max-height:280px;overflow-y:auto}
+.gen-table{width:100%;border-collapse:collapse;font-size:.74rem}
+.gen-table thead th{background:#0f172a;color:#64748b;font-weight:700;padding:9px 14px;text-align:left;border-bottom:1px solid #1e293b;position:sticky;top:0}
+.gen-table td{padding:7px 14px;color:#cbd5e1;border-bottom:1px solid #1e293b}
+.gen-table tr:last-child td{border-bottom:none}
+.gap-flag{background:#450a0a;color:#f87171;padding:2px 8px;border-radius:6px;font-size:.65rem;font-weight:700}
+.bar-wrap{background:#1e293b;border-radius:4px;height:6px;width:80px;display:inline-block;vertical-align:middle}
+.bar-fill{height:6px;border-radius:4px;background:#f87171;transition:width .5s}
+.bar-fill.green{background:#4ade80}
+.bar-fill.amber{background:#fbbf24}
+.pred-badge{padding:2px 8px;border-radius:8px;font-size:.65rem;font-weight:700}
+.pred-badge.resolved{background:#14532d;color:#4ade80}
+.pred-badge.sent{background:#0c2d58;color:#60a5fa}
+.pred-badge.pending{background:#1e293b;color:#94a3b8}
+
+/* ── Human Review Panel ── */
+#review-view{background:#0a0f1a}
+.review-grid{display:grid;grid-template-columns:320px 1fr;gap:20px;height:calc(100vh - 120px)}
+.review-list{background:#111827;border:1px solid #1e293b;border-radius:12px;overflow-y:auto}
+.review-list-header{padding:14px 16px;border-bottom:1px solid #1e293b;font-size:.82rem;font-weight:700;color:#f1f5f9;position:sticky;top:0;background:#111827;z-index:1}
+.review-item{padding:12px 16px;border-bottom:1px solid #1e293b;cursor:pointer;transition:background .15s}
+.review-item:hover{background:#1a2535}
+.review-item.selected{background:#0f1f38;border-left:3px solid #7c3aed}
+.review-item-icn{font-size:.72rem;font-weight:700;color:#7c3aed}
+.review-item-name{font-size:.8rem;color:#e2e8f0;margin:2px 0}
+.review-item-reason{font-size:.68rem;color:#a78bfa;margin-top:2px;line-height:1.4}
+.review-item-amount{font-size:.72rem;color:#fbbf24;font-weight:700;margin-top:3px}
+.review-detail{background:#111827;border:1px solid #1e293b;border-radius:12px;padding:24px;overflow-y:auto}
+.review-detail-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#334155;text-align:center}
+.review-detail-empty .icon{font-size:3rem;margin-bottom:12px}
+.review-examiner{background:#130a2e;border:1px solid #581c87;border-radius:12px;padding:18px;margin-top:18px}
+.review-examiner h3{color:#c084fc;font-size:.88rem;font-weight:700;margin-bottom:14px}
+.exam-field{margin-bottom:12px}
+.exam-field label{font-size:.72rem;color:#7c3aed;font-weight:700;display:block;margin-bottom:4px}
+.exam-field textarea,.exam-field select{width:100%;background:#0f172a;border:1px solid #581c87;border-radius:6px;color:#e2e8f0;padding:8px 10px;font-size:.78rem;resize:vertical;outline:none}
+.exam-field textarea:focus,.exam-field select:focus{border-color:#7c3aed}
+.exam-actions{display:flex;gap:8px;margin-top:12px}
+.exam-btn{flex:1;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.exam-btn.approve{background:#14532d;color:#4ade80}
+.exam-btn.approve:hover{background:#166534}
+.exam-btn.deny{background:#450a0a;color:#f87171}
+.exam-btn.deny:hover{background:#7f1d1d}
+.exam-btn.escalate{background:#431407;color:#fb923c}
+.exam-btn.escalate:hover{background:#7c2d12}
+
+/* ── Progress bar ── */
+.progress-wrap{background:#1e293b;border-radius:4px;height:5px;width:100%;margin-bottom:16px;display:none}
+.progress-wrap.visible{display:block}
+.progress-bar{height:5px;border-radius:4px;background:#2563eb;width:0%;transition:width .3s}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#0f172a}
+::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+
+/* ── Trace View ── */
+#trace-view{background:#0a0f1a}
+.trace-layout{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+.trace-claim-card{background:#111827;border:1px solid #1e3a5f;border-radius:14px;padding:20px;position:sticky;top:20px}
+.trace-claim-card h3{font-size:.72rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.tcc-field{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;font-size:.78rem;gap:8px}
+.tcc-label{color:#64748b;white-space:nowrap}
+.tcc-value{color:#e2e8f0;font-weight:600;text-align:right}
+.tcc-icn{font-family:monospace;color:#60a5fa}
+.tcc-edit{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px;margin-top:12px}
+.tcc-edit-code{font-family:monospace;color:#f87171;font-size:.8rem;font-weight:700}
+.tcc-edit-desc{color:#94a3b8;font-size:.74rem;margin-top:3px;line-height:1.4}
+.tcc-cat{display:inline-block;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:2px 8px;font-size:.66rem;color:#94a3b8;margin-top:6px}
+
+/* Trace flow steps */
+.trace-flow{display:flex;flex-direction:column;gap:0}
+.trace-step{opacity:0;transform:translateY(12px);transition:opacity .4s,transform .4s;margin-bottom:0}
+.trace-step.visible{opacity:1;transform:translateY(0)}
+.trace-connector{width:2px;height:24px;background:linear-gradient(to bottom,#1e3a5f,#1e293b);margin-left:23px;opacity:0;transition:opacity .3s}
+.trace-connector.visible{opacity:1}
+.trace-step-card{background:#111827;border:1px solid #1e293b;border-radius:12px;padding:16px 18px;transition:border-color .3s}
+.trace-step-card.active-step{border-color:#2563eb;background:#0f1f38}
+.trace-step-card.done-step{border-color:#16a34a;background:#0a1812}
+.trace-step-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.trace-step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0}
+.trace-step-num.pending{background:#1e293b;color:#475569}
+.trace-step-num.running{background:#1e3a5f;color:#60a5fa;animation:spin-glow .8s infinite}
+.trace-step-num.done{background:#14532d;color:#4ade80}
+@keyframes spin-glow{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}50%{box-shadow:0 0 0 4px rgba(37,99,235,.1)}}
+.trace-step-title{font-size:.82rem;font-weight:700;color:#f1f5f9}
+.trace-step-subtitle{font-size:.72rem;color:#475569;margin-left:auto}
+.trace-step-body{font-size:.78rem;color:#94a3b8;line-height:1.6;padding-left:38px}
+.trace-typing{display:inline-block}
+.trace-typing::after{content:'▊';animation:blink .7s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Trace sub-elements */
+.trace-sop-box{background:#0f172a;border:1px solid #1e3a5f;border-radius:8px;padding:12px;margin-top:8px}
+.trace-sop-ref{font-family:monospace;color:#60a5fa;font-size:.75rem;font-weight:700}
+.trace-sop-path{color:#475569;font-size:.7rem;margin-top:2px}
+.trace-sop-steps{margin-top:10px;list-style:none}
+.trace-sop-item{display:flex;align-items:flex-start;gap:8px;font-size:.74rem;color:#64748b;margin-bottom:6px;opacity:.4;transition:all .3s}
+.trace-sop-item.lit{opacity:1;color:#94a3b8}
+.trace-sop-item.checked{color:#4ade80;opacity:1}
+.trace-sop-item .sop-icon{flex-shrink:0;margin-top:1px}
+.trace-db-hit{background:#0a1812;border:1px solid #16a34a;border-radius:8px;padding:12px;margin-top:8px}
+.trace-db-miss{background:#1a0a0a;border:1px solid #7f1d1d;border-radius:8px;padding:12px;margin-top:8px}
+.trace-db-header{font-size:.72rem;font-weight:700;margin-bottom:8px}
+.trace-db-header.hit{color:#4ade80}
+.trace-db-header.miss{color:#f87171}
+.trace-db-row{display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:4px}
+.trace-db-row span:first-child{color:#475569}
+.trace-db-row span:last-child{color:#cbd5e1;font-family:monospace}
+.trace-kg-rule{background:#0f172a;border-left:3px solid #7c3aed;padding:8px 12px;margin-top:6px;border-radius:0 6px 6px 0;font-size:.75rem;color:#c084fc}
+.trace-decision-box{background:#0f172a;border-radius:10px;padding:16px;margin-top:8px;text-align:center}
+.trace-decision-outcome{font-size:1.4rem;font-weight:700;margin-bottom:6px}
+.trace-decision-codes{font-family:monospace;font-size:.75rem;color:#475569;margin-bottom:4px}
+.trace-decision-payment{font-size:.85rem;color:#94a3b8}
+
+/* Trace selector */
+.trace-selector-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.trace-select{background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:8px 12px;border-radius:8px;font-size:.8rem;cursor:pointer;min-width:280px}
+.trace-run-btn{background:#2563eb;color:#fff;border:none;padding:9px 20px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s}
+.trace-run-btn:hover{background:#1d4ed8}
+.trace-run-btn:disabled{background:#1e293b;color:#475569;cursor:not-allowed}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     HUB
+══════════════════════════════════════════════════════ -->
+<div id="hub-view" class="view active">
+  <div class="hub-header">
+    <h1>Claims Operations — Agentic AI Platform</h1>
+    <p>Payers · Medical Claims Adjudication · Two-Workflow Demo</p>
+  </div>
+
+  <div class="agent-chain">
+    <div class="agent-chip">Intake</div>
+    <span class="chain-arrow">→</span>
+    <div class="agent-chip focus">Pend Processing</div>
+    <span class="chain-arrow">→</span>
+    <div class="agent-chip active">Adjustment</div>
+    <span class="chain-arrow">→</span>
+    <div class="agent-chip">Payment</div>
+    <span class="chain-arrow">→</span>
+    <div class="agent-chip">Collections</div>
+    <span class="chain-arrow">→</span>
+    <div class="agent-chip">Appeals</div>
+    <span class="chain-arrow">→</span>
+    <div class="agent-chip">Reporting</div>
+    <span class="chain-arrow">→</span>
+    <div class="agent-chip">Financial Close</div>
+  </div>
+
+  <div class="hub-cards" style="max-width:900px;margin:0 auto 28px">
+    <div class="hub-card" onclick="showView('act1-view');loadAct1Stats()">
+      <div class="hub-card-icon">⚡</div>
+      <h3>Claims Pend Processing</h3>
+      <p>~20% of claims fall out of auto-adjudication and enter the pend queue. Agentic AI resolves each pend against 6 live databases using deterministic SOP rules.</p>
+      <span class="badge green">Gen 1 Live</span>
+      <span class="badge" style="margin-left:4px">Gen 2 Signal</span>
+      <span class="badge amber" style="margin-left:4px">Gen 3 Preview</span>
+    </div>
+    <div class="hub-card" onclick="alert('Provider Adjustment workflow — coming next')">
+      <div class="hub-card-icon">🔄</div>
+      <h3>Provider Adjustment</h3>
+      <p>~7% of paid claims are contested by providers. Agent reviews post-payment disputes, validates adjustment requests, and processes approved corrections.</p>
+      <span class="badge" style="background:#451a03;color:#fb923c">In Development</span>
+    </div>
+  </div>
+
+  <div id="hub-stats" class="hub-stat-row" style="display:none">
+    <div class="hub-stat"><div class="hub-stat-n" id="hs-pended">—</div><div class="hub-stat-l">Pended Claims</div></div>
+    <div class="hub-stat"><div class="hub-stat-n" id="hs-edits">—</div><div class="hub-stat-l">Edit Types</div></div>
+    <div class="hub-stat"><div class="hub-stat-n" id="hs-hr">—</div><div class="hub-stat-l">Human Review</div></div>
+    <div class="hub-stat"><div class="hub-stat-n" id="hs-dbs">6</div><div class="hub-stat-l">Database Connectors</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     ACT 1 — PEND PROCESSING
+══════════════════════════════════════════════════════ -->
+<div id="act1-view" class="view">
+  <div class="nav">
+    <button class="nav-back" onclick="showView('hub-view')">← Hub</button>
+    <span class="nav-title">Claims Pend Processing — Agent 1</span>
+    <button class="nav-back" onclick="showView('trace-view');initTrace()" style="background:#172554;border-color:#2563eb;color:#60a5fa">▶ Single Claim Trace</button>
+    <button class="nav-back" style="margin-left:8px" onclick="showView('review-view');loadReviewQueue()">Human Review Queue <span id="hr-badge" style="background:#581c87;color:#c084fc;border-radius:8px;padding:1px 8px;font-size:.68rem;margin-left:4px">—</span></button>
+  </div>
+
+  <!-- 6 DB Cards -->
+  <div class="db-grid" id="db-grid">
+    <div class="db-card" id="dbc-0" onclick="toggleDbExpand(0)">
+      <div class="db-card-icon">🏥</div>
+      <div class="db-card-name">Provider DB</div>
+      <div class="db-card-count" id="dbc-0-count">40 records</div>
+      <div class="db-card-hits" id="dbc-0-hits">0 queries</div>
+    </div>
+    <div class="db-card" id="dbc-1" onclick="toggleDbExpand(1)">
+      <div class="db-card-icon">📋</div>
+      <div class="db-card-name">Authorization DB</div>
+      <div class="db-card-count" id="dbc-1-count">60 records</div>
+      <div class="db-card-hits" id="dbc-1-hits">0 queries</div>
+    </div>
+    <div class="db-card" id="dbc-2" onclick="toggleDbExpand(2)">
+      <div class="db-card-icon">🔀</div>
+      <div class="db-card-name">COB DB</div>
+      <div class="db-card-count" id="dbc-2-count">14 records</div>
+      <div class="db-card-hits" id="dbc-2-hits">0 queries</div>
+    </div>
+    <div class="db-card" id="dbc-3" onclick="toggleDbExpand(3)">
+      <div class="db-card-icon">💲</div>
+      <div class="db-card-name">Fee Schedule</div>
+      <div class="db-card-count" id="dbc-3-count">30 CPT codes</div>
+      <div class="db-card-hits" id="dbc-3-hits">0 queries</div>
+    </div>
+    <div class="db-card" id="dbc-4" onclick="toggleDbExpand(4)">
+      <div class="db-card-icon">📊</div>
+      <div class="db-card-name">Claims History</div>
+      <div class="db-card-count" id="dbc-4-count">151 claims</div>
+      <div class="db-card-hits" id="dbc-4-hits">0 queries</div>
+    </div>
+    <div class="db-card" id="dbc-5" onclick="toggleDbExpand(5)">
+      <div class="db-card-icon">✅</div>
+      <div class="db-card-name">Eligibility DB</div>
+      <div class="db-card-count" id="dbc-5-count">20 members</div>
+      <div class="db-card-hits" id="dbc-5-hits">0 queries</div>
+    </div>
+  </div>
+
+  <!-- DB Expand panel -->
+  <div class="db-expand-wrap" id="db-expand-wrap">
+    <div class="db-expand" id="db-expand-content">
+      <button class="db-expand-close" onclick="closeDbExpand()">✕ close</button>
+      <div id="db-expand-inner"></div>
+    </div>
+  </div>
+
+  <!-- Processing controls + counters -->
+  <div class="processing-header">
+    <button class="proc-btn" id="start-btn" onclick="startProcessing()">▶ Start Live Processing</button>
+    <button class="proc-btn" style="background:#1e293b;color:#94a3b8;margin-left:8px" id="reset-btn" onclick="resetAct1()">↺ Reset</button>
+    <div class="proc-counters">
+      <div class="counter-box"><div class="counter-n" id="cnt-total">0</div><div class="counter-l">Total</div></div>
+      <div class="counter-box"><div class="counter-n green" id="cnt-approved">0</div><div class="counter-l">Approved</div></div>
+      <div class="counter-box"><div class="counter-n red" id="cnt-denied">0</div><div class="counter-l">Denied</div></div>
+      <div class="counter-box"><div class="counter-n yellow" id="cnt-partial">0</div><div class="counter-l">Partial</div></div>
+      <div class="counter-box"><div class="counter-n blue" id="cnt-adr">0</div><div class="counter-l">ADR</div></div>
+      <div class="counter-box"><div class="counter-n purple" id="cnt-hr">0</div><div class="counter-l">Human Review</div></div>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-wrap" id="proc-progress"><div class="progress-bar" id="proc-bar"></div></div>
+
+  <!-- Claim Detail Panel (shown on row click) -->
+  <div class="claim-panel" id="claim-panel">
+    <div class="claim-panel-header">
+      <div>
+        <div style="font-size:.75rem;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Claim Detail</div>
+        <div id="cp-title" style="font-size:1rem;font-weight:700;color:#f1f5f9;margin-top:2px"></div>
+      </div>
+      <button class="claim-panel-close" onclick="closeClaimPanel()">✕</button>
+    </div>
+    <div id="cp-body"></div>
+  </div>
+
+  <!-- Queue table -->
+  <div class="queue-wrap">
+    <table class="queue-table">
+      <thead>
+        <tr>
+          <th>ICN</th>
+          <th>Member</th>
+          <th>Provider</th>
+          <th>CPT</th>
+          <th>Billed</th>
+          <th>Edit</th>
+          <th>Category</th>
+          <th>Decision</th>
+          <th>Payment</th>
+          <th>SOP Ref</th>
+        </tr>
+      </thead>
+      <tbody id="queue-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Gen 2 / Gen 3 tabs -->
+  <div class="gen-tabs">
+    <button class="gen-tab active" onclick="switchGenTab('gen1')">⚡ Gen 1 — Live Results</button>
+    <button class="gen-tab" onclick="switchGenTab('gen2')">🔍 Gen 2 — SOP Gap Detection</button>
+    <button class="gen-tab" onclick="switchGenTab('gen3')">🔮 Gen 3 — Upstream Prediction</button>
+  </div>
+
+  <!-- Gen 1 panel (results summary) -->
+  <div class="gen-panel active" id="gen1-panel">
+    <div style="background:#111827;border:1px solid #1e293b;border-radius:12px;padding:18px;font-size:.8rem;color:#475569">
+      Click "Start Live Processing" to run the agent across 29 edit types in real time. Each row represents 1 featured claim per edit type. Click any row to inspect the full reasoning trail.
+    </div>
+  </div>
+
+  <!-- Gen 2 panel -->
+  <div class="gen-panel" id="gen2-panel">
+    <div class="gen-table-wrap">
+      <table class="gen-table">
+        <thead>
+          <tr><th>Edit Type</th><th>Category</th><th>Total Processed</th><th>Auto-Resolved</th><th>Human Override %</th><th>Avg Minutes</th><th>SOP Gap Signal</th></tr>
+        </thead>
+        <tbody id="gen2-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Gen 3 panel -->
+  <div class="gen-panel" id="gen3-panel">
+    <div style="background:#111827;border:1px solid #1e3a5f;border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:.78rem;color:#60a5fa">
+      🔮 <strong>Gen 3 Predictive:</strong> Agent analyzes incoming claims before submission. Provider patterns trigger proactive outreach — resolving pends before they happen.
+    </div>
+    <div class="gen-table-wrap">
+      <table class="gen-table">
+        <thead>
+          <tr><th>Member</th><th>Provider</th><th>CPT</th><th>Predicted Edit</th><th>Pend Probability</th><th>Basis</th><th>Status</th></tr>
+        </thead>
+        <tbody id="gen3-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     HUMAN REVIEW QUEUE
+══════════════════════════════════════════════════════ -->
+<div id="review-view" class="view">
+  <div class="nav">
+    <button class="nav-back" onclick="showView('act1-view')">← Pend Queue</button>
+    <span class="nav-title">Human Review Queue</span>
+    <span class="nav-sub" id="review-sub"></span>
+  </div>
+
+  <div class="review-grid">
+    <div class="review-list">
+      <div class="review-list-header">Claims Requiring Human Review <span id="review-count-badge" style="background:#581c87;color:#c084fc;border-radius:8px;padding:1px 8px;font-size:.7rem;margin-left:6px">0</span></div>
+      <div id="review-list-body"></div>
+    </div>
+    <div class="review-detail" id="review-detail">
+      <div class="review-detail-empty">
+        <div class="icon">🔍</div>
+        <div style="color:#475569;font-size:.85rem">Select a claim to review</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TRACE VIEW — Single Claim Walkthrough
+══════════════════════════════════════════════════════ -->
+<div id="trace-view" class="view">
+  <div class="nav">
+    <button class="nav-back" onclick="showView('act1-view')">← Pend Queue</button>
+    <span class="nav-title">Agent Trace — Single Claim Walkthrough</span>
+  </div>
+
+  <div class="trace-selector-row">
+    <select class="trace-select" id="trace-claim-select">
+      <option value="">Loading claims…</option>
+    </select>
+    <button class="trace-run-btn" id="trace-run-btn" onclick="runTrace()">▶ Run Agent</button>
+    <button class="trace-run-btn" style="background:#1e293b;color:#94a3b8" onclick="resetTrace()">↺ Reset</button>
+  </div>
+
+  <div class="trace-layout">
+    <!-- Left: incoming claim card -->
+    <div class="trace-claim-card" id="trace-claim-card">
+      <h3>Incoming Pend</h3>
+      <div style="color:#334155;font-size:.8rem;text-align:center;padding:20px 0">Select a claim above</div>
+    </div>
+
+    <!-- Right: animated flow -->
+    <div class="trace-flow" id="trace-flow">
+      <div style="color:#334155;font-size:.8rem;padding:20px 0">Agent steps will appear here when you click Run Agent.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "http://localhost:5002";
+
+// ── View switching ────────────────────────────────────────────────────────────
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Hub stats ─────────────────────────────────────────────────────────────────
+
+async function loadAct1Stats() {
+  try {
+    const s = await fetch(`${API}/api/stats`).then(r => r.json());
+    document.getElementById('hs-pended').textContent = s.total_pended;
+    document.getElementById('hs-edits').textContent  = s.edit_types;
+    document.getElementById('hs-hr').textContent     = s.human_review_count;
+    document.getElementById('hub-stats').style.display = 'flex';
+    document.getElementById('hr-badge').textContent  = s.human_review_count;
+  } catch(e) {}
+  loadGen2();
+  loadGen3();
+}
+
+// ── DB Card expand ────────────────────────────────────────────────────────────
+
+const DB_META = [
+  { name:"Provider DB",     endpoint:"/api/db/providers",        cols:["NPI","Name","Specialty","Group","Network","Credentialing"] },
+  { name:"Authorization DB",endpoint:"/api/db/authorizations",   cols:["Auth #","Member","CPT","DOS Start","DOS End","Units Auth","Status"] },
+  { name:"COB DB",          endpoint:"/api/db/cob",              cols:["Member","Carrier","Policy #","COB Order","Plan Type","Effective"] },
+  { name:"Fee Schedule",    endpoint:"/api/db/fee-schedule",     cols:["CPT","Description","Specialty","Allowed","Max Units","Auth Req"] },
+  { name:"Claims History",  endpoint:"/api/db/claims-history/MBR-10001", cols:["ICN","CPT","ICD-10","DOS","Billed","Paid","Status"] },
+  { name:"Eligibility DB",  endpoint:"/api/db/eligibility/MBR-10001",    cols:["Member ID","Name","DOB","Plan","Status","Effective"] },
+];
+
+const DB_ROW_FNS = [
+  r => [r.npi, r.name, r.specialty, r.group_name, r.network_status, r.credentialing_status],
+  r => [r.auth_number, r.member_name, r.cpt_code, r.dos_start, r.dos_end, r.units_authorized, r.status],
+  r => [r.member_name, r.carrier_name, r.policy_number, r.cob_order, r.plan_type, r.effective_date],
+  r => [r.cpt_code, r.description?.substring(0,34)+'…', r.specialty, `$${r.allowed_amount}`, r.max_units_per_day, r.auth_required ? '✓' : '—'],
+  r => [r.icn, r.cpt_code, r.icd10, r.dos, `$${r.billed_amount}`, `$${r.paid_amount}`, r.status],
+  r => [r.member_id, r.member_name, r.dob, r.plan, r.eligibility_status, r.effective_date],
+];
+
+let openDb = null;
+
+async function toggleDbExpand(n) {
+  const wrap = document.getElementById('db-expand-wrap');
+  if (openDb === n) {
+    wrap.classList.remove('open');
+    openDb = null;
+    return;
+  }
+  openDb = n;
+  wrap.classList.add('open');
+  const inner = document.getElementById('db-expand-inner');
+  inner.innerHTML = `<div style="color:#475569;font-size:.78rem;padding:8px">Loading ${DB_META[n].name}…</div>`;
+  try {
+    const data = await fetch(`${API}${DB_META[n].endpoint}`).then(r => r.json());
+    const rows = data.records || (Array.isArray(data) ? data : [data]);
+    const cols = DB_META[n].cols;
+    const fn   = DB_ROW_FNS[n];
+    inner.innerHTML = `<div style="font-size:.75rem;color:#60a5fa;font-weight:700;margin-bottom:8px">${DB_META[n].name} — ${data.total || rows.length} records</div>
+      <table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+      <tbody>${rows.slice(0,12).map(r=>`<tr>${fn(r).map(v=>`<td>${v ?? '—'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  } catch(e) {
+    inner.innerHTML = `<div style="color:#f87171;font-size:.78rem">Could not load — is server running?</div>`;
+  }
+}
+
+function closeDbExpand() {
+  document.getElementById('db-expand-wrap').classList.remove('open');
+  openDb = null;
+}
+
+// ── Live Processing ───────────────────────────────────────────────────────────
+
+let processing = false;
+const counts = { total:0, approve:0, deny:0, partial_pay:0, request_info:0, escalate:0, human_review:0 };
+const DB_CATEGORY_MAP = {
+  "Authorization":    [0,1],
+  "Provider":         [0],
+  "Pricing":          [3,0],
+  "Coding":           [3],
+  "COB":              [2,4],
+  "Duplicate":        [4,5],
+  "Timely Filing":    [4],
+  "Medical Necessity":[1,4],
+};
+let dbQueryCounts = [0,0,0,0,0,0];
+let processedResults = [];
+
+async function startProcessing() {
+  if (processing) return;
+  processing = true;
+  document.getElementById('start-btn').disabled = true;
+
+  // Show progress bar
+  document.getElementById('proc-progress').classList.add('visible');
+
+  try {
+    const data = await fetch(`${API}/api/process-batch`).then(r => r.json());
+    const results = data.results || [];
+    const total   = results.length;
+
+    for (let i = 0; i < results.length; i++) {
+      const r = results[i];
+      processedResults.push(r);
+      await streamRow(r, i);
+
+      // Update DB card highlights
+      const dbIdxs = DB_CATEGORY_MAP[r.edit_category] || [5];
+      dbIdxs.forEach(idx => {
+        dbQueryCounts[idx]++;
+        const card = document.getElementById(`dbc-${idx}`);
+        card.classList.add('done');
+        document.getElementById(`dbc-${idx}-hits`).textContent = `${dbQueryCounts[idx]} queries`;
+      });
+
+      // Update counters
+      counts.total++;
+      const outcome = r.outcome;
+      if (outcome === 'approve')      counts.approve++;
+      else if (outcome === 'deny')    counts.deny++;
+      else if (outcome === 'partial_pay') counts.partial_pay++;
+      else if (outcome === 'request_info') counts.request_info++;
+      else if (outcome === 'escalate') counts.escalate++;
+      else if (outcome === 'human_review') counts.human_review++;
+
+      document.getElementById('cnt-total').textContent    = counts.total;
+      document.getElementById('cnt-approved').textContent = counts.approve;
+      document.getElementById('cnt-denied').textContent   = counts.deny;
+      document.getElementById('cnt-partial').textContent  = counts.partial_pay;
+      document.getElementById('cnt-adr').textContent      = counts.request_info;
+      document.getElementById('cnt-hr').textContent       = counts.human_review;
+
+      // Progress bar
+      document.getElementById('proc-bar').style.width = `${((i+1)/total)*100}%`;
+
+      await delay(90);
+    }
+  } catch(e) {
+    console.error(e);
+  }
+  processing = false;
+  document.getElementById('start-btn').disabled = false;
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function streamRow(r, idx) {
+  const tbody = document.getElementById('queue-tbody');
+  const tr = document.createElement('tr');
+  tr.id = `row-${r.icn}`;
+  tr.onclick = () => openClaimPanel(r);
+
+  const color = r.outcome_color || 'gray';
+  const payment = r.payment_amount > 0 ? `$${r.payment_amount.toFixed(2)}` : '—';
+  const hrBadge = r.human_review ? `<span class="badge-hr">HR</span>` : '';
+
+  tr.innerHTML = `
+    <td style="font-family:monospace;color:#60a5fa;font-size:.72rem">${r.icn}</td>
+    <td>${r.member_name}</td>
+    <td style="color:#94a3b8">${r.provider_name?.split(' ').slice(0,3).join(' ')}</td>
+    <td style="font-family:monospace">${r.cpt_code}</td>
+    <td style="color:#fbbf24">$${r.billed_amount?.toFixed(2)}</td>
+    <td style="font-family:monospace;color:#94a3b8;font-size:.7rem">${r.edit_code}</td>
+    <td><span class="badge-cat">${r.edit_category}</span></td>
+    <td><span class="badge-outcome ${color}">${r.outcome_label}</span>${hrBadge}</td>
+    <td style="color:${color === 'green' || color === 'yellow' ? '#4ade80' : '#475569'}">${payment}</td>
+    <td style="font-size:.68rem;color:#475569">${r.sop_ref}</td>
+  `;
+  tbody.insertBefore(tr, tbody.firstChild);
+}
+
+function resetAct1() {
+  processing = false;
+  processedResults = [];
+  dbQueryCounts = [0,0,0,0,0,0];
+  Object.keys(counts).forEach(k => counts[k] = 0);
+  ['total','approved','denied','partial','adr','hr'].forEach(k => {
+    const el = document.getElementById(`cnt-${k}`);
+    if (el) el.textContent = '0';
+  });
+  document.getElementById('queue-tbody').innerHTML = '';
+  document.getElementById('proc-progress').classList.remove('visible');
+  document.getElementById('proc-bar').style.width = '0%';
+  document.getElementById('start-btn').disabled = false;
+  for (let i = 0; i < 6; i++) {
+    const card = document.getElementById(`dbc-${i}`);
+    card.classList.remove('done','querying');
+    document.getElementById(`dbc-${i}-hits`).textContent = '0 queries';
+  }
+  closeClaimPanel();
+  closeDbExpand();
+}
+
+// ── Claim Detail Panel ────────────────────────────────────────────────────────
+
+function openClaimPanel(r) {
+  const panel = document.getElementById('claim-panel');
+  const title = document.getElementById('cp-title');
+  const body  = document.getElementById('cp-body');
+
+  title.textContent = `${r.icn} — ${r.member_name} — ${r.cpt_code} — ${r.edit_description}`;
+
+  const color = r.outcome_color || 'gray';
+  const payment = r.payment_amount > 0 ? `$${r.payment_amount.toFixed(2)}` : '—';
+
+  const stepsHtml = (r.sop_steps || []).map((s, i) =>
+    `<li class="sop-step"><span class="step-num">${i+1}</span>${s}</li>`
+  ).join('');
+
+  const dbsHtml = (r.dbs_queried || []).map(db =>
+    `<span class="db-query-pill hit">✓ ${db}</span>`
+  ).join('');
+
+  const hrBlock = r.human_review ? `
+    <div class="hr-box">
+      <h4>⚠ Human Review Required</h4>
+      <p>${r.human_review_reason || 'This claim requires human examiner review before final disposition.'}</p>
+      <div class="hr-actions">
+        <button class="hr-btn approve" onclick="examinerAction('approve','${r.icn}')">Approve</button>
+        <button class="hr-btn deny"    onclick="examinerAction('deny','${r.icn}')">Deny</button>
+        <button class="hr-btn escalate" onclick="examinerAction('escalate','${r.icn}')">Escalate</button>
+      </div>
+    </div>` : '';
+
+  body.innerHTML = `
+    <div class="cp-grid">
+      <div class="cp-box">
+        <h4>Claim</h4>
+        <div class="cp-field"><span class="cp-field-label">ICN</span><span class="cp-field-value" style="font-family:monospace;color:#60a5fa">${r.icn}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Member</span><span class="cp-field-value">${r.member_name}</span></div>
+        <div class="cp-field"><span class="cp-field-label">CPT</span><span class="cp-field-value" style="font-family:monospace">${r.cpt_code}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Billed</span><span class="cp-field-value yellow">$${r.billed_amount?.toFixed(2)}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Allowed</span><span class="cp-field-value">$${r.allowed_amount?.toFixed(2)}</span></div>
+        <div class="cp-field"><span class="cp-field-label">ICD-10</span><span class="cp-field-value" style="font-family:monospace">${r.icd10_principal}</span></div>
+      </div>
+      <div class="cp-box">
+        <h4>Edit &amp; Decision</h4>
+        <div class="cp-field"><span class="cp-field-label">Edit Code</span><span class="cp-field-value" style="font-family:monospace;color:#60a5fa">${r.edit_code}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Category</span><span class="cp-field-value">${r.edit_category}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Description</span><span class="cp-field-value" style="font-size:.7rem">${r.edit_description}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Decision</span><span class="cp-field-value ${color}">${r.outcome_label}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Payment</span><span class="cp-field-value green">${payment}</span></div>
+        <div class="cp-field"><span class="cp-field-label">CARC / RARC</span><span class="cp-field-value" style="font-family:monospace;font-size:.7rem">${r.carc} / ${r.rarc}</span></div>
+      </div>
+      <div class="cp-box">
+        <h4>Knowledge Graph — SOP Execution</h4>
+        <div style="font-size:.68rem;color:#475569;margin-bottom:8px">${r.sop_ref} · ${r.processing_ms}ms</div>
+        <ul class="sop-steps">${stepsHtml}</ul>
+      </div>
+    </div>
+    <div class="cp-box" style="margin-bottom:14px">
+      <h4>Database Queries</h4>
+      <div style="margin-top:6px">${dbsHtml}</div>
+    </div>
+    ${hrBlock}
+  `;
+
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeClaimPanel() {
+  document.getElementById('claim-panel').classList.remove('visible');
+}
+
+function examinerAction(action, icn) {
+  alert(`Action recorded: ${action.toUpperCase()} for ${icn}\n\nIn production this would:\n• Log the decision with examiner ID and timestamp\n• Update the claim record in the adjudication system\n• Trigger downstream payment or denial workflow`);
+}
+
+// ── Gen Tab switching ─────────────────────────────────────────────────────────
+
+function switchGenTab(tab) {
+  document.querySelectorAll('.gen-tab').forEach((t,i) => {
+    const ids = ['gen1','gen2','gen3'];
+    t.classList.toggle('active', ids[i] === tab);
+  });
+  document.querySelectorAll('.gen-panel').forEach((p,i) => {
+    const ids = ['gen1','gen2','gen3'];
+    p.classList.toggle('active', ids[i] === tab);
+  });
+}
+
+// ── Gen 2 — SOP Gap Detection ─────────────────────────────────────────────────
+
+async function loadGen2() {
+  try {
+    const data = await fetch(`${API}/api/sop-outcomes`).then(r => r.json());
+    const tbody = document.getElementById('gen2-tbody');
+    tbody.innerHTML = data.map(row => {
+      const pct = row.override_pct;
+      const barColor = pct > 30 ? 'red' : pct > 20 ? 'amber' : 'green';
+      const gapHtml  = row.sop_gap_flag
+        ? `<span class="gap-flag">⚠ Gap Detected</span>`
+        : `<span style="color:#4ade80;font-size:.7rem">✓ SOP OK</span>`;
+      return `<tr>
+        <td style="font-family:monospace;color:#60a5fa;font-size:.7rem">${row.edit_code}</td>
+        <td><span class="badge-cat">${row.category}</span></td>
+        <td>${row.total_processed.toLocaleString()}</td>
+        <td>${row.auto_resolved.toLocaleString()} <span style="color:#475569;font-size:.68rem">(${Math.round(row.auto_resolved/row.total_processed*100)}%)</span></td>
+        <td>
+          <span style="margin-right:6px;font-weight:700;color:${pct>30?'#f87171':pct>20?'#fbbf24':'#4ade80'}">${pct}%</span>
+          <span class="bar-wrap"><span class="bar-fill ${barColor}" style="width:${Math.min(pct*2,100)}%"></span></span>
+        </td>
+        <td>${row.avg_processing_min} min</td>
+        <td>${gapHtml}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {}
+}
+
+// ── Gen 3 — Upstream Predictions ──────────────────────────────────────────────
+
+async function loadGen3() {
+  try {
+    const data = await fetch(`${API}/api/predictions`).then(r => r.json());
+    const tbody = document.getElementById('gen3-tbody');
+    tbody.innerHTML = data.map(row => {
+      const prob = row.pend_probability;
+      const badgeClass = row.status === 'resolved' ? 'resolved' : row.status === 'outreach_sent' ? 'sent' : 'pending';
+      const badgeLabel = row.status === 'resolved' ? '✓ Resolved' : row.status === 'outreach_sent' ? '📨 Outreach Sent' : '⏳ Pending';
+      return `<tr>
+        <td>${row.member_name}</td>
+        <td style="color:#94a3b8">${row.provider_name?.split(' ').slice(0,3).join(' ')}</td>
+        <td style="font-family:monospace">${row.cpt_code}</td>
+        <td style="font-size:.7rem;color:#f87171">${row.predicted_edit_desc}</td>
+        <td>
+          <span style="font-weight:700;color:${prob>80?'#f87171':prob>70?'#fbbf24':'#4ade80'}">${prob}%</span>
+        </td>
+        <td style="font-size:.68rem;color:#64748b;max-width:200px;white-space:normal">${row.basis}</td>
+        <td><span class="pred-badge ${badgeClass}">${badgeLabel}</span></td>
+      </tr>`;
+    }).join('');
+  } catch(e) {}
+}
+
+// ── Human Review Queue ────────────────────────────────────────────────────────
+
+let reviewClaims = [];
+let selectedReviewIdx = null;
+
+async function loadReviewQueue() {
+  try {
+    const data = await fetch(`${API}/api/human-review`).then(r => r.json());
+    reviewClaims = data.claims || [];
+    document.getElementById('review-count-badge').textContent = reviewClaims.length;
+    document.getElementById('review-sub').textContent = `${reviewClaims.length} claims requiring examiner decision`;
+
+    const listBody = document.getElementById('review-list-body');
+    listBody.innerHTML = reviewClaims.map((c, i) => `
+      <div class="review-item" id="ri-${i}" onclick="selectReviewItem(${i})">
+        <div class="review-item-icn">${c.icn}</div>
+        <div class="review-item-name">${c.member_name}</div>
+        <div class="review-item-reason">${c.human_review_reason || 'Review required'}</div>
+        <div class="review-item-amount">$${c.allowed_amount?.toFixed(2)} — ${c.edit_category}</div>
+      </div>
+    `).join('');
+  } catch(e) {}
+}
+
+function selectReviewItem(idx) {
+  selectedReviewIdx = idx;
+  document.querySelectorAll('.review-item').forEach((el, i) =>
+    el.classList.toggle('selected', i === idx)
+  );
+  renderReviewDetail(reviewClaims[idx]);
+}
+
+function renderReviewDetail(c) {
+  const detail = document.getElementById('review-detail');
+  detail.innerHTML = `
+    <div style="margin-bottom:16px">
+      <div style="font-size:.72rem;color:#7c3aed;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Human Review — ${c.icn}</div>
+      <div style="font-size:1rem;font-weight:700;color:#f1f5f9;margin-top:3px">${c.member_name} · ${c.cpt_code} · ${c.edit_description}</div>
+    </div>
+    <div class="cp-grid">
+      <div class="cp-box">
+        <h4>Claim Details</h4>
+        <div class="cp-field"><span class="cp-field-label">ICN</span><span class="cp-field-value" style="font-family:monospace;color:#60a5fa">${c.icn}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Member</span><span class="cp-field-value">${c.member_name}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Provider</span><span class="cp-field-value">${c.provider_name}</span></div>
+        <div class="cp-field"><span class="cp-field-label">CPT</span><span class="cp-field-value" style="font-family:monospace">${c.cpt_code}</span></div>
+        <div class="cp-field"><span class="cp-field-label">ICD-10</span><span class="cp-field-value" style="font-family:monospace">${c.icd10_principal}</span></div>
+        <div class="cp-field"><span class="cp-field-label">DOS</span><span class="cp-field-value">${c.dos}</span></div>
+      </div>
+      <div class="cp-box">
+        <h4>Financial &amp; Edit</h4>
+        <div class="cp-field"><span class="cp-field-label">Billed</span><span class="cp-field-value yellow">$${c.billed_amount?.toFixed(2)}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Allowed</span><span class="cp-field-value">$${c.allowed_amount?.toFixed(2)}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Edit Code</span><span class="cp-field-value" style="font-family:monospace;color:#f87171">${c.edit_code}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Category</span><span class="cp-field-value">${c.edit_category}</span></div>
+        <div class="cp-field"><span class="cp-field-label">CARC</span><span class="cp-field-value" style="font-family:monospace">${c.carc_code}</span></div>
+        <div class="cp-field"><span class="cp-field-label">RARC</span><span class="cp-field-value" style="font-family:monospace">${c.rarc_code}</span></div>
+      </div>
+      <div class="cp-box">
+        <h4>Review Trigger</h4>
+        <div style="background:#130a2e;border:1px solid #581c87;border-radius:8px;padding:10px;font-size:.75rem;color:#a78bfa;line-height:1.6">
+          ${c.human_review_reason || 'Manual review required'}
+        </div>
+        <div style="margin-top:10px;font-size:.7rem;color:#475569">
+          Plan: ${c.plan}<br>
+          Days in queue: ${c.days_in_queue}<br>
+          Priority: ${c.priority}
+        </div>
+      </div>
+    </div>
+    <div class="review-examiner">
+      <h3>Examiner Decision</h3>
+      <div class="exam-field">
+        <label>Clinical Rationale / Override Reason</label>
+        <textarea id="exam-notes" rows="3" placeholder="Enter rationale for override or confirm denial basis…"></textarea>
+      </div>
+      <div class="exam-field">
+        <label>Action</label>
+        <select id="exam-action">
+          <option value="">— Select —</option>
+          <option>Approve — Medical necessity confirmed</option>
+          <option>Approve — Policy exception applied</option>
+          <option>Deny — Criteria not met</option>
+          <option>Deny — No auth on file</option>
+          <option>Partial Pay — Reduce to allowed amount</option>
+          <option>ADR — Request additional documentation</option>
+          <option>Escalate — Medical director review</option>
+        </select>
+      </div>
+      <div class="exam-actions">
+        <button class="exam-btn approve" onclick="submitExaminerDecision('approve')">✓ Approve</button>
+        <button class="exam-btn deny"    onclick="submitExaminerDecision('deny')">✕ Deny</button>
+        <button class="exam-btn escalate" onclick="submitExaminerDecision('escalate')">↑ Escalate</button>
+      </div>
+    </div>
+  `;
+}
+
+function submitExaminerDecision(action) {
+  const notes  = document.getElementById('exam-notes')?.value || '';
+  const sel    = document.getElementById('exam-action')?.value || '';
+  const claim  = reviewClaims[selectedReviewIdx];
+  alert(`Decision logged:\n\nAction: ${action.toUpperCase()}\nClaim: ${claim.icn}\nRationale: ${notes || sel || '(none)'}\n\nIn production: written to adjudication system with examiner ID + timestamp. Downstream payment or denial workflow triggered.`);
+}
+
+// ── Trace View ───────────────────────────────────────────────────────────────
+
+let traceClaims = [];
+let traceMultiClaims = [];
+let traceRunning = false;
+
+async function initTrace() {
+  if (traceClaims.length) return;
+  try {
+    const [single, multi] = await Promise.all([
+      fetch(`${API}/api/pend-queue?featured=true`).then(r => r.json()),
+      fetch(`${API}/api/multi-edit-claims`).then(r => r.json()),
+    ]);
+    traceClaims      = single.claims || [];
+    traceMultiClaims = multi.claims  || [];
+
+    const sel = document.getElementById('trace-claim-select');
+    const multiOpts = traceMultiClaims.map(c =>
+      `<option value="${c.icn}" data-multi="true">⚡ MULTI-EDIT: ${c.label} — ${c.member_name}</option>`
+    ).join('');
+    const singleOpts = traceClaims.map(c =>
+      `<option value="${c.icn}">${c.icn} — ${c.member_name} — ${c.edit_code}: ${c.edit_description.substring(0,40)}</option>`
+    ).join('');
+    sel.innerHTML = `<optgroup label="── Multi-Edit Claims (3 SOPs)">${multiOpts}</optgroup>
+                     <optgroup label="── Single-Edit Claims (1 SOP)">${singleOpts}</optgroup>`;
+
+    const allClaims = [...traceMultiClaims, ...traceClaims];
+    renderTraceClaimCard(allClaims[0]);
+    sel.onchange = () => {
+      const c = allClaims.find(x => x.icn === sel.value);
+      if (c) { renderTraceClaimCard(c); resetTrace(false); }
+    };
+  } catch(e) { console.error(e); }
+}
+
+function renderTraceClaimCard(c) {
+  const card = document.getElementById('trace-claim-card');
+  const isMulti = c.is_multi_edit;
+  const editBlock = isMulti
+    ? `<div style="margin-top:12px">
+        <div style="font-size:.63rem;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${c.edit_codes.length} Edit Codes — Stamped by Auto-Adjudication</div>
+        ${(c.edits_detail || []).map((e,i) => `
+          <div class="tcc-edit" style="margin-bottom:6px;border-color:${['#7f1d1d','#451a03','#1e3a5f'][i]||'#334155'}">
+            <div style="font-size:.6rem;color:#475569;margin-bottom:2px">Edit ${i+1} of ${c.edit_codes.length}</div>
+            <div class="tcc-edit-code">${e.edit_code}</div>
+            <div class="tcc-edit-desc">${e.edit_description}</div>
+            <span class="tcc-cat">${e.edit_category}</span>
+          </div>`).join('')}
+        ${c.scenario_note ? `<div style="background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:8px;font-size:.7rem;color:#60a5fa;margin-top:8px;line-height:1.5">${c.scenario_note}</div>` : ''}
+      </div>`
+    : `<div class="tcc-edit">
+        <div class="tcc-edit-code">${c.edit_code}</div>
+        <div class="tcc-edit-desc">${c.edit_description}</div>
+        <span class="tcc-cat">${c.edit_category}</span>
+      </div>`;
+
+  card.innerHTML = `
+    <h3>${isMulti ? '⚡ Multi-Edit Pend' : 'Incoming Pend'}</h3>
+    <div class="tcc-field"><span class="tcc-label">ICN</span><span class="tcc-value tcc-icn">${c.icn}</span></div>
+    <div class="tcc-field"><span class="tcc-label">Member</span><span class="tcc-value">${c.member_name}</span></div>
+    <div class="tcc-field"><span class="tcc-label">DOB</span><span class="tcc-value">${c.member_dob}</span></div>
+    <div class="tcc-field"><span class="tcc-label">Plan</span><span class="tcc-value" style="font-size:.72rem">${c.plan}</span></div>
+    <div class="tcc-field"><span class="tcc-label">Provider</span><span class="tcc-value" style="font-size:.72rem">${c.provider_name}</span></div>
+    <div class="tcc-field"><span class="tcc-label">Specialty</span><span class="tcc-value" style="font-size:.72rem">${c.provider_specialty}</span></div>
+    <div class="tcc-field"><span class="tcc-label">CPT</span><span class="tcc-value" style="font-family:monospace">${c.cpt_code}</span></div>
+    <div class="tcc-field"><span class="tcc-label">Description</span><span class="tcc-value" style="font-size:.68rem">${c.cpt_description?.substring(0,36)}…</span></div>
+    <div class="tcc-field"><span class="tcc-label">ICD-10</span><span class="tcc-value" style="font-family:monospace">${c.icd10_principal}</span></div>
+    <div class="tcc-field"><span class="tcc-label">Billed</span><span class="tcc-value" style="color:#fbbf24">$${c.billed_amount?.toFixed(2)}</span></div>
+    <div class="tcc-field"><span class="tcc-label">Allowed</span><span class="tcc-value">$${c.allowed_amount?.toFixed(2)}</span></div>
+    <div class="tcc-field"><span class="tcc-label">DOS</span><span class="tcc-value">${c.dos}</span></div>
+    <div class="tcc-field"><span class="tcc-label">Days in Queue</span><span class="tcc-value" style="color:${c.days_in_queue>14?'#f87171':'#94a3b8'}">${c.days_in_queue} days</span></div>
+    ${editBlock}
+  `;
+}
+
+function resetTrace(clearSelect = true) {
+  document.getElementById('trace-flow').innerHTML = '<div style="color:#334155;font-size:.8rem;padding:20px 0">Agent steps will appear here when you click Run Agent.</div>';
+  document.getElementById('trace-run-btn').disabled = false;
+  traceRunning = false;
+}
+
+async function runTrace() {
+  if (traceRunning) return;
+  const sel = document.getElementById('trace-claim-select');
+  const icn = sel.value;
+  if (!icn) return;
+
+  const allClaims = [...traceMultiClaims, ...traceClaims];
+  const claim = allClaims.find(c => c.icn === icn);
+  if (!claim) return;
+
+  if (claim.is_multi_edit) { await runMultiTrace(claim); return; }
+
+  traceRunning = true;
+  document.getElementById('trace-run-btn').disabled = true;
+  const flow = document.getElementById('trace-flow');
+  flow.innerHTML = '';
+
+  // Fetch full context
+  let ctx;
+  try {
+    ctx = await fetch(`${API}/api/claim-context/${icn}`).then(r => r.json());
+  } catch(e) {
+    flow.innerHTML = '<div style="color:#f87171">Server not reachable — is it running on port 5002?</div>';
+    traceRunning = false;
+    document.getElementById('trace-run-btn').disabled = false;
+    return;
+  }
+
+  const res = ctx.resolution;
+
+  // ── STEP 1: CLAIM RECEIVED ────────────────────────────────────────────────
+  await addTraceStep(flow, 1, '📥 Claim Received', 'Auto-adjudication engine — fallout detected', `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:8px">
+        <div style="font-size:.65rem;color:#475569;margin-bottom:4px">CLAIM</div>
+        <div style="font-family:monospace;color:#60a5fa;font-size:.78rem">${claim.icn}</div>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">${claim.cpt_code} · $${claim.billed_amount?.toFixed(2)} billed</div>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:1px">ICD-10: ${claim.icd10_principal}</div>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:1px">DOS: ${claim.dos}</div>
+      </div>
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:8px">
+        <div style="font-size:.65rem;color:#475569;margin-bottom:4px">MEMBER</div>
+        <div style="font-size:.78rem;color:#e2e8f0">${claim.member_name}</div>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">${claim.plan}</div>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:1px">${claim.provider_name}</div>
+      </div>
+    </div>
+    <div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:6px;padding:8px;margin-top:8px;display:flex;align-items:center;gap:12px">
+      <div>
+        <div style="font-size:.63rem;color:#7f1d1d;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Edit Code — Stamped by Auto-Adjudication Engine</div>
+        <span style="font-family:monospace;font-weight:700;color:#f87171;font-size:.85rem">${claim.edit_code}</span>
+        <span style="color:#fca5a5;font-size:.75rem;margin-left:10px">${claim.edit_description}</span>
+      </div>
+      <span style="margin-left:auto;background:#450a0a;color:#f87171;border-radius:6px;padding:3px 10px;font-size:.68rem;font-weight:700;white-space:nowrap">${claim.edit_category}</span>
+    </div>
+  `, 600);
+
+  // ── STEP 2: EDIT IDENTIFICATION ───────────────────────────────────────────
+  await addTraceStep(flow, 2, '⚡ Edit Code Identified', `Auto-adjudication flagged reason code`, `
+    <div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:8px;padding:12px;margin-top:6px">
+      <div style="font-family:monospace;font-size:.9rem;font-weight:700;color:#f87171">${claim.edit_code}</div>
+      <div style="font-size:.8rem;color:#fca5a5;margin-top:4px">${claim.edit_description}</div>
+      <div style="display:flex;gap:10px;margin-top:8px;font-size:.72rem">
+        <span style="color:#475569">Category: <span style="color:#94a3b8">${claim.edit_category}</span></span>
+        <span style="color:#475569">CARC: <span style="font-family:monospace;color:#fbbf24">${claim.carc_code}</span></span>
+        <span style="color:#475569">RARC: <span style="font-family:monospace;color:#fbbf24">${claim.rarc_code}</span></span>
+      </div>
+    </div>
+  `, 800);
+
+  // ── STEP 3: SOP LOOKUP ────────────────────────────────────────────────────
+  await addTraceStep(flow, 3, '📚 SOP Database Lookup', `Querying SOP library for ${claim.edit_code}…`, `
+    <div style="font-size:.75rem;color:#60a5fa;margin-top:4px;font-family:monospace">SELECT * FROM sop_library WHERE edit_code = '${claim.edit_code}'…</div>
+  `, 400, async (body) => {
+    await sleep(900);
+    body.innerHTML += `
+      <div class="trace-sop-box" style="margin-top:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="trace-sop-ref">&#10003; SOP Retrieved: ${res.sop_ref}</div>
+          <span style="background:#14532d;color:#4ade80;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:6px">ACTIVE</span>
+        </div>
+        <div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:8px;padding:14px">
+          <div style="font-size:.65rem;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Standard Operating Procedure</div>
+          <div style="font-size:.82rem;font-weight:700;color:#f1f5f9;margin-bottom:4px">${claim.edit_description}</div>
+          <div style="display:flex;gap:12px;font-size:.7rem;margin-bottom:12px;flex-wrap:wrap">
+            <span style="color:#475569">Edit: <span style="font-family:monospace;color:#60a5fa">${claim.edit_code}</span></span>
+            <span style="color:#475569">Category: <span style="color:#94a3b8">${claim.edit_category}</span></span>
+            <span style="color:#475569">CARC: <span style="font-family:monospace;color:#fbbf24">${claim.carc_code}</span></span>
+            <span style="color:#475569">RARC: <span style="font-family:monospace;color:#fbbf24">${claim.rarc_code}</span></span>
+          </div>
+          <div style="font-size:.65rem;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Procedural Steps</div>
+          <ol style="list-style:none;padding:0;margin:0">
+            ${(res.sop_steps || []).map((s, i) => `
+              <li style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #1e293b;font-size:.74rem;color:#94a3b8">
+                <span style="background:#1e3a5f;color:#60a5fa;border-radius:4px;padding:1px 7px;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:1px">${i+1}</span>
+                ${s}
+              </li>`).join('')}
+          </ol>
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid #1e293b;font-size:.7rem">
+            <span style="color:#475569">Resolution path: </span>
+            <span style="font-family:monospace;color:#a78bfa">${claim.resolution_path}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  // ── STEP 4: SOP EXECUTION (step by step) ─────────────────────────────────
+  const sopSteps = res.sop_steps || [];
+  const stepsHtml = sopSteps.map((s, i) =>
+    `<li class="trace-sop-item" id="tsop-${i}"><span class="sop-icon">○</span>${s}</li>`
+  ).join('');
+
+  await addTraceStep(flow, 4, '⚙ SOP Execution', `Running ${sopSteps.length} procedural steps…`, `
+    <ul class="trace-sop-steps" id="sop-step-list">${stepsHtml}</ul>
+  `, 400, async () => {
+    for (let i = 0; i < sopSteps.length; i++) {
+      await sleep(600);
+      const el = document.getElementById(`tsop-${i}`);
+      if (el) {
+        el.classList.add('lit');
+        el.querySelector('.sop-icon').textContent = '→';
+      }
+      await sleep(500);
+      if (el) {
+        el.classList.add('checked');
+        el.querySelector('.sop-icon').textContent = '✓';
+      }
+    }
+  });
+
+  // ── STEP 5: DATABASE QUERIES ──────────────────────────────────────────────
+  const dbs = res.dbs_queried || [];
+  for (const dbName of dbs) {
+    const dbData = getDbData(ctx, dbName);
+    await addTraceStep(flow, 5, `🔍 Database Query — ${dbName}`, `Agent querying ${dbName}…`, `
+      <div style="font-size:.74rem;color:#60a5fa;margin-top:4px;font-family:monospace">SELECT * FROM ${dbName.replace(/ /g,'_').toUpperCase()} WHERE member_id = '${claim.member_id}' AND …</div>
+    `, 400, async (body) => {
+      await sleep(800);
+      if (dbData.found) {
+        body.innerHTML += `
+          <div class="trace-db-hit">
+            <div class="trace-db-header hit">✓ Record found in ${dbName}</div>
+            ${dbData.rows.map(r => `<div class="trace-db-row"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('')}
+          </div>`;
+      } else {
+        body.innerHTML += `
+          <div class="trace-db-miss">
+            <div class="trace-db-header miss">✗ No record found in ${dbName}</div>
+            <div style="font-size:.72rem;color:#94a3b8;margin-top:4px">${dbData.message}</div>
+          </div>`;
+      }
+    });
+  }
+
+  // ── STEP 6: KNOWLEDGE GRAPH REASONING ────────────────────────────────────
+  const kgRules = ctx.kg_rules || [];
+  const kgRulesHtml = kgRules.map((r, i) => `
+    <div class="trace-kg-rule" style="margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-family:monospace;font-size:.68rem;font-weight:700;color:#7c3aed;background:#1e1035;padding:1px 7px;border-radius:4px">${r.rule_id}</span>
+        <span style="font-size:.75rem;font-weight:700;color:#c084fc">${r.check}</span>
+      </div>
+      <div style="font-size:.74rem;color:#94a3b8;line-height:1.5;margin-bottom:3px">${r.text}</div>
+      <div style="font-size:.67rem;color:#475569;font-style:italic">Source: ${r.source}</div>
+    </div>
+  `).join('');
+
+  await addTraceStep(flow, 6, '🧠 Knowledge Graph Reasoning', `${kgRules.length} rule${kgRules.length!==1?'s':''} evaluated — deterministic`, `
+    <div style="margin-top:6px">${kgRulesHtml || '<div style="color:#475569">No specific KG rules for this edit type.</div>'}</div>
+    ${claim.human_review_flag ? `<div class="trace-kg-rule" style="border-left-color:#7c3aed;color:#c084fc;margin-top:8px"><span style="font-family:monospace;font-size:.68rem;font-weight:700;background:#1e1035;padding:1px 7px;border-radius:4px;margin-right:6px">KG-HR-001</span>Human review threshold: ${claim.human_review_reason}</div>` : ''}
+    <div style="font-size:.72rem;color:#4ade80;margin-top:10px;padding-top:8px;border-top:1px solid #1e293b">✓ ${kgRules.length} rule${kgRules.length!==1?'s':''} fired · Confidence: 100% · 0 ambiguous rules · All citations auditable</div>
+  `, 700);
+
+  // ── STEP 7: DECISION ──────────────────────────────────────────────────────
+  const colorMap = {approve:'#4ade80',deny:'#f87171',partial_pay:'#fbbf24',request_info:'#60a5fa',escalate:'#fb923c',human_review:'#c084fc'};
+  const outcomeColor = colorMap[res.outcome] || '#94a3b8';
+  const payment = res.payment_amount > 0 ? `$${res.payment_amount.toFixed(2)}` : '$0.00';
+
+  await addTraceStep(flow, 7, '✅ Decision', 'Episode complete — route to payment system', `
+    <div class="trace-decision-box">
+      <div class="trace-decision-outcome" style="color:${outcomeColor}">${res.outcome_label}</div>
+      <div class="trace-decision-codes">${res.carc} / ${res.rarc}</div>
+      <div class="trace-decision-payment">Payment: <strong style="color:${outcomeColor}">${payment}</strong></div>
+      ${res.human_review ? `<div style="background:#130a2e;border:1px solid #581c87;border-radius:8px;padding:8px;margin-top:10px;font-size:.74rem;color:#c084fc">⚠ Routed to Human Review Queue — examiner decision required</div>` : ''}
+      <div style="margin-top:12px;font-size:.7rem;color:#475569">Processing time: ${res.processing_ms}ms · SOP: ${res.sop_ref}</div>
+    </div>
+  `, 600);
+
+  traceRunning = false;
+  document.getElementById('trace-run-btn').disabled = false;
+}
+
+async function runMultiTrace(claim) {
+  traceRunning = true;
+  document.getElementById('trace-run-btn').disabled = true;
+  const flow = document.getElementById('trace-flow');
+  flow.innerHTML = '';
+
+  let ctx;
+  try {
+    ctx = await fetch(`${API}/api/multi-edit-context/${claim.icn}`).then(r => r.json());
+  } catch(e) {
+    flow.innerHTML = '<div style="color:#f87171">Server not reachable — is it running on port 5002?</div>';
+    traceRunning = false;
+    document.getElementById('trace-run-btn').disabled = false;
+    return;
+  }
+
+  const edits = ctx.edit_resolutions || [];
+  const colorMap = {approve:'#4ade80',deny:'#f87171',partial_pay:'#fbbf24',request_info:'#60a5fa',escalate:'#fb923c',human_review:'#c084fc'};
+
+  // STEP 1: Claim received with all edit codes
+  await addTraceStep(flow, 1, '📥 Claim Received', `Auto-adjudication flagged ${edits.length} edit codes`, `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:8px">
+        <div style="font-size:.65rem;color:#475569;margin-bottom:4px">CLAIM</div>
+        <div style="font-family:monospace;color:#60a5fa;font-size:.78rem">${claim.icn}</div>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">${claim.cpt_code} · $${claim.billed_amount?.toFixed(2)} billed</div>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:1px">ICD-10: ${claim.icd10_principal} · DOS: ${claim.dos}</div>
+      </div>
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:8px">
+        <div style="font-size:.65rem;color:#475569;margin-bottom:4px">MEMBER</div>
+        <div style="font-size:.78rem;color:#e2e8f0">${claim.member_name}</div>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">${claim.plan}</div>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:1px">${claim.provider_name}</div>
+      </div>
+    </div>
+    <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px">
+      ${edits.map((e,i) => `
+        <div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:6px;padding:7px 10px;display:flex;align-items:center;gap:10px">
+          <span style="background:#450a0a;color:#f87171;border-radius:4px;padding:1px 7px;font-size:.65rem;font-weight:700;flex-shrink:0">Edit ${i+1}</span>
+          <span style="font-family:monospace;font-weight:700;color:#f87171;font-size:.78rem">${e.edit_code}</span>
+          <span style="color:#fca5a5;font-size:.72rem">${e.edit_description}</span>
+          <span style="margin-left:auto;background:#1e293b;color:#94a3b8;border-radius:6px;padding:2px 7px;font-size:.65rem;white-space:nowrap">${e.edit_category}</span>
+        </div>`).join('')}
+    </div>
+  `, 600);
+
+  // Per-edit loop: SOP Lookup + Execution + DB Query
+  let stepNum = 2;
+  for (let i = 0; i < edits.length; i++) {
+    const ed = edits[i];
+    const sopSteps = ed.sop_steps || [];
+    const dbs = ed.dbs_queried || [];
+
+    // SOP Lookup
+    await addTraceStep(flow, stepNum++, `📚 Edit ${i+1}/${edits.length} — SOP Lookup`, `${ed.edit_code}: ${ed.edit_description.substring(0,40)}…`, `
+      <div style="font-size:.75rem;color:#60a5fa;margin-top:4px;font-family:monospace">SELECT * FROM sop_library WHERE edit_code = '${ed.edit_code}'…</div>
+    `, 500, async (body) => {
+      await sleep(800);
+      body.innerHTML += `
+        <div class="trace-sop-box" style="margin-top:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div class="trace-sop-ref">&#10003; ${ed.sop_ref}</div>
+            <span style="background:#14532d;color:#4ade80;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:6px">ACTIVE</span>
+          </div>
+          <div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:8px;padding:12px">
+            <div style="font-size:.8rem;font-weight:700;color:#f1f5f9;margin-bottom:10px">${ed.edit_description}</div>
+            <div style="display:flex;gap:10px;font-size:.7rem;margin-bottom:10px;flex-wrap:wrap">
+              <span style="color:#475569">Edit: <span style="font-family:monospace;color:#60a5fa">${ed.edit_code}</span></span>
+              <span style="color:#475569">CARC: <span style="font-family:monospace;color:#fbbf24">${ed.carc_code}</span></span>
+              <span style="color:#475569">RARC: <span style="font-family:monospace;color:#rarc_code">${ed.rarc_code}</span></span>
+            </div>
+            <div style="font-size:.65rem;color:#475569;font-weight:700;text-transform:uppercase;margin-bottom:6px">Procedural Steps</div>
+            <ol style="list-style:none;padding:0;margin:0">
+              ${sopSteps.map((s,j) => `<li style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #1e293b;font-size:.74rem;color:#94a3b8"><span style="background:#1e3a5f;color:#60a5fa;border-radius:4px;padding:1px 6px;font-size:.62rem;font-weight:700;flex-shrink:0">${j+1}</span>${s}</li>`).join('')}
+            </ol>
+            <div style="margin-top:8px;font-size:.7rem;color:#475569">Resolution path: <span style="font-family:monospace;color:#a78bfa">${ed.resolution_path}</span></div>
+          </div>
+        </div>`;
+    });
+
+    // DB Queries for this edit
+    for (const dbName of dbs) {
+      const dbData = getDbData(ctx, dbName);
+      await addTraceStep(flow, stepNum++, `🔍 Edit ${i+1} — Database Query: ${dbName}`, `Querying ${dbName}…`, `
+        <div style="font-size:.74rem;color:#60a5fa;margin-top:4px;font-family:monospace">SELECT * FROM ${dbName.replace(/ /g,'_').toUpperCase()} WHERE …</div>
+      `, 350, async (body) => {
+        await sleep(700);
+        if (dbData.found) {
+          body.innerHTML += `<div class="trace-db-hit"><div class="trace-db-header hit">&#10003; Record found</div>${dbData.rows.map(r=>`<div class="trace-db-row"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('')}</div>`;
+        } else {
+          body.innerHTML += `<div class="trace-db-miss"><div class="trace-db-header miss">&#10007; No record found</div><div style="font-size:.72rem;color:#94a3b8;margin-top:4px">${dbData.message}</div></div>`;
+        }
+      });
+    }
+  }
+
+  // Knowledge Graph — per-edit rules then combined
+  const totalKgRules = edits.reduce((sum, e) => sum + (e.kg_rules||[]).length, 0);
+  const multiKgHtml = edits.map((e, i) => {
+    const rules = e.kg_rules || [];
+    return `<div style="margin-bottom:12px">
+      <div style="font-size:.7rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Edit ${i+1} — ${e.edit_code}</div>
+      ${rules.map(r => `
+        <div class="trace-kg-rule" style="margin-bottom:6px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-family:monospace;font-size:.67rem;font-weight:700;color:#7c3aed;background:#1e1035;padding:1px 6px;border-radius:4px">${r.rule_id}</span>
+            <span style="font-size:.73rem;font-weight:700;color:#c084fc">${r.check}</span>
+          </div>
+          <div style="font-size:.73rem;color:#94a3b8;line-height:1.5;margin-bottom:2px">${r.text}</div>
+          <div style="font-size:.66rem;color:#475569;font-style:italic">Source: ${r.source}</div>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+
+  await addTraceStep(flow, stepNum++, '🧠 Knowledge Graph — Combined Reasoning', `${totalKgRules} rules across ${edits.length} edits · most restrictive applies`, `
+    <div style="margin-top:6px">${multiKgHtml}</div>
+    <div style="background:#1e293b;border-radius:6px;padding:10px;margin-top:8px">
+      <div style="font-size:.72rem;font-weight:700;color:#94a3b8;margin-bottom:6px">Combined Decision Rule</div>
+      ${edits.map((e,i) => `<div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:3px"><span style="color:#475569">Edit ${i+1} (${e.edit_code})</span><span style="color:${colorMap[e.outcome]||'#94a3b8'}">${e.outcome_label}</span></div>`).join('')}
+      <div style="border-top:1px solid #334155;margin-top:6px;padding-top:6px;font-size:.72rem;color:#4ade80">&#10003; Most restrictive outcome wins · ${totalKgRules} rules fired · All citations auditable</div>
+    </div>
+  `, 700);
+
+  // Final Decision
+  const combined = ctx.combined_outcome;
+  const combinedColor = colorMap[combined] || '#94a3b8';
+  const payment = ctx.combined_payment > 0 ? `$${ctx.combined_payment.toFixed(2)}` : '$0.00';
+  await addTraceStep(flow, stepNum++, '✅ Final Decision', `${edits.length} edits resolved → single combined disposition`, `
+    <div class="trace-decision-box">
+      <div style="font-size:.8rem;color:#475569;margin-bottom:8px">${edits.length} edit codes · ${edits.length} SOPs executed</div>
+      <div class="trace-decision-outcome" style="color:${combinedColor}">${ctx.combined_label}</div>
+      <div class="trace-decision-payment">Payment: <strong style="color:${combinedColor}">${payment}</strong></div>
+      ${claim.human_review_flag ? `<div style="background:#130a2e;border:1px solid #581c87;border-radius:8px;padding:8px;margin-top:10px;font-size:.74rem;color:#c084fc">&#9888; Routed to Human Review Queue</div>` : ''}
+    </div>
+  `, 600);
+
+  traceRunning = false;
+  document.getElementById('trace-run-btn').disabled = false;
+}
+
+function getDbData(ctx, dbName) {
+  const claim = ctx.claim;
+  if (dbName === 'Authorization DB') {
+    if (ctx.auth_db && ctx.auth_db.auth_number) {
+      const a = ctx.auth_db;
+      return { found: true, rows: [
+        ['Auth #', a.auth_number], ['CPT', a.cpt_code], ['Status', a.status],
+        ['Units Auth', a.units_authorized], ['Units Used', a.units_used],
+        ['DOS End', a.dos_end],
+      ]};
+    }
+    return { found: false, message: `No active authorization found for member ${claim.member_id} — CPT ${claim.cpt_code}` };
+  }
+  if (dbName === 'Provider DB') {
+    const p = ctx.provider_db;
+    if (p && p.npi) return { found: true, rows: [
+      ['NPI', p.npi], ['Name', p.name], ['Specialty', p.specialty],
+      ['Network', p.network_status], ['Credentialing', p.credentialing_status],
+      ['Group', p.group_name],
+    ]};
+    return { found: false, message: 'Provider NPI not found in directory' };
+  }
+  if (dbName === 'Fee Schedule DB') {
+    const f = ctx.fee_schedule;
+    if (f && f.cpt_code) return { found: true, rows: [
+      ['CPT', f.cpt_code], ['Allowed', `$${f.allowed_amount}`], ['Max Units', f.max_units_per_day],
+      ['Auth Required', f.auth_required ? 'Yes' : 'No'], ['Global Days', f.global_period_days],
+    ]};
+    return { found: false, message: `CPT ${claim.cpt_code} not in fee schedule` };
+  }
+  if (dbName === 'COB DB') {
+    const c = ctx.cob_db;
+    if (c && c.carrier_name) return { found: true, rows: [
+      ['Carrier', c.carrier_name], ['Order', c.cob_order], ['Plan Type', c.plan_type],
+      ['Policy #', c.policy_number], ['EOB Required', c.primary_eob_required ? 'Yes' : 'No'],
+    ]};
+    return { found: false, message: `No COB record on file for ${claim.member_id}` };
+  }
+  if (dbName === 'Claims History DB') {
+    const h = ctx.claims_history;
+    return { found: h.count > 0, rows: [
+      ['Prior Claims', h.count], ['Total Paid YTD', `$${h.total_paid_ytd?.toFixed(2)}`],
+      ['Last CPT', h.last_claim?.cpt_code || '—'], ['Last DOS', h.last_claim?.dos || '—'],
+      ['Last Status', h.last_claim?.status || '—'],
+    ], message: 'No prior claims found for this member' };
+  }
+  if (dbName === 'Eligibility DB') {
+    const e = ctx.eligibility;
+    return { found: true, rows: [
+      ['Member ID', e.member_id], ['Plan', e.plan], ['Status', e.status],
+      ['Effective', e.effective_date],
+    ]};
+  }
+  return { found: false, message: 'Database not found' };
+}
+
+async function addTraceStep(flow, num, title, subtitle, bodyHtml, delayMs = 500, afterFn = null) {
+  await sleep(delayMs);
+
+  // Connector line (except for step 1)
+  if (num > 1) {
+    const connector = document.createElement('div');
+    connector.className = 'trace-connector';
+    flow.appendChild(connector);
+    await sleep(50);
+    connector.classList.add('visible');
+  }
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'trace-step';
+  wrapper.innerHTML = `
+    <div class="trace-step-card active-step">
+      <div class="trace-step-header">
+        <div class="trace-step-num running">${num}</div>
+        <div class="trace-step-title">${title}</div>
+        <div class="trace-step-subtitle">${subtitle}</div>
+      </div>
+      <div class="trace-step-body" id="tsb-${num}">${bodyHtml}</div>
+    </div>
+  `;
+  flow.appendChild(wrapper);
+  await sleep(30);
+  wrapper.classList.add('visible');
+
+  // Scroll into view
+  wrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  if (afterFn) {
+    const body = document.getElementById(`tsb-${num}`);
+    await afterFn(body);
+  }
+
+  // Mark done
+  const card = wrapper.querySelector('.trace-step-card');
+  const numEl = wrapper.querySelector('.trace-step-num');
+  await sleep(200);
+  card.classList.remove('active-step');
+  card.classList.add('done-step');
+  numEl.classList.remove('running');
+  numEl.classList.add('done');
+  numEl.textContent = '✓';
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+(async function init() {
+  try {
+    const s = await fetch(`${API}/api/stats`).then(r => r.json());
+    document.getElementById('hs-pended').textContent = s.total_pended;
+    document.getElementById('hs-edits').textContent  = s.edit_types;
+    document.getElementById('hs-hr').textContent     = s.human_review_count;
+    document.getElementById('hub-stats').style.display = 'flex';
+    document.getElementById('hr-badge').textContent  = s.human_review_count;
+    document.getElementById('review-count-badge').textContent = s.human_review_count;
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,572 @@
+{
+  "99213": {
+    "cpt_code": "99213",
+    "description": "Office Visit \u2014 Established Patient, Low Complexity",
+    "specialty": "Internal Medicine",
+    "allowed_amount": 92.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "99214": {
+    "cpt_code": "99214",
+    "description": "Office Visit \u2014 Established Patient, Moderate Complexity",
+    "specialty": "Internal Medicine",
+    "allowed_amount": 133.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "99215": {
+    "cpt_code": "99215",
+    "description": "Office Visit \u2014 Established Patient, High Complexity",
+    "specialty": "Internal Medicine",
+    "allowed_amount": 176.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "99232": {
+    "cpt_code": "99232",
+    "description": "Subsequent Hospital Care, Moderate Complexity",
+    "specialty": "Internal Medicine",
+    "allowed_amount": 112.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "27447": {
+    "cpt_code": "27447",
+    "description": "Total Knee Arthroplasty",
+    "specialty": "Orthopedic Surgery",
+    "allowed_amount": 1580.0,
+    "max_units_per_day": 1,
+    "global_period_days": 90,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "29827": {
+    "cpt_code": "29827",
+    "description": "Shoulder Arthroscopy with Rotator Cuff Repair",
+    "specialty": "Orthopedic Surgery",
+    "allowed_amount": 890.0,
+    "max_units_per_day": 1,
+    "global_period_days": 90,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "29881": {
+    "cpt_code": "29881",
+    "description": "Knee Arthroscopy with Meniscectomy",
+    "specialty": "Orthopedic Surgery",
+    "allowed_amount": 720.0,
+    "max_units_per_day": 1,
+    "global_period_days": 90,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "43239": {
+    "cpt_code": "43239",
+    "description": "Upper GI Endoscopy with Biopsy",
+    "specialty": "Gastroenterology",
+    "allowed_amount": 310.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "47562": {
+    "cpt_code": "47562",
+    "description": "Laparoscopic Cholecystectomy",
+    "specialty": "General Surgery",
+    "allowed_amount": 940.0,
+    "max_units_per_day": 1,
+    "global_period_days": 90,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "70553": {
+    "cpt_code": "70553",
+    "description": "MRI Brain with and without Contrast",
+    "specialty": "Radiology",
+    "allowed_amount": 420.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": true
+  },
+  "71046": {
+    "cpt_code": "71046",
+    "description": "Chest X-Ray, 2 Views",
+    "specialty": "Radiology",
+    "allowed_amount": 48.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": true
+  },
+  "72148": {
+    "cpt_code": "72148",
+    "description": "MRI Lumbar Spine without Contrast",
+    "specialty": "Radiology",
+    "allowed_amount": 380.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": true
+  },
+  "74177": {
+    "cpt_code": "74177",
+    "description": "CT Abdomen and Pelvis with Contrast",
+    "specialty": "Radiology",
+    "allowed_amount": 360.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": true
+  },
+  "93000": {
+    "cpt_code": "93000",
+    "description": "Electrocardiogram with Interpretation",
+    "specialty": "Cardiology",
+    "allowed_amount": 29.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "93306": {
+    "cpt_code": "93306",
+    "description": "Echocardiography with Doppler",
+    "specialty": "Cardiology",
+    "allowed_amount": 295.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "97110": {
+    "cpt_code": "97110",
+    "description": "Therapeutic Exercise",
+    "specialty": "Physical Therapy",
+    "allowed_amount": 42.0,
+    "max_units_per_day": 8,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "97530": {
+    "cpt_code": "97530",
+    "description": "Therapeutic Activities",
+    "specialty": "Physical Therapy",
+    "allowed_amount": 44.0,
+    "max_units_per_day": 8,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "97012": {
+    "cpt_code": "97012",
+    "description": "Traction Therapy",
+    "specialty": "Physical Therapy",
+    "allowed_amount": 25.0,
+    "max_units_per_day": 4,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "90837": {
+    "cpt_code": "90837",
+    "description": "Psychotherapy, 60 minutes",
+    "specialty": "Psychiatry",
+    "allowed_amount": 134.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "90834": {
+    "cpt_code": "90834",
+    "description": "Psychotherapy, 45 minutes",
+    "specialty": "Psychiatry",
+    "allowed_amount": 103.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "96413": {
+    "cpt_code": "96413",
+    "description": "Chemotherapy Administration, IV Infusion, First Hour",
+    "specialty": "Oncology",
+    "allowed_amount": 145.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": true
+  },
+  "96415": {
+    "cpt_code": "96415",
+    "description": "Chemotherapy Administration, IV Infusion, Each Add'l Hour",
+    "specialty": "Oncology",
+    "allowed_amount": 65.0,
+    "max_units_per_day": 5,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": true
+  },
+  "20610": {
+    "cpt_code": "20610",
+    "description": "Aspiration and/or Injection, Major Joint",
+    "specialty": "Orthopedic Surgery",
+    "allowed_amount": 74.0,
+    "max_units_per_day": 1,
+    "global_period_days": 10,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "96374": {
+    "cpt_code": "96374",
+    "description": "IV Push Injection",
+    "specialty": "Internal Medicine",
+    "allowed_amount": 55.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "80053": {
+    "cpt_code": "80053",
+    "description": "Comprehensive Metabolic Panel",
+    "specialty": "Internal Medicine",
+    "allowed_amount": 14.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "85025": {
+    "cpt_code": "85025",
+    "description": "Complete Blood Count with Differential",
+    "specialty": "Internal Medicine",
+    "allowed_amount": 10.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "36415": {
+    "cpt_code": "36415",
+    "description": "Routine Venipuncture",
+    "specialty": "Internal Medicine",
+    "allowed_amount": 3.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": false,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "G0289": {
+    "cpt_code": "G0289",
+    "description": "Arthroscopy, Knee \u2014 Surgical",
+    "specialty": "Orthopedic Surgery",
+    "allowed_amount": 580.0,
+    "max_units_per_day": 1,
+    "global_period_days": 90,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "01402": {
+    "cpt_code": "01402",
+    "description": "Anesthesia \u2014 Total Knee Arthroplasty",
+    "specialty": "Anesthesiology",
+    "allowed_amount": 420.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  },
+  "99291": {
+    "cpt_code": "99291",
+    "description": "Critical Care, First 30-74 minutes",
+    "specialty": "Internal Medicine",
+    "allowed_amount": 218.0,
+    "max_units_per_day": 1,
+    "global_period_days": 0,
+    "modifier_impact": {
+      "25": 0.0,
+      "51": -0.5,
+      "59": 0.0,
+      "76": 0.0,
+      "GT": 0.0,
+      "LT": -0.1
+    },
+    "auth_required": true,
+    "effective_date": "2026-01-01",
+    "lcd_ncd_applies": false
+  }
+}

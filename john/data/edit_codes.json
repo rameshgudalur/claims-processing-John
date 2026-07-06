@@ -1,0 +1,205 @@
+{
+  "E-AUTH-001": {
+    "category": "Authorization",
+    "desc": "Prior authorization missing",
+    "carc": "CO-197",
+    "rarc": "N517",
+    "resolution": "deny_or_approve_if_exempt"
+  },
+  "E-AUTH-002": {
+    "category": "Authorization",
+    "desc": "Prior authorization expired",
+    "carc": "CO-197",
+    "rarc": "N56",
+    "resolution": "deny_unless_retro"
+  },
+  "E-AUTH-003": {
+    "category": "Authorization",
+    "desc": "Service not covered under authorization",
+    "carc": "CO-197",
+    "rarc": "N115",
+    "resolution": "deny_or_resubmit"
+  },
+  "E-AUTH-004": {
+    "category": "Authorization",
+    "desc": "Authorization units/visits exceeded",
+    "carc": "CO-119",
+    "rarc": "N362",
+    "resolution": "deny_excess_units"
+  },
+  "E-AUTH-005": {
+    "category": "Authorization",
+    "desc": "Wrong provider on authorization",
+    "carc": "CO-197",
+    "rarc": "N517",
+    "resolution": "verify_or_deny"
+  },
+  "E-PROV-001": {
+    "category": "Provider",
+    "desc": "Rendering provider not credentialed",
+    "carc": "CO-185",
+    "rarc": "N570",
+    "resolution": "deny_or_approve_if_credentialed"
+  },
+  "E-PROV-002": {
+    "category": "Provider",
+    "desc": "Billing NPI and rendering NPI mismatch",
+    "carc": "CO-16",
+    "rarc": "N286",
+    "resolution": "verify_npi_or_deny"
+  },
+  "E-PROV-003": {
+    "category": "Provider",
+    "desc": "Place of service mismatch",
+    "carc": "CO-5",
+    "rarc": "N30",
+    "resolution": "correct_pos_or_deny"
+  },
+  "E-PROV-004": {
+    "category": "Provider",
+    "desc": "Group NPI not linked to individual NPI",
+    "carc": "CO-16",
+    "rarc": "N286",
+    "resolution": "verify_group_link"
+  },
+  "E-PROV-005": {
+    "category": "Provider",
+    "desc": "Provider out of network \u2014 no OON benefit",
+    "carc": "CO-3",
+    "rarc": "N19",
+    "resolution": "deny_or_apply_oon"
+  },
+  "E-PRICE-001": {
+    "category": "Pricing",
+    "desc": "Billed amount exceeds fee schedule max",
+    "carc": "CO-45",
+    "rarc": "N30",
+    "resolution": "reprice_to_fee_schedule"
+  },
+  "E-PRICE-002": {
+    "category": "Pricing",
+    "desc": "Units billed exceed allowed maximum",
+    "carc": "CO-4",
+    "rarc": "M44",
+    "resolution": "reduce_units_or_deny"
+  },
+  "E-PRICE-003": {
+    "category": "Pricing",
+    "desc": "Modifier required for correct pricing",
+    "carc": "CO-4",
+    "rarc": "M114",
+    "resolution": "apply_modifier_or_deny"
+  },
+  "E-PRICE-004": {
+    "category": "Pricing",
+    "desc": "Global surgery period \u2014 unbundled svc",
+    "carc": "CO-97",
+    "rarc": "N70",
+    "resolution": "deny_bundled_service"
+  },
+  "E-PRICE-005": {
+    "category": "Pricing",
+    "desc": "Pricing exception review required",
+    "carc": "CO-45",
+    "rarc": "N30",
+    "resolution": "escalate_pricing_review"
+  },
+  "E-CODE-001": {
+    "category": "Coding",
+    "desc": "ICD-10 diagnosis code invalid/inactive",
+    "carc": "CO-16",
+    "rarc": "N30",
+    "resolution": "deny_or_correct_code"
+  },
+  "E-CODE-002": {
+    "category": "Coding",
+    "desc": "CPT code not covered under plan",
+    "carc": "CO-96",
+    "rarc": "N63",
+    "resolution": "deny_not_covered"
+  },
+  "E-CODE-003": {
+    "category": "Coding",
+    "desc": "ICD-10/CPT combination fails LCD/NCD",
+    "carc": "CO-167",
+    "rarc": "N115",
+    "resolution": "deny_lcd_ncd"
+  },
+  "E-CODE-004": {
+    "category": "Coding",
+    "desc": "Age or sex conflict with diagnosis code",
+    "carc": "CO-16",
+    "rarc": "N286",
+    "resolution": "verify_demographics"
+  },
+  "E-CODE-005": {
+    "category": "Coding",
+    "desc": "Principal diagnosis sequencing error",
+    "carc": "CO-16",
+    "rarc": "N30",
+    "resolution": "correct_sequencing"
+  },
+  "E-COB-001": {
+    "category": "COB",
+    "desc": "Secondary ins on file \u2014 primary EOB req",
+    "carc": "CO-22",
+    "rarc": "N173",
+    "resolution": "request_primary_eob"
+  },
+  "E-COB-002": {
+    "category": "COB",
+    "desc": "Medicare primary \u2014 crossover error",
+    "carc": "CO-22",
+    "rarc": "N173",
+    "resolution": "process_crossover"
+  },
+  "E-COB-003": {
+    "category": "COB",
+    "desc": "COB savings calculation required",
+    "carc": "CO-22",
+    "rarc": "N173",
+    "resolution": "calculate_cob_savings"
+  },
+  "E-DUP-001": {
+    "category": "Duplicate",
+    "desc": "Exact duplicate \u2014 same member/DOS/CPT",
+    "carc": "CO-18",
+    "rarc": "N522",
+    "resolution": "deny_duplicate"
+  },
+  "E-DUP-002": {
+    "category": "Duplicate",
+    "desc": "Potential duplicate \u2014 same member/DOS",
+    "carc": "CO-18",
+    "rarc": "N522",
+    "resolution": "investigate_or_deny"
+  },
+  "E-TF-001": {
+    "category": "Timely Filing",
+    "desc": "Claim received beyond 365-day limit",
+    "carc": "CO-29",
+    "rarc": "N35",
+    "resolution": "deny_timely_filing"
+  },
+  "E-TF-002": {
+    "category": "Timely Filing",
+    "desc": "Corrected claim beyond 180-day limit",
+    "carc": "CO-29",
+    "rarc": "N35",
+    "resolution": "deny_timely_filing"
+  },
+  "E-MN-001": {
+    "category": "Medical Necessity",
+    "desc": "Medical necessity \u2014 no clinical documentation",
+    "carc": "CO-50",
+    "rarc": "N115",
+    "resolution": "request_documentation"
+  },
+  "E-MN-002": {
+    "category": "Medical Necessity",
+    "desc": "Diagnosis does not support procedure \u2014 LCD/NCD violation",
+    "carc": "CO-50",
+    "rarc": "N130",
+    "resolution": "deny_medical_necessity"
+  }
+}
