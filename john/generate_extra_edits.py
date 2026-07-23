@@ -51,9 +51,12 @@ claims = json.load(open("data/claims_pend.json", encoding="utf-8"))
 claims = [c for c in claims if not str(c.get("icn", "")).startswith("ICN-2026-2")]
 seq = 2001
 mi = 0
+featured_seen = set()
 for edit_code, count, cpt, cpt_desc, billed, allowed, icd, icd_desc, hr in SPECS:
     meta = EDITS[edit_code]
     for _ in range(count):
+        feature_this = edit_code not in featured_seen
+        featured_seen.add(edit_code)
         m = members[mi % len(members)]; mi += 1
         prov = PROVIDERS[seq % len(PROVIDERS)]
         claims.append({
@@ -72,9 +75,20 @@ for edit_code, count, cpt, cpt_desc, billed, allowed, icd, icd_desc, hr in SPECS
             "payment_amount": None, "denial_code": None, "resolution_step": None, "resolved_by": None,
             "processing_ms": None, "human_review_flag": hr,
             "human_review_reason": "Adjustment requires examiner posting" if hr else None,
-            "is_featured": False,
+            "is_featured": feature_this,
         })
         seq += 1
 
 json.dump(claims, open("data/claims_pend.json", "w", encoding="utf-8"), indent=2)
-print(f"edit_codes now {len(ec)}; claims_pend now {len(claims)} (+{seq-2001} extras across {len(SPECS)} categories)")
+
+# featured_claims.json — one representative claim per edit type; add the new edit codes (idempotent)
+feat = json.load(open("data/featured_claims.json", encoding="utf-8"))
+feat = [c for c in feat if not str(c.get("icn", "")).startswith("ICN-2026-2")]
+seen = set(c.get("edit_code") for c in feat)
+for c in claims:
+    if str(c["icn"]).startswith("ICN-2026-2") and c["edit_code"] in EDITS and c["edit_code"] not in seen:
+        fc = dict(c); fc["is_featured"] = True
+        feat.append(fc); seen.add(c["edit_code"])
+json.dump(feat, open("data/featured_claims.json", "w", encoding="utf-8"), indent=2)
+
+print(f"edit_codes now {len(ec)}; claims_pend now {len(claims)} (+{seq-2001} extras); featured now {len(feat)}")

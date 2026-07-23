@@ -4542,7 +4542,7 @@
     "processing_ms": null,
     "human_review_flag": false,
     "human_review_reason": null,
-    "is_featured": false
+    "is_featured": true
   },
   {
     "icn": "ICN-2026-2002",
@@ -4677,7 +4677,7 @@
     "processing_ms": null,
     "human_review_flag": false,
     "human_review_reason": null,
-    "is_featured": false
+    "is_featured": true
   },
   {
     "icn": "ICN-2026-2005",
@@ -4767,7 +4767,7 @@
     "processing_ms": null,
     "human_review_flag": false,
     "human_review_reason": null,
-    "is_featured": false
+    "is_featured": true
   },
   {
     "icn": "ICN-2026-2007",
@@ -4857,7 +4857,7 @@
     "processing_ms": null,
     "human_review_flag": false,
     "human_review_reason": null,
-    "is_featured": false
+    "is_featured": true
   },
   {
     "icn": "ICN-2026-2009",
@@ -4947,7 +4947,7 @@
     "processing_ms": null,
     "human_review_flag": false,
     "human_review_reason": null,
-    "is_featured": false
+    "is_featured": true
   },
   {
     "icn": "ICN-2026-2011",
@@ -5037,7 +5037,7 @@
     "processing_ms": null,
     "human_review_flag": false,
     "human_review_reason": null,
-    "is_featured": false
+    "is_featured": true
   },
   {
     "icn": "ICN-2026-2013",
@@ -5127,7 +5127,7 @@
     "processing_ms": null,
     "human_review_flag": false,
     "human_review_reason": null,
-    "is_featured": false
+    "is_featured": true
   },
   {
     "icn": "ICN-2026-2015",
@@ -5217,7 +5217,7 @@
     "processing_ms": null,
     "human_review_flag": true,
     "human_review_reason": "Adjustment requires examiner posting",
-    "is_featured": false
+    "is_featured": true
   },
   {
     "icn": "ICN-2026-2017",
