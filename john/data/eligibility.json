@@ -1,0 +1,362 @@
+{
+  "MBR-10001": {
+    "member_id": "MBR-10001",
+    "name": "Eleanor Hawkins",
+    "dob": "Jan 12, 1958",
+    "sex": "F",
+    "plan": "BlueCross Gold PPO",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "BlueCross Gold PPO"
+      }
+    ],
+    "group_number": "GRP-30142",
+    "subscriber_id": "MBR-10001",
+    "relationship": "subscriber"
+  },
+  "MBR-10002": {
+    "member_id": "MBR-10002",
+    "name": "Robert Chen",
+    "dob": "Mar 05, 1963",
+    "sex": "M",
+    "plan": "Aetna Choice POS II",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Aetna Choice POS II"
+      }
+    ],
+    "group_number": "GRP-74739",
+    "subscriber_id": "MBR-10002",
+    "relationship": "subscriber"
+  },
+  "MBR-10003": {
+    "member_id": "MBR-10003",
+    "name": "Margaret O'Brien",
+    "dob": "Jul 22, 1955",
+    "sex": "F",
+    "plan": "UnitedHealth Choice Plus",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "UnitedHealth Choice Plus"
+      }
+    ],
+    "group_number": "GRP-31792",
+    "subscriber_id": "MBR-10003",
+    "relationship": "subscriber"
+  },
+  "MBR-10004": {
+    "member_id": "MBR-10004",
+    "name": "James Whitfield",
+    "dob": "Nov 30, 1960",
+    "sex": "M",
+    "plan": "Humana HMO Gold",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Humana HMO Gold"
+      }
+    ],
+    "group_number": "GRP-61367",
+    "subscriber_id": "MBR-10004",
+    "relationship": "subscriber"
+  },
+  "MBR-10005": {
+    "member_id": "MBR-10005",
+    "name": "Patricia Morales",
+    "dob": "Feb 14, 1967",
+    "sex": "F",
+    "plan": "Cigna Connect 250",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Cigna Connect 250"
+      }
+    ],
+    "group_number": "GRP-13373",
+    "subscriber_id": "MBR-10005",
+    "relationship": "subscriber"
+  },
+  "MBR-10006": {
+    "member_id": "MBR-10006",
+    "name": "David Kowalski",
+    "dob": "Sep 08, 1952",
+    "sex": "M",
+    "plan": "BlueCross Gold PPO",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "BlueCross Gold PPO"
+      }
+    ],
+    "group_number": "GRP-10518",
+    "subscriber_id": "MBR-10006",
+    "relationship": "subscriber"
+  },
+  "MBR-10007": {
+    "member_id": "MBR-10007",
+    "name": "Sandra Mitchell",
+    "dob": "Apr 19, 1970",
+    "sex": "F",
+    "plan": "Aetna Choice POS II",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Aetna Choice POS II"
+      }
+    ],
+    "group_number": "GRP-22374",
+    "subscriber_id": "MBR-10007",
+    "relationship": "subscriber"
+  },
+  "MBR-10008": {
+    "member_id": "MBR-10008",
+    "name": "Thomas Nguyen",
+    "dob": "Dec 03, 1958",
+    "sex": "M",
+    "plan": "UnitedHealth Choice Plus",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "UnitedHealth Choice Plus"
+      }
+    ],
+    "group_number": "GRP-10648",
+    "subscriber_id": "MBR-10008",
+    "relationship": "subscriber"
+  },
+  "MBR-10009": {
+    "member_id": "MBR-10009",
+    "name": null,
+    "dob": null,
+    "sex": "M",
+    "plan": "Aetna Choice POS II",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Aetna Choice POS II"
+      }
+    ],
+    "group_number": "GRP-62326",
+    "subscriber_id": "MBR-10009",
+    "relationship": "subscriber"
+  },
+  "MBR-10010": {
+    "member_id": "MBR-10010",
+    "name": "Richard Yamamoto",
+    "dob": "Aug 15, 1961",
+    "sex": "M",
+    "plan": "Cigna Connect 250",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Cigna Connect 250"
+      }
+    ],
+    "group_number": "GRP-48439",
+    "subscriber_id": "MBR-10010",
+    "relationship": "subscriber"
+  },
+  "MBR-10011": {
+    "member_id": "MBR-10011",
+    "name": "Dorothy Hamilton",
+    "dob": "May 07, 1953",
+    "sex": "F",
+    "plan": "BlueCross Gold PPO",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "BlueCross Gold PPO"
+      }
+    ],
+    "group_number": "GRP-95298",
+    "subscriber_id": "MBR-10011",
+    "relationship": "subscriber"
+  },
+  "MBR-10012": {
+    "member_id": "MBR-10012",
+    "name": "Charles Rivera",
+    "dob": "Oct 21, 1969",
+    "sex": "M",
+    "plan": "Aetna Choice POS II",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Aetna Choice POS II"
+      }
+    ],
+    "group_number": "GRP-77660",
+    "subscriber_id": "MBR-10012",
+    "relationship": "subscriber"
+  },
+  "MBR-10013": {
+    "member_id": "MBR-10013",
+    "name": "Helen Washington",
+    "dob": "Jan 30, 1956",
+    "sex": "F",
+    "plan": "UnitedHealth Choice Plus",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "UnitedHealth Choice Plus"
+      }
+    ],
+    "group_number": "GRP-74615",
+    "subscriber_id": "MBR-10013",
+    "relationship": "subscriber"
+  },
+  "MBR-10014": {
+    "member_id": "MBR-10014",
+    "name": "Frank Thompson",
+    "dob": "Mar 17, 1964",
+    "sex": "M",
+    "plan": "Humana HMO Gold",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Humana HMO Gold"
+      }
+    ],
+    "group_number": "GRP-92924",
+    "subscriber_id": "MBR-10014",
+    "relationship": "subscriber"
+  },
+  "MBR-10015": {
+    "member_id": "MBR-10015",
+    "name": "Ruth Anderson",
+    "dob": "Jul 04, 1959",
+    "sex": "F",
+    "plan": "Cigna Connect 250",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Cigna Connect 250"
+      }
+    ],
+    "group_number": "GRP-98278",
+    "subscriber_id": "MBR-10015",
+    "relationship": "subscriber"
+  },
+  "MBR-10016": {
+    "member_id": "MBR-10016",
+    "name": "George Martinez",
+    "dob": "Nov 11, 1971",
+    "sex": "M",
+    "plan": "BlueCross Gold PPO",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "BlueCross Gold PPO"
+      }
+    ],
+    "group_number": "GRP-70200",
+    "subscriber_id": "MBR-10016",
+    "relationship": "subscriber"
+  },
+  "MBR-10017": {
+    "member_id": "MBR-10017",
+    "name": null,
+    "dob": null,
+    "sex": "M",
+    "plan": "Aetna Choice POS II",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Aetna Choice POS II"
+      }
+    ],
+    "group_number": "GRP-35757",
+    "subscriber_id": "MBR-10017",
+    "relationship": "subscriber"
+  },
+  "MBR-10018": {
+    "member_id": "MBR-10018",
+    "name": "Harold Brown",
+    "dob": "Sep 14, 1962",
+    "sex": "M",
+    "plan": "UnitedHealth Choice Plus",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "UnitedHealth Choice Plus"
+      }
+    ],
+    "group_number": "GRP-97249",
+    "subscriber_id": "MBR-10018",
+    "relationship": "subscriber"
+  },
+  "MBR-10019": {
+    "member_id": "MBR-10019",
+    "name": "Ethel Davis",
+    "dob": "Apr 01, 1954",
+    "sex": "F",
+    "plan": "Humana HMO Gold",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Humana HMO Gold"
+      }
+    ],
+    "group_number": "GRP-78968",
+    "subscriber_id": "MBR-10019",
+    "relationship": "subscriber"
+  },
+  "MBR-10020": {
+    "member_id": "MBR-10020",
+    "name": "Walter Wilson",
+    "dob": "Dec 19, 1966",
+    "sex": "M",
+    "plan": "Cigna Connect 250",
+    "status": "active",
+    "coverage_spans": [
+      {
+        "effective": "2025-01-01",
+        "term": "2026-12-31",
+        "product": "Cigna Connect 250"
+      }
+    ],
+    "group_number": "GRP-54179",
+    "subscriber_id": "MBR-10020",
+    "relationship": "subscriber"
+  }
+}

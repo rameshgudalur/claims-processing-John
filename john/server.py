@@ -25,6 +25,7 @@ authorizations  = load("authorizations.json")
 cob             = load("cob.json")
 fee_schedule    = load("fee_schedule.json")
 claims_history  = load("claims_history.json")
+eligibility     = load("eligibility.json")
 pended_claims   = load("claims_pend.json")
 featured_claims = load("featured_claims.json")
 human_review    = load("human_review.json")
@@ -825,26 +826,39 @@ def api_db_claims_history(member_id):
     h = claims_history.get(member_id, [])
     return jsonify({"member_id": member_id, "claims": h, "count": len(h)})
 
+def _covers_dos(rec, dos):
+    """Does the member's coverage span cover the date of service?"""
+    if not rec or not dos:
+        return None
+    for sp in rec.get("coverage_spans", []):
+        if sp.get("effective", "0000") <= str(dos) <= sp.get("term", "9999"):
+            return True
+    return False
+
+
+def eligibility_for(member_id, dos=None):
+    """Real eligibility lookup from the eligibility DB (+ coverage-on-DOS check)."""
+    rec = eligibility.get(member_id)
+    if not rec:
+        return None
+    out = dict(rec)
+    dob = rec.get("dob") or ""
+    try:
+        out["age"] = 2026 - int(dob.split(", ")[1])
+    except Exception:
+        out["age"] = None
+    if dos is not None:
+        out["covers_dos"] = _covers_dos(rec, dos)
+    return out
+
+
 @app.route("/api/db/eligibility/<member_id>")
 def api_db_eligibility(member_id):
-    from generate_data import MEMBERS
-    member = next((m for m in MEMBERS if m[0] == member_id), None)
-    if not member:
+    dos = request.args.get("dos")
+    rec = eligibility_for(member_id, dos)
+    if not rec:
         return jsonify({"error": "Member not found"}), 404
-    dob_year = int(member[2].split(", ")[1])
-    age = 2026 - dob_year
-    return jsonify({
-        "member_id":    member[0],
-        "member_name":  member[1],
-        "dob":          member[2],
-        "plan":         member[3],
-        "age":          age,
-        "eligibility_status": "active",
-        "effective_date": "2026-01-01",
-        "termination_date": "2026-12-31",
-        "group_number": f"GRP-{random.randint(10000, 99999)}",
-        "subscriber_id": member[0],
-    })
+    return jsonify(rec)
 
 # ── Demo Endpoints ────────────────────────────────────────────────────────────
 
@@ -876,10 +890,10 @@ def api_claim_context(icn):
             "total_paid_ytd": prior_paid,
             "last_claim": last_claim,
         },
-        "eligibility": {
+        "eligibility": eligibility_for(claim["member_id"], claim.get("dos")) or {
             "member_id":   claim["member_id"],
             "plan":        claim["plan"],
-            "status":      "active",
+            "status":      "unknown",
         },
         "resolution": res,
     }
@@ -946,6 +960,186 @@ def api_observability():
     out = dict(_OBS_CACHE)
     out["updated"] = time.strftime("%H:%M:%S")
     return jsonify(out)
+
+
+# ── Adaptive Intelligence — the agent responds to interventions and gets smarter ─
+# REAL state changes → REAL re-resolution (the resolver consults RESOLUTION_RULES / the source
+# DBs live). Scenario claims are separate from the 100-claim pend queue so observability is
+# unaffected. State resets on restart (a fresh demo each session).
+def _sc(**kw):
+    c = {"icn": kw.get("icn"), "claim_type": "Professional", "member_id": "MBR-10007",
+         "member_name": "Sandra Mitchell", "member_dob": "Feb 02, 1958", "plan": "Aetna Choice POS II",
+         "npi_billing": "1131647525", "npi_rendering": "1401640052", "provider_name": "Dr. Alan Ross",
+         "provider_specialty": "Orthopedics", "group_name": "Advanced Specialty Care",
+         "dos": "2026-03-18", "received_date": "2026-03-20", "pend_date": "2026-04-02",
+         "days_in_queue": 12, "priority": "high", "cpt_code": "29881",
+         "cpt_description": "Knee arthroscopy w/ meniscectomy", "modifier": None,
+         "icd10_principal": "M17.11", "icd10_secondary": None, "icd10_desc": "Osteoarthritis, right knee",
+         "place_of_service": "22", "units_billed": 1, "billed_amount": 2400.0, "allowed_amount": 1650.0,
+         "auth_number": None, "carc_code": "CO-16", "rarc_code": "N286", "human_review_flag": False,
+         "human_review_reason": None, "is_featured": False, "status": "pending"}
+    c.update(kw)
+    return c
+
+# A permanent rule for the "fix the source record" scenario (auth presence flips the outcome).
+RESOLUTION_RULES["approve_if_auth_on_file"] = {
+    "steps": ["Query Authorization DB for the CPT + member + date of service",
+              "If a valid authorization is on file that covers the service: approve at the fee-schedule rate",
+              "If no authorization is on file: route to a human examiner (do not auto-deny)"],
+    "outcome_logic": lambda c: "approve" if c.get("auth_number") else "human_review",
+    "sop_ref": "SOP-AUTH-001 §3.2",
+}
+
+# The SOP that "arrives via the SFTP landing zone" for the no-SOP scenario.
+_INGESTED_SOP_TEXT = (
+    "SOP-PRICE-006 — Site-of-Service Differential (payment integrity)\n"
+    "1. Identify services on the outpatient site-of-service differential list (e.g., CPT 29881).\n"
+    "2. Compare billed place of service (22 = hospital outpatient) against the site-neutral policy.\n"
+    "3. If performed at a higher-cost site with no clinical justification on file, price at the "
+    "site-neutral (ASC) rate — partial pay to the differential, not a full denial.\n"
+    "4. Cite CARC CO-45 / RARC N574; note the site-neutral basis in the remit.")
+
+ADAPTIVE = {}
+
+
+def _adaptive_init():
+    global ADAPTIVE
+    # Remove any rules a prior demo run ingested so "before" starts un-resolvable again.
+    RESOLUTION_RULES.pop("site_of_service_differential", None)
+    RESOLUTION_RULES.pop("plan_specific_wrap_edit", None)
+    ADAPTIVE = {
+        "sop_ingest": {
+            "id": "sop_ingest", "order": 1,
+            "title": "No SOP found → ingest a SOP from the SFTP landing zone → re-resolve",
+            "situation": "A pend arrives on a new edit (E-PRICE-006 · site-of-service differential). The agent has no SOP for it, so it cannot act — it routes to a human.",
+            "intervention": "Ingest SOP from SFTP",
+            "claim": _sc(icn="ICN-ADPT-001", edit_code="E-PRICE-006", edit_category="Pricing",
+                         edit_description="Site-of-service differential (no SOP on file)",
+                         resolution_path="site_of_service_differential", carc_code="CO-45", rarc_code="N574"),
+            "applied": False, "sop_text": _INGESTED_SOP_TEXT,
+        },
+        "override": {
+            "id": "override", "order": 2,
+            "title": "Human override → the agent proposes a rule adjustment (learning loop)",
+            "situation": "The agent denied this authorization pend by the current rule. An examiner overrides it to approve, with a reason.",
+            "intervention": "Override → approve (examiner)",
+            "claim": _sc(icn="ICN-ADPT-002", edit_code="E-AUTH-001", edit_category="Authorization",
+                         edit_description="Prior authorization missing", resolution_path="deny_or_approve_if_exempt",
+                         allowed_amount=180.0, carc_code="CO-197", rarc_code="N517"),
+            "applied": False,
+        },
+        "fix_record": {
+            "id": "fix_record", "order": 3,
+            "title": "Fix a source record (link the authorization) → the pend auto-resolves",
+            "situation": "This pend is held for a human because no authorization is on file. The auth actually exists — it just was never linked to the claim.",
+            "intervention": "Link authorization AUTH-88231 → re-run",
+            "claim": _sc(icn="ICN-ADPT-003", edit_code="E-AUTH-001", edit_category="Authorization",
+                         edit_description="Prior authorization not linked", resolution_path="approve_if_auth_on_file",
+                         carc_code="CO-197", rarc_code="N517"),
+            "applied": False,
+        },
+        "draft_rule": {
+            "id": "draft_rule", "order": 4,
+            "title": "Unknown edit, no SOP → the agent drafts a candidate rule for human approval",
+            "situation": "A plan-specific wrap edit (E-WRAP-001) the system has never seen. No SOP exists and none is available to ingest — so the agent cannot decide.",
+            "intervention": "Agent drafts a candidate rule → route to human",
+            "claim": _sc(icn="ICN-ADPT-004", edit_code="E-WRAP-001", edit_category="Plan-Specific",
+                         edit_description="Plan wrap-network edit (unknown)", resolution_path="plan_specific_wrap_edit",
+                         carc_code="CO-16", rarc_code="N286"),
+            "applied": False, "draft": None,
+        },
+    }
+
+
+def _adaptive_view(sc):
+    """Return a scenario with its live 'before' and (if applied) 'after' resolution."""
+    out = {k: v for k, v in sc.items() if k not in ("claim",)}
+    before = resolve_claim(sc["claim"])
+    out["before"] = {"outcome": before["outcome"], "outcome_label": before["outcome_label"],
+                     "steps": before["sop_steps"], "sop_ref": before["sop_ref"]}
+    out["claim"] = {k: sc["claim"].get(k) for k in ("icn", "member_name", "cpt_code", "cpt_description",
+                    "edit_code", "edit_category", "edit_description", "billed_amount", "allowed_amount", "auth_number")}
+    if sc.get("applied"):
+        out["after"] = sc.get("after")
+    return out
+
+
+@app.route("/api/adaptive")
+def api_adaptive():
+    if not ADAPTIVE:
+        _adaptive_init()
+    scenarios = sorted((_adaptive_view(sc) for sc in ADAPTIVE.values()), key=lambda s: s["order"])
+    return jsonify({"scenarios": scenarios})
+
+
+@app.route("/api/adaptive/reset", methods=["POST", "GET"])
+def api_adaptive_reset():
+    _adaptive_init()
+    return jsonify({"ok": True})
+
+
+@app.route("/api/adaptive/<sid>/apply", methods=["POST", "GET"])
+def api_adaptive_apply(sid):
+    if not ADAPTIVE:
+        _adaptive_init()
+    sc = ADAPTIVE.get(sid)
+    if not sc:
+        return jsonify({"error": "unknown scenario"}), 404
+
+    if sid == "sop_ingest":
+        # A real SOP arrives via SFTP → the agent ingests it → a rule now exists → re-resolve.
+        RESOLUTION_RULES["site_of_service_differential"] = {
+            "steps": ["Ingested SOP-PRICE-006 from the SFTP landing zone",
+                      "Identify site-of-service differential services (CPT 29881, POS 22)",
+                      "Apply site-neutral (ASC) pricing — partial pay to the differential, not a full denial",
+                      "Cite CO-45 / N574 with the site-neutral basis"],
+            "outcome_logic": lambda c: "partial_pay",
+            "sop_ref": "SOP-PRICE-006 §1 (ingested via SFTP)",
+        }
+        res = resolve_claim(sc["claim"])
+        sc["after"] = {"outcome": res["outcome"], "outcome_label": res["outcome_label"],
+                       "steps": res["sop_steps"], "sop_ref": res["sop_ref"],
+                       "note": "SOP ingested from the SFTP landing zone; a rule was generated and the agent re-resolved the pend autonomously — no code change."}
+
+    elif sid == "fix_record":
+        # The authorization is added/linked to the claim → re-resolve → auto-approves.
+        sc["claim"]["auth_number"] = "AUTH-88231"
+        authorizations["AUTH-88231"] = {"auth_number": "AUTH-88231", "member_id": sc["claim"]["member_id"],
+                                        "cpt_code": sc["claim"]["cpt_code"], "status": "approved",
+                                        "valid_from": "2026-03-01", "valid_to": "2026-06-30", "units_approved": 1}
+        res = resolve_claim(sc["claim"])
+        sc["after"] = {"outcome": res["outcome"], "outcome_label": res["outcome_label"],
+                       "steps": res["sop_steps"], "sop_ref": res["sop_ref"],
+                       "note": "Authorization AUTH-88231 linked in the source DB; on re-run the same rule now finds it and the pend auto-resolves to approve."}
+
+    elif sid == "override":
+        # Examiner override logged → the agent proposes a rule adjustment from the pattern.
+        sc["override_reason"] = "Auth on file at the group level; service is auth-exempt under the 2026 benefit."
+        sc["after"] = {"outcome": "approve", "outcome_label": "Approved (examiner override)",
+                       "proposed_adjustment": {
+                           "rule": "deny_or_approve_if_exempt (E-AUTH-001)",
+                           "change": "Add auth-exemption check against the 2026 benefit design before denying; raise the group-level auth match to auto-approve.",
+                           "evidence": "3 of the last 5 overrides on E-AUTH-001 for this benefit were the same pattern.",
+                           "status": "pending analyst approval"},
+                       "note": "The override is logged and the agent proposes a rule change — a human approves it before it takes effect. No silent self-rewrite."}
+
+    elif sid == "draft_rule":
+        # Unknown edit, no SOP available → the agent DRAFTS a candidate rule and routes to a human.
+        sc["draft"] = {
+            "proposed_path": "plan_specific_wrap_edit",
+            "steps": ["Query the plan wrap-network configuration for E-WRAP-001",
+                      "If the rendering provider is in the wrap network: price at the wrap rate (partial pay)",
+                      "If not in the wrap network: deny CO-242 / N130",
+                      "Confidence moderate — first occurrence; recommend examiner confirmation"],
+            "proposed_outcome": "partial_pay",
+            "sop_ref": "DRAFT — pending examiner approval",
+        }
+        sc["after"] = {"outcome": "human_review", "outcome_label": "Human Review (with drafted rule)",
+                       "draft": sc["draft"],
+                       "note": "No SOP exists and none was available to ingest, so the agent did NOT decide — it drafted a candidate rule from first principles and routed it to a human to approve. The agent proposes; the human governs."}
+
+    sc["applied"] = True
+    return jsonify(_adaptive_view(sc))
 
 
 # ── Enterprise Insights — pends as an UPSTREAM SENSOR ─────────────────────────

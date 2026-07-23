@@ -329,6 +329,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
     <button class="nav-back" onclick="showView('trace-view');initTrace()" style="background:#172554;border-color:#2563eb;color:#60a5fa">▶ Single Claim Trace</button>
     <button class="nav-back" style="margin-left:8px" onclick="showView('review-view');loadReviewQueue()">Human Review Queue <span id="hr-badge" style="background:#581c87;color:#c084fc;border-radius:8px;padding:1px 8px;font-size:.68rem;margin-left:4px">—</span></button>
     <button class="nav-back" style="margin-left:8px;background:#0b2e1a;border-color:#166534;color:#4ade80" onclick="showView('observe-view');startObs()">📊 Observability</button>
+    <button class="nav-back" style="margin-left:8px;background:#2a1a4a;border-color:#7c3aed;color:#c4b5fd" onclick="showView('adaptive-view');loadAdaptive()">🧠 Adaptive Intelligence</button>
   </div>
 
   <!-- 6 DB Cards -->
@@ -561,6 +562,23 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════════
+     ADAPTIVE INTELLIGENCE — the agent responds to interventions
+══════════════════════════════════════════════════════ -->
+<div id="adaptive-view" class="view">
+  <div class="nav">
+    <button class="nav-back" onclick="showView('act1-view')">← Pend Queue</button>
+    <span class="nav-title">🧠 Adaptive Intelligence — the agent learns &amp; adapts</span>
+    <button class="nav-back" style="margin-left:auto;background:#2a1a4a;border-color:#7c3aed;color:#c4b5fd" onclick="resetAdaptive()">↺ Reset scenarios</button>
+  </div>
+  <div style="max-width:1080px;margin:0 auto;padding:6px 16px 30px">
+    <div style="background:#1a1333;border:1px solid #7c3aed;border-radius:12px;padding:14px 18px;margin-bottom:18px;font-size:.82rem;color:#c4b5fd">
+      🧠 <strong>Adaptive, not static.</strong> The agent doesn't just apply fixed rules — it responds to real interventions and gets smarter. Each card shows the pend the agent <strong>couldn't</strong> resolve, the intervention, and the <strong>live re-resolution</strong>. Nothing scripted — each action changes real state (rules / source data) and the agent re-runs.
+    </div>
+    <div id="adaptive-cards"></div>
+  </div>
+</div>
+
 <script>
 const API = "http://localhost:5002";
 
@@ -644,6 +662,56 @@ async function loadAct1Stats() {
   loadGen3();
 }
 
+// ── Adaptive Intelligence ─────────────────────────────────────────────────────
+const OUTCOME_COLORS = { "Approved":"#4ade80","Partial Pay":"#fbbf24","Denied":"#f87171",
+  "Human Review":"#c084fc","Escalated":"#fb923c","ADR Sent":"#60a5fa" };
+function _oc(label){ for (const k in OUTCOME_COLORS) if ((label||'').indexOf(k)>=0) return OUTCOME_COLORS[k]; return '#94a3b8'; }
+
+async function loadAdaptive(){
+  try {
+    const data = await fetch(`${API}/api/adaptive`).then(r=>r.json());
+    document.getElementById('adaptive-cards').innerHTML = (data.scenarios||[]).map(renderAdaptiveCard).join('');
+  } catch(e){}
+}
+async function resetAdaptive(){ try { await fetch(`${API}/api/adaptive/reset`,{method:'POST'}); } catch(e){} loadAdaptive(); }
+async function applyAdaptive(id){
+  const btn = document.getElementById('adpt-btn-'+id);
+  if (btn){ btn.disabled=true; btn.textContent='Working…'; }
+  try {
+    const sc = await fetch(`${API}/api/adaptive/${id}/apply`,{method:'POST'}).then(r=>r.json());
+    document.getElementById('adpt-card-'+id).outerHTML = renderAdaptiveCard(sc);
+  } catch(e){ if(btn){ btn.disabled=false; btn.textContent='Retry'; } }
+}
+function renderAdaptiveCard(sc){
+  const before = sc.before||{}, after = sc.after||null, cl = sc.claim||{};
+  const beforeBadge = `<span style="font-weight:800;color:${_oc(before.outcome_label)}">${before.outcome_label||'—'}</span>`;
+  let afterHtml = '';
+  if (after){
+    afterHtml = `
+      <div style="margin-top:12px;padding-top:12px;border-top:1px dashed #334155">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#4ade80;margin-bottom:6px">✓ After intervention — live re-resolution</div>
+        <div style="font-size:.9rem;margin-bottom:6px">Outcome: <span style="font-weight:800;color:${_oc(after.outcome_label)}">${after.outcome_label}</span></div>
+        ${after.sop_ref?`<div style="font-size:.7rem;color:#94a3b8;margin-bottom:6px">Rule/SOP: <span style="font-family:monospace;color:#cbd5e1">${after.sop_ref}</span></div>`:''}
+        ${after.steps?`<ul style="margin:4px 0 0 16px;padding:0;font-size:.72rem;color:#cbd5e1">${after.steps.map(s=>`<li>${s}</li>`).join('')}</ul>`:''}
+        ${after.proposed_adjustment?`<div style="margin-top:8px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px;font-size:.72rem;color:#cbd5e1"><strong style="color:#c084fc">Proposed rule adjustment:</strong> ${after.proposed_adjustment.change}<br><span style="color:#64748b">Evidence: ${after.proposed_adjustment.evidence}</span><br><span style="color:#fbbf24">Status: ${after.proposed_adjustment.status}</span></div>`:''}
+        ${after.draft?`<div style="margin-top:8px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px;font-size:.72rem;color:#cbd5e1"><strong style="color:#c084fc">Agent-drafted candidate rule</strong> (${after.draft.sop_ref}):<ul style="margin:4px 0 0 16px;padding:0">${after.draft.steps.map(s=>`<li>${s}</li>`).join('')}</ul><span style="color:#fbbf24">Proposed outcome: ${after.draft.proposed_outcome} · pending examiner approval</span></div>`:''}
+        <div style="margin-top:8px;font-size:.72rem;color:#4ade80;font-style:italic">${after.note||''}</div>
+      </div>`;
+  } else {
+    afterHtml = `<div style="margin-top:12px"><button id="adpt-btn-${sc.id}" class="nav-back" style="background:#2a1a4a;border-color:#7c3aed;color:#c4b5fd;cursor:pointer" onclick="applyAdaptive('${sc.id}')">▶ ${sc.intervention}</button></div>`;
+  }
+  return `<div id="adpt-card-${sc.id}" style="background:#0f172a;border:1px solid ${after?'#166534':'#1e293b'};border-radius:12px;padding:16px 18px;margin-bottom:14px">
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+      <span style="background:#7c3aed;color:#fff;border-radius:6px;font-size:.7rem;font-weight:800;padding:1px 8px">${sc.order}</span>
+      <span style="font-weight:800;font-size:.95rem;color:#e2e8f0">${sc.title}</span>
+    </div>
+    <div style="font-size:.76rem;color:#94a3b8;margin-bottom:8px">${sc.situation}</div>
+    <div style="font-size:.72rem;color:#64748b;margin-bottom:8px">Claim <span style="font-family:monospace;color:#94a3b8">${cl.icn}</span> · ${cl.edit_code} ${cl.edit_description?('· '+cl.edit_description):''} · billed $${cl.billed_amount}</div>
+    <div style="font-size:.86rem">Agent (before): ${beforeBadge} <span style="color:#64748b;font-size:.72rem">— ${before.sop_ref||'no SOP match'}</span></div>
+    ${afterHtml}
+  </div>`;
+}
+
 // ── DB Card expand ────────────────────────────────────────────────────────────
 
 const DB_META = [
@@ -661,7 +729,7 @@ const DB_ROW_FNS = [
   r => [r.member_name, r.carrier_name, r.policy_number, r.cob_order, r.plan_type, r.effective_date],
   r => [r.cpt_code, r.description?.substring(0,34)+'…', r.specialty, `$${r.allowed_amount}`, r.max_units_per_day, r.auth_required ? '✓' : '—'],
   r => [r.icn, r.cpt_code, r.icd10, r.dos, `$${r.billed_amount}`, `$${r.paid_amount}`, r.status],
-  r => [r.member_id, r.member_name, r.dob, r.plan, r.eligibility_status, r.effective_date],
+  r => [r.member_id, r.name, r.dob, r.plan, r.status, r.coverage_spans?.[0]?.effective],
 ];
 
 let openDb = null;
