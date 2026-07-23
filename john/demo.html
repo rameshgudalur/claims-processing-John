@@ -301,7 +301,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
       <p>~20% of claims fall out of auto-adjudication and enter the pend queue. Agentic AI resolves each pend against 6 live databases using deterministic SOP rules.</p>
       <span class="badge green">Gen 1 Live</span>
       <span class="badge" style="margin-left:4px">Gen 2 Signal</span>
-      <span class="badge amber" style="margin-left:4px">Gen 3 Preview</span>
+      <span class="badge amber" style="margin-left:4px">Enterprise Insights</span>
     </div>
     <div class="hub-card" onclick="alert('Provider Adjustment workflow — coming next')">
       <div class="hub-card-icon">🔄</div>
@@ -328,6 +328,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
     <span class="nav-title">Claims Pend Processing — Agent 1</span>
     <button class="nav-back" onclick="showView('trace-view');initTrace()" style="background:#172554;border-color:#2563eb;color:#60a5fa">▶ Single Claim Trace</button>
     <button class="nav-back" style="margin-left:8px" onclick="showView('review-view');loadReviewQueue()">Human Review Queue <span id="hr-badge" style="background:#581c87;color:#c084fc;border-radius:8px;padding:1px 8px;font-size:.68rem;margin-left:4px">—</span></button>
+    <button class="nav-back" style="margin-left:8px;background:#0b2e1a;border-color:#166534;color:#4ade80" onclick="showView('observe-view');startObs()">📊 Observability</button>
   </div>
 
   <!-- 6 DB Cards -->
@@ -432,7 +433,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
   <div class="gen-tabs">
     <button class="gen-tab active" onclick="switchGenTab('gen1')">⚡ Gen 1 — Live Results</button>
     <button class="gen-tab" onclick="switchGenTab('gen2')">🔍 Gen 2 — SOP Gap Detection</button>
-    <button class="gen-tab" onclick="switchGenTab('gen3')">🔮 Gen 3 — Upstream Prediction</button>
+    <button class="gen-tab" onclick="switchGenTab('gen3')">📈 Enterprise Insights — Upstream Sensor</button>
   </div>
 
   <!-- Gen 1 panel (results summary) -->
@@ -454,19 +455,21 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
     </div>
   </div>
 
-  <!-- Gen 3 panel -->
+  <!-- Enterprise Insights panel (pends as an upstream sensor) -->
   <div class="gen-panel" id="gen3-panel">
     <div style="background:#111827;border:1px solid #1e3a5f;border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:.78rem;color:#60a5fa">
-      🔮 <strong>Gen 3 Predictive:</strong> Agent analyzes incoming claims before submission. Provider patterns trigger proactive outreach — resolving pends before they happen.
+      📈 <strong>Enterprise Insights:</strong> the pends we resolve are a signal. We mine them for recurring drivers — by edit category, provider and code — and hand the payer evidence-backed patterns so <strong>they</strong> can tune their auto-adjudication rules at the source. We surface the evidence; the payer decides; we never touch their engine.
     </div>
+    <div id="ei-summary" style="background:#0b2e1a;border:1px solid #166534;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:.82rem;color:#4ade80"></div>
     <div class="gen-table-wrap">
       <table class="gen-table">
         <thead>
-          <tr><th>Member</th><th>Provider</th><th>CPT</th><th>Predicted Edit</th><th>Pend Probability</th><th>Basis</th><th>Status</th></tr>
+          <tr><th>Recurring driver</th><th>Pend volume</th><th>Predominant outcome</th><th>Recurring pattern (evidence)</th><th>Recommended payer action</th><th>Est. return to auto-adj</th></tr>
         </thead>
         <tbody id="gen3-tbody"></tbody>
       </table>
     </div>
+    <div style="font-size:.68rem;color:#64748b;margin-top:10px">Volumes and outcomes are computed live from the resolved pend queue; root-cause patterns and recommended actions are representative. This is the honest, in-scope value — <strong>downstream work as an upstream sensor</strong> — not interception of the payer's adjudication engine.</div>
   </div>
 </div>
 
@@ -525,6 +528,39 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════════
+     LIVE OBSERVABILITY
+══════════════════════════════════════════════════════ -->
+<div id="observe-view" class="view">
+  <div class="nav">
+    <button class="nav-back" onclick="showView('act1-view')">← Pend Queue</button>
+    <span class="nav-title">Live Observability — Claims Pend Processing</span>
+    <span id="obs-updated" style="margin-left:auto;color:#64748b;font-size:.72rem">—</span>
+  </div>
+  <div style="max-width:1120px;margin:0 auto;padding:6px 16px 30px">
+    <div id="obs-throughput" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px">
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px">Decision mix</div>
+        <div id="obs-outcomes"></div></div>
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px">By edit category</div>
+        <div id="obs-categories"></div></div>
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px">Turnaround — days in queue</div>
+        <div id="obs-dq"></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:14px">
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px">Guardrail verification</div>
+        <div id="obs-guardrails"></div></div>
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px">What the agent is doing — audit trail</div>
+        <div id="obs-audit" style="max-height:360px;overflow:auto"></div></div>
+    </div>
+  </div>
+</div>
+
 <script>
 const API = "http://localhost:5002";
 
@@ -533,6 +569,64 @@ const API = "http://localhost:5002";
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  if (id !== 'observe-view' && _obsTimer) { clearInterval(_obsTimer); _obsTimer = null; }
+}
+
+// ── Live Observability ──────────────────────────────────────────────────────────
+let _obsTimer = null;
+const OKC = {approve:'#22c55e', deny:'#ef4444', partial_pay:'#f59e0b', request_info:'#3b82f6', escalate:'#fb923c', human_review:'#a855f7'};
+const OCOL = {green:'#22c55e', red:'#ef4444', yellow:'#f59e0b', blue:'#3b82f6', orange:'#fb923c', purple:'#a855f7', gray:'#94a3b8'};
+function startObs(){ loadObservability(); if (_obsTimer) clearInterval(_obsTimer); _obsTimer = setInterval(loadObservability, 3000); }
+function _obar(label, val, total, color){
+  const pct = total ? Math.round(val/total*100) : 0;
+  return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+    <span style="width:118px;font-size:.72rem;color:#94a3b8;flex-shrink:0">${label}</span>
+    <div style="flex:1;height:7px;background:#0b1120;border-radius:99px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${color};border-radius:99px"></div></div>
+    <span style="width:62px;text-align:right;font-size:.72rem;color:#e2e8f0;font-weight:700">${val} · ${pct}%</span></div>`;
+}
+function _ocard(n, l, color){
+  return `<div style="flex:1;min-width:145px;background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:15px;text-align:center">
+    <div style="font-size:1.7rem;font-weight:800;color:${color||'#e2e8f0'}">${n}</div>
+    <div style="font-size:.68rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-top:4px">${l}</div></div>`;
+}
+async function loadObservability(){
+  try {
+    const d = await fetch(`${API}/api/observability`).then(r => r.json());
+    document.getElementById('obs-updated').textContent = 'updated ' + d.updated + ' · auto-refresh 3s';
+    const t = d.throughput;
+    document.getElementById('obs-throughput').innerHTML =
+      _ocard(t.pended.toLocaleString(),'Pended claims','#60a5fa')
+     + _ocard(t.auto_resolved.toLocaleString(),'Auto-resolved','#22c55e')
+     + _ocard(t.human_review.toLocaleString(),'Human review','#a855f7')
+     + _ocard(t.auto_pct + '%','Agent-driven','#22c55e')
+     + _ocard(t.edit_types,'Edit categories','#f59e0b');
+    const otot = d.outcomes.reduce((a,b) => a + b.count, 0);
+    document.getElementById('obs-outcomes').innerHTML = d.outcomes.map(o => _obar(o.label, o.count, otot, OCOL[o.color] || '#94a3b8')).join('');
+    const cats = d.categories, ctot = Object.values(cats).reduce((a,b) => a + b, 0);
+    document.getElementById('obs-categories').innerHTML = Object.keys(cats).sort((a,b) => cats[b]-cats[a]).map(k => _obar(k, cats[k], ctot, '#3b82f6')).join('');
+    const dq = d.days_in_queue, dtot = Object.values(dq).reduce((a,b) => a + b, 0);
+    const dcol = {'< 15 days':'#22c55e','15-30 days':'#f59e0b','30-60 days':'#fb923c','60+ days':'#ef4444'};
+    document.getElementById('obs-dq').innerHTML = Object.keys(dq).map(k => _obar(k, dq[k], dtot, dcol[k] || '#3b82f6')).join('');
+    document.getElementById('obs-guardrails').innerHTML = d.guardrails.map(g =>
+      `<div style="background:#0b1120;border:1px solid #1e293b;border-radius:9px;padding:10px 12px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+          <span style="font-size:.75rem;color:#e2e8f0;font-weight:600">${g.check}</span>
+          <span style="font-size:.68rem;font-weight:800;color:#4ade80;background:#052e1a;padding:2px 8px;border-radius:99px;white-space:nowrap">${g.count.toLocaleString()}</span>
+        </div></div>`).join('');
+    document.getElementById('obs-audit').innerHTML =
+      '<table style="width:100%;border-collapse:collapse;font-size:.72rem"><thead><tr style="color:#64748b;text-align:left">'
+      + ['ICN','Member','Edit','Category','Outcome','CARC/RARC','SOP'].map(h => `<th style="padding:5px 8px;position:sticky;top:0;background:#0f172a">${h}</th>`).join('')
+      + '</tr></thead><tbody>'
+      + d.audit.map(r => `<tr style="border-top:1px solid #1e293b">
+          <td style="padding:5px 8px;color:#60a5fa;font-family:monospace">${r.icn}</td>
+          <td style="padding:5px 8px;color:#e2e8f0">${r.member}</td>
+          <td style="padding:5px 8px;color:#94a3b8">${r.edit_code}</td>
+          <td style="padding:5px 8px;color:#94a3b8">${r.category}</td>
+          <td style="padding:5px 8px;font-weight:700;color:${OKC[r.outcome_key] || '#e2e8f0'}">${r.outcome}</td>
+          <td style="padding:5px 8px;color:#94a3b8;font-family:monospace">${r.carc}/${r.rarc}</td>
+          <td style="padding:5px 8px;color:#64748b">${r.sop}</td></tr>`).join('')
+      + '</tbody></table>';
+  } catch(e) {}
 }
 
 // ── Hub stats ─────────────────────────────────────────────────────────────────
@@ -840,26 +934,25 @@ async function loadGen2() {
   } catch(e) {}
 }
 
-// ── Gen 3 — Upstream Predictions ──────────────────────────────────────────────
+// ── Enterprise Insights — pends as an upstream sensor ─────────────────────────
 
 async function loadGen3() {
   try {
-    const data = await fetch(`${API}/api/predictions`).then(r => r.json());
+    const data = await fetch(`${API}/api/enterprise-insights`).then(r => r.json());
+    const s = data.summary || {};
+    const sum = document.getElementById('ei-summary');
+    if (sum) sum.innerHTML = `If the payer tunes these <strong>${s.rules}</strong> rule drivers, an estimated <strong>${s.recoverable_pct}%</strong> of today's pends (<strong>${s.recoverable}</strong> of ${data.total_pends}) return to auto-adjudication at the source — evidence we provide, the payer decides.`;
     const tbody = document.getElementById('gen3-tbody');
-    tbody.innerHTML = data.map(row => {
-      const prob = row.pend_probability;
-      const badgeClass = row.status === 'resolved' ? 'resolved' : row.status === 'outreach_sent' ? 'sent' : 'pending';
-      const badgeLabel = row.status === 'resolved' ? '✓ Resolved' : row.status === 'outreach_sent' ? '📨 Outreach Sent' : '⏳ Pending';
+    tbody.innerHTML = (data.drivers || []).map(row => {
+      const lift = row.lift;
+      const liftColor = lift >= 65 ? '#4ade80' : lift >= 45 ? '#fbbf24' : '#f87171';
       return `<tr>
-        <td>${row.member_name}</td>
-        <td style="color:#94a3b8">${row.provider_name?.split(' ').slice(0,3).join(' ')}</td>
-        <td style="font-family:monospace">${row.cpt_code}</td>
-        <td style="font-size:.7rem;color:#f87171">${row.predicted_edit_desc}</td>
-        <td>
-          <span style="font-weight:700;color:${prob>80?'#f87171':prob>70?'#fbbf24':'#4ade80'}">${prob}%</span>
-        </td>
-        <td style="font-size:.68rem;color:#64748b;max-width:200px;white-space:normal">${row.basis}</td>
-        <td><span class="pred-badge ${badgeClass}">${badgeLabel}</span></td>
+        <td style="font-weight:700">${row.category}</td>
+        <td><span style="font-weight:700">${row.volume}</span> <span style="color:#64748b;font-size:.7rem">(${row.pct}%)</span></td>
+        <td style="font-size:.72rem;color:#94a3b8">${row.top_outcome}</td>
+        <td style="font-size:.68rem;color:#94a3b8;max-width:230px;white-space:normal">${row.pattern}</td>
+        <td style="font-size:.68rem;color:#cbd5e1;max-width:230px;white-space:normal">${row.action}</td>
+        <td><span style="font-weight:700;color:${liftColor}">${row.recoverable}</span> <span style="color:#64748b;font-size:.7rem">(~${lift}%)</span></td>
       </tr>`;
     }).join('');
   } catch(e) {}
