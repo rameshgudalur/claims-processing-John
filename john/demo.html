@@ -370,6 +370,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
       <div class="db-card-count" id="dbc-5-count">20 members</div>
       <div class="db-card-hits" id="dbc-5-hits">0 queries</div>
     </div>
+    <div class="db-card" id="dbc-6" onclick="toggleDbExpand(6)">
+      <div class="db-card-icon">💠</div>
+      <div class="db-card-name">Pricing Engine</div>
+      <div class="db-card-count" id="dbc-6-count">Burgess / Multiplan / Zelis</div>
+      <div class="db-card-hits" id="dbc-6-hits" style="color:#fbbf24">representative</div>
+    </div>
   </div>
 
   <!-- DB Expand panel -->
@@ -660,6 +666,15 @@ async function loadAct1Stats() {
   } catch(e) {}
   loadGen2();
   loadGen3();
+  loadPricingStatus();
+}
+
+async function loadPricingStatus(){
+  try {
+    const s = await fetch(`${API}/api/pricing/status`).then(r=>r.json());
+    const el = document.getElementById('dbc-6-hits');
+    if (el){ el.textContent = s.live ? (s.vendor + ' API · live') : 'representative'; el.style.color = s.live ? '#4ade80' : '#fbbf24'; }
+  } catch(e){}
 }
 
 // ── Adaptive Intelligence ─────────────────────────────────────────────────────
@@ -721,6 +736,7 @@ const DB_META = [
   { name:"Fee Schedule",    endpoint:"/api/db/fee-schedule",     cols:["CPT","Description","Specialty","Allowed","Max Units","Auth Req"] },
   { name:"Claims History",  endpoint:"/api/db/claims-history/MBR-10001", cols:["ICN","CPT","ICD-10","DOS","Billed","Paid","Status"] },
   { name:"Eligibility DB",  endpoint:"/api/db/eligibility/MBR-10001",    cols:["Member ID","Name","DOB","Plan","Status","Effective"] },
+  { name:"Pricing Engine (Burgess / Multiplan / Zelis)", endpoint:"/api/pricing/recent", cols:["ICN","CPT","Billed","Allowed","Methodology","Mode"] },
 ];
 
 const DB_ROW_FNS = [
@@ -730,6 +746,7 @@ const DB_ROW_FNS = [
   r => [r.cpt_code, r.description?.substring(0,34)+'…', r.specialty, `$${r.allowed_amount}`, r.max_units_per_day, r.auth_required ? '✓' : '—'],
   r => [r.icn, r.cpt_code, r.icd10, r.dos, `$${r.billed_amount}`, `$${r.paid_amount}`, r.status],
   r => [r.member_id, r.name, r.dob, r.plan, r.status, r.coverage_spans?.[0]?.effective],
+  r => [r.icn, r.cpt, `$${r.billed}`, r.allowed!=null?`$${r.allowed}`:'—', r.methodology, r.source],
 ];
 
 let openDb = null;

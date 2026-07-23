@@ -201,5 +201,61 @@
     "carc": "CO-50",
     "rarc": "N130",
     "resolution": "deny_medical_necessity"
+  },
+  "E-PRICE-006": {
+    "category": "Manual Pricing",
+    "desc": "Manual pricing required (Burgess/Multiplan/Zelis)",
+    "carc": "CO-45",
+    "rarc": "N574",
+    "resolution": "manual_price_via_engine"
+  },
+  "E-OON-001": {
+    "category": "OON",
+    "desc": "Out-of-network \u2014 repricing required",
+    "carc": "CO-242",
+    "rarc": "N130",
+    "resolution": "oon_reprice"
+  },
+  "E-ENR-001": {
+    "category": "Enrollment",
+    "desc": "Enrollment (old-born) \u2014 patient detail missing/mismatch",
+    "carc": "CO-140",
+    "rarc": "N382",
+    "resolution": "enrollment_correct_details"
+  },
+  "E-ENR-002": {
+    "category": "Enrollment",
+    "desc": "Enrollment (newborn) \u2014 add / father on policy",
+    "carc": "CO-140",
+    "rarc": "N382",
+    "resolution": "enrollment_newborn"
+  },
+  "E-PCP-001": {
+    "category": "PCP",
+    "desc": "PCP not mapped / line to delete",
+    "carc": "CO-16",
+    "rarc": "N286",
+    "resolution": "pcp_remap"
+  },
+  "E-WC-001": {
+    "category": "Workers Comp",
+    "desc": "Work-related injury \u2014 redirect to WC carrier",
+    "carc": "CO-19",
+    "rarc": "N418",
+    "resolution": "wc_redirect"
+  },
+  "E-MG-001": {
+    "category": "Medigap",
+    "desc": "Medigap secondary crossover",
+    "carc": "CO-22",
+    "rarc": "N598",
+    "resolution": "medigap_crossover"
+  },
+  "E-ADJ-001": {
+    "category": "Adjustment",
+    "desc": "Adjustment / POS-DA reprocess (HPI, claimstop, flush)",
+    "carc": "CO-16",
+    "rarc": "N286",
+    "resolution": "adjustment_reprocess"
   }
 }

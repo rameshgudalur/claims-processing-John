@@ -6,9 +6,14 @@ import json, random, time
 from pathlib import Path
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import pricing_engine
 
 app = Flask(__name__)
 CORS(app)
+
+# Burgess / Multiplan / Zelis pricing — real API client (live when BURGESS_API_URL + _KEY set;
+# representative repricing engine at the same interface until then).
+pricing_client = pricing_engine.BurgessPricingClient()
 
 DATA = Path(__file__).parent / "data"
 
@@ -251,7 +256,7 @@ def get_kg_rules(edit_code, claim, ctx):
     """Return KG rules for this edit, with claim data filled into templates."""
     rules = KG_RULES.get(edit_code, [])
     result = []
-    adj = round(claim.get("billed_amount", 0) - claim.get("allowed_amount", 0), 2)
+    adj = round((claim.get("billed_amount") or 0) - (claim.get("allowed_amount") or 0), 2)
     for rule in rules:
         text = rule["template"].format(
             cpt       = claim.get("cpt_code", ""),
@@ -582,7 +587,78 @@ DB_QUERIES = {
     "Duplicate":     ["Claims History DB", "Eligibility DB"],
     "Timely Filing": ["Claims History DB"],
     "Medical Necessity": ["Authorization DB", "Claims History DB"],
+    "Manual Pricing":    ["Pricing Engine (Burgess/Multiplan/Zelis)", "Fee Schedule DB"],
+    "Enrollment":        ["Eligibility DB", "Enrollment DB"],
+    "PCP":               ["Provider DB", "Eligibility DB"],
+    "Workers Comp":      ["COB DB", "Eligibility DB"],
+    "Medigap":           ["COB DB", "Claims History DB"],
+    "Adjustment":        ["Claims History DB", "Provider DB"],
+    "OON":               ["Provider DB", "Pricing Engine (Burgess/Multiplan/Zelis)"],
 }
+
+# New-category resolution rules (gap categories from the client's pend taxonomy).
+RESOLUTION_RULES.update({
+    "manual_price_via_engine": {
+        "steps": ["Auto-adjudication could not price the claim — route to manual pricing",
+                  "Query the pricing engine (Burgess / Multiplan / Zelis) with CPT, POS, DOS, provider and billed amount",
+                  "Apply the returned allowed amount + methodology",
+                  "Approve at the repriced allowed amount"],
+        "outcome_logic": lambda c: "approve",
+        "sop_ref": "SOP-PRICE-MANUAL §2.1",
+    },
+    "enrollment_correct_details": {
+        "steps": ["Query Eligibility / Enrollment DB for the member",
+                  "Identify the missing or mismatched patient detail (name, DOB, ID)",
+                  "If correctable from the enrollment record: correct and reprocess",
+                  "If not: request a corrected 834 / enrollment update"],
+        "outcome_logic": lambda c: "request_info" if (c.get("days_in_queue", 0) or 0) < 30 else "human_review",
+        "sop_ref": "SOP-ENR-001 §1.4",
+    },
+    "enrollment_newborn": {
+        "steps": ["Confirm newborn add within the 31-day enrollment window",
+                  "Verify the newborn is linked to a covered subscriber (father/mother on policy)",
+                  "If within window and linked: approve",
+                  "If outside window or not linked: request enrollment documentation"],
+        "outcome_logic": lambda c: "approve" if (c.get("days_in_queue", 0) or 0) < 31 else "request_info",
+        "sop_ref": "SOP-ENR-002 §2.2",
+    },
+    "pcp_remap": {
+        "steps": ["Query Provider DB for the member's assigned PCP",
+                  "Delete the erroneous claim line and map to the correct PCP",
+                  "Reprice the remaining lines at the in-network rate"],
+        "outcome_logic": lambda c: "partial_pay",
+        "sop_ref": "SOP-PCP-001 §3.1",
+    },
+    "wc_redirect": {
+        "steps": ["Indicators suggest a work-related injury (Workers Compensation)",
+                  "Query COB / other-coverage for a WC carrier on file",
+                  "Deny to the health plan and redirect to the WC carrier (CO-19)"],
+        "outcome_logic": lambda c: "deny",
+        "sop_ref": "SOP-WC-001 §1.2",
+    },
+    "medigap_crossover": {
+        "steps": ["Confirm Medicare adjudicated as primary",
+                  "Identify the Medigap / supplemental policy on file",
+                  "Send the crossover to the Medigap payer for secondary payment"],
+        "outcome_logic": lambda c: "request_info",
+        "sop_ref": "SOP-MG-001 §2.1",
+    },
+    "adjustment_reprocess": {
+        "steps": ["Adjustment / POS-DA request — validate HPI indicators, claimstop and flush codes",
+                  "Confirm the rendering provider and the adjustment reason",
+                  "Route to an examiner to post the adjustment (examiner-governed)"],
+        "outcome_logic": lambda c: "human_review",
+        "sop_ref": "SOP-ADJ-001 §4.3",
+    },
+    "oon_reprice": {
+        "steps": ["Confirm the provider is out-of-network and check for an OON benefit",
+                  "Query the pricing engine (Multiplan / Zelis) for the OON network rate",
+                  "Partial-pay at the OON allowed amount per benefit"],
+        "outcome_logic": lambda c: "partial_pay",
+        "sop_ref": "SOP-OON-001 §2.4",
+    },
+})
+
 
 def resolve_claim(claim):
     """Run SOP logic and return resolution + reasoning steps."""
@@ -602,20 +678,27 @@ def resolve_claim(claim):
     if claim["human_review_flag"] and outcome in ("deny", "approve"):
         outcome = "human_review"
 
-    # Compute payment
+    # Manual pricing (Burgess/Multiplan/Zelis) — reprice via the pricing engine (real API when configured)
+    pricing_info = None
     allowed = claim["allowed_amount"]
+    if resolution_path == "manual_price_via_engine":
+        pricing_info = pricing_client.reprice(claim, fee_schedule)
+        if allowed is None:
+            allowed = pricing_info.get("allowed") or 0.0
+
+    # Compute payment
     units   = claim["units_billed"]
     if outcome == "approve":
-        payment = round(allowed * units, 2)
+        payment = round((allowed or 0) * units, 2)
     elif outcome == "partial_pay":
-        payment = round(allowed * random.uniform(0.4, 0.75), 2)
+        payment = round((allowed or 0) * random.uniform(0.4, 0.75), 2)
     else:
         payment = 0.0
 
     # DB queries triggered
     dbs_queried = DB_QUERIES.get(claim["edit_category"], ["Eligibility DB"])
 
-    return {
+    out = {
         "icn":            claim["icn"],
         "outcome":        outcome,
         "outcome_label":  RESOLUTION_LABELS.get(outcome, {}).get("label", outcome),
@@ -630,6 +713,9 @@ def resolve_claim(claim):
         "human_review_reason": claim.get("human_review_reason"),
         "processing_ms":  random.randint(180, 950),
     }
+    if pricing_info:
+        out["pricing"] = pricing_info
+    return out
 
 # ── API Routes ────────────────────────────────────────────────────────────────
 
@@ -859,6 +945,41 @@ def api_db_eligibility(member_id):
     if not rec:
         return jsonify({"error": "Member not found"}), 404
     return jsonify(rec)
+
+
+@app.route("/api/pricing/status")
+def api_pricing_status():
+    """Is the Burgess/Multiplan/Zelis pricing API live (credentials configured) or representative?"""
+    return jsonify({
+        "vendor": pricing_client.vendor,
+        "live": pricing_client.live,
+        "endpoint": pricing_client.url if pricing_client.live else None,
+        "mode": (f"{pricing_client.vendor} API (live)" if pricing_client.live
+                 else f"representative pricing engine ({pricing_client.vendor} API connects at deployment)"),
+    })
+
+
+@app.route("/api/pricing/reprice/<icn>")
+def api_pricing_reprice(icn):
+    """Reprice a claim through the pricing engine (real Burgess/Multiplan/Zelis API when configured)."""
+    claim = claims_index.get(icn)
+    if not claim:
+        return jsonify({"error": "ICN not found"}), 404
+    return jsonify(pricing_client.reprice(claim, fee_schedule))
+
+
+@app.route("/api/pricing/recent")
+def api_pricing_recent():
+    """Recent manual-pricing / OON claims repriced through the engine (the Pricing Engine source view)."""
+    rows = []
+    for c in pended_claims:
+        if c.get("resolution_path") in ("manual_price_via_engine", "oon_reprice"):
+            pr = pricing_client.reprice(c, fee_schedule)
+            rows.append({"icn": c["icn"], "cpt": c["cpt_code"], "billed": c["billed_amount"],
+                         "allowed": pr.get("allowed"), "methodology": pr.get("methodology"),
+                         "source": "live" if pr.get("live") else "representative"})
+    return jsonify({"records": rows, "total": len(rows), "live": pricing_client.live,
+                    "vendor": pricing_client.vendor})
 
 # ── Demo Endpoints ────────────────────────────────────────────────────────────
 
@@ -1165,6 +1286,20 @@ CATEGORY_INSIGHTS = {
                           "action": "Prompt for records / criteria at submission; keep the human gate for medical necessity.", "lift": 25},
     "Timely Filing": {"pattern": "Clearinghouse acceptance date not carried into the received-date logic.",
                       "action": "Use the clearinghouse acceptance timestamp as the received date.", "lift": 80},
+    "Manual Pricing": {"pattern": "Auto-adjudication cannot price the service (implant, high-cost, OON) — falls to manual pricing.",
+                       "action": "Integrate the Burgess/Multiplan/Zelis pricing API into auto-adjudication so these price automatically.", "lift": 70},
+    "OON": {"pattern": "Out-of-network services priced manually; no auto network-repricing path.",
+            "action": "Wire Multiplan/Zelis network repricing into the auto-adjudication flow.", "lift": 60},
+    "Enrollment": {"pattern": "Patient-detail mismatches / newborn adds not reconciled against the enrollment feed.",
+                   "action": "Nightly 834 enrollment reconciliation + newborn auto-add within the 31-day window.", "lift": 55},
+    "PCP": {"pattern": "PCP assignment stale, so claims pend for line deletion / remap.",
+            "action": "Refresh PCP assignment from the provider file before adjudication.", "lift": 65},
+    "Workers Comp": {"pattern": "Work-related injury indicators not screened before the health-plan pays.",
+                     "action": "Screen injury dx + WC-carrier-on-file at intake; auto-redirect to the WC carrier.", "lift": 60},
+    "Medigap": {"pattern": "Medicare-primary crossovers not auto-forwarded to the Medigap payer.",
+                "action": "Enable automated Medigap crossover after Medicare adjudication.", "lift": 65},
+    "Adjustment": {"pattern": "POS-DA adjustments (HPI, claimstop, flush) routed manually.",
+                   "action": "Codify the common adjustment reasons into auto-adjustment rules; keep exceptions to a human.", "lift": 40},
 }
 _EI_CACHE = None
 
