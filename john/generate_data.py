@@ -3,9 +3,11 @@ Project John — Claims Pend Processing
 Generates all 6 databases + 100 pended claims
 Run: python generate_data.py
 """
-import json, random, uuid
+import json, random, uuid, os
 from datetime import date, timedelta
 from pathlib import Path
+
+PEND_SCALE = int(os.environ.get("PEND_SCALE", "1"))   # multiply pend volume for scale demos
 
 BASE = Path(__file__).parent / "data"
 BASE.mkdir(exist_ok=True)
@@ -391,7 +393,7 @@ def generate_pended_claims(providers, npis, members, auths):
 
     for edit_code, count in CLAIM_DISTRIBUTION:
         edit = EDIT_CODES[edit_code]
-        for _ in range(count):
+        for _ in range(count * PEND_SCALE):
             member  = random.choice(members)
             npi_rendering = random.choice(npis)
             npi_billing   = random.choice(npis)

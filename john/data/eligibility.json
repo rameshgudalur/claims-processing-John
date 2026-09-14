@@ -145,16 +145,16 @@
   },
   "MBR-10009": {
     "member_id": "MBR-10009",
-    "name": null,
-    "dob": null,
-    "sex": "M",
-    "plan": "Aetna Choice POS II",
+    "name": "Barbara Foster",
+    "dob": "Jun 27, 1965",
+    "sex": "F",
+    "plan": "Humana HMO Gold",
     "status": "active",
     "coverage_spans": [
       {
         "effective": "2025-01-01",
         "term": "2026-12-31",
-        "product": "Aetna Choice POS II"
+        "product": "Humana HMO Gold"
       }
     ],
     "group_number": "GRP-62326",
@@ -289,8 +289,8 @@
   },
   "MBR-10017": {
     "member_id": "MBR-10017",
-    "name": null,
-    "dob": null,
+    "name": "Alice Johnson",
+    "dob": "Feb 28, 1957",
     "sex": "M",
     "plan": "Aetna Choice POS II",
     "status": "active",

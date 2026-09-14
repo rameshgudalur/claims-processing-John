@@ -677,6 +677,16 @@ RESOLUTION_RULES.update({
 })
 
 
+_PEND_RESOLVE_CACHE = {}
+def _resolve_pended(claim):
+    """Cached resolution for aggregate views (observability / enterprise-insights) so a large
+    pend queue isn't re-resolved on every request. Keyed by ICN; pend claims are static."""
+    icn = claim.get("icn")
+    if icn not in _PEND_RESOLVE_CACHE:
+        _PEND_RESOLVE_CACHE[icn] = resolve_claim(claim)
+    return _PEND_RESOLVE_CACHE[icn]
+
+
 def resolve_claim(claim):
     """Run SOP logic and return resolution + reasoning steps."""
     edit_code = claim["edit_code"]
@@ -1053,7 +1063,7 @@ def api_observability():
         auto = human = traced = 0
         for c in pended_claims:
             try:
-                res = resolve_claim(c)
+                res = _resolve_pended(c)
             except Exception:
                 continue
             o = res["outcome"]
@@ -1333,7 +1343,7 @@ def api_enterprise_insights():
         for c in pended_claims:
             cat = c.get("edit_category", "Other")
             try:
-                o = resolve_claim(c)["outcome"]
+                o = _resolve_pended(c)["outcome"]
             except Exception:
                 o = "unknown"
             d = by_cat.setdefault(cat, {"volume": 0, "outcomes": {}})

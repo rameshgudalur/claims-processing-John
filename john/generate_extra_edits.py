@@ -2,7 +2,8 @@
 """Append the client-taxonomy gap categories (Manual Pricing/Burgess, OON, Enrollment, PCP,
 Workers Comp, Medigap, Adjustment) as new edit codes + pend claims. Idempotent: re-running
 removes the previously-appended extras first (matched by the ICN-2026-2xxx range)."""
-import json
+import json, os
+PEND_SCALE = int(os.environ.get("PEND_SCALE", "1"))   # scale extra-category pend volume to match
 
 EDITS = {
     "E-PRICE-006": {"category": "Manual Pricing", "desc": "Manual pricing required (Burgess/Multiplan/Zelis)",
@@ -54,7 +55,7 @@ mi = 0
 featured_seen = set()
 for edit_code, count, cpt, cpt_desc, billed, allowed, icd, icd_desc, hr in SPECS:
     meta = EDITS[edit_code]
-    for _ in range(count):
+    for _ in range(count * PEND_SCALE):
         feature_this = edit_code not in featured_seen
         featured_seen.add(edit_code)
         m = members[mi % len(members)]; mi += 1
