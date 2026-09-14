@@ -2,14 +2,31 @@
 Project John — Claims Pend Processing Demo
 Flask backend  |  Port 5002
 """
-import json, random, time
+import json, random, time, os
 from pathlib import Path
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response, send_from_directory
 from flask_cors import CORS
 import pricing_engine
 
 app = Flask(__name__)
 CORS(app)
+
+# Password gate — active only when DEMO_PASSWORD is set (e.g. on Railway); open locally.
+DEMO_PASSWORD = os.environ.get("DEMO_PASSWORD", "")
+
+@app.before_request
+def _demo_gate():
+    if not DEMO_PASSWORD:
+        return  # no password configured → open (local dev)
+    auth = request.authorization
+    if not auth or auth.password != DEMO_PASSWORD:
+        return Response("Authentication required.", 401,
+                        {"WWW-Authenticate": 'Basic realm="Claims Pend Processing — Demo"'})
+
+@app.route("/")
+def _root():
+    # Serve the single-page demo from the app (so it works on Railway, not just as a local file).
+    return send_from_directory(str(Path(__file__).parent), "demo.html")
 
 # Burgess / Multiplan / Zelis pricing — real API client (live when BURGESS_API_URL + _KEY set;
 # representative repricing engine at the same interface until then).
@@ -1347,4 +1364,4 @@ if __name__ == "__main__":
     print(f"  {len(pended_claims)} pended claims loaded")
     print(f"  {len(providers)} providers  |  {len(authorizations)} authorizations  |  {len(cob)} COB records")
     print("Server starting on http://localhost:5002")
-    app.run(debug=True, port=5002)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5002)), debug=True)
