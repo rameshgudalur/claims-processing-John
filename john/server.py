@@ -159,6 +159,15 @@ def _pad_reference_dbs():
 
 _pad_reference_dbs()
 
+# Single-payer demo: unify every plan/payer label to one payer (member's own plan only;
+# COB other-coverage carriers are intentionally left as different carriers).
+def _normalize_payer(name="Althea Health"):
+    for coll in (pended_claims, line_item_claims, multi_edit_claims, list(eligibility.values())):
+        for c in coll:
+            if isinstance(c, dict) and c.get("plan"):
+                c["plan"] = name
+_normalize_payer()
+
 # ── Knowledge Graph Rules ────────────────────────────────────────────────────
 
 KG_RULES = {
@@ -294,7 +303,7 @@ KG_RULES = {
     ],
     "E-CODE-003": [
         {"rule_id":"KG-CODE-005", "check":"LCD Coverage Criteria — ICD/CPT Pair",
-         "template":"LCD lookup: CPT {cpt} subject to LCD L33787 (or applicable LCD). Billed diagnosis {icd10} not in LCD's covered ICD-10 list. Medical necessity not established under LCD criteria.",
+         "template":"LCD lookup: CPT {cpt} subject to LCD L33787 (or applicable LCD). Billed diagnosis {icd10} is not in the LCD's covered ICD-10 list → not a covered indication for CPT {cpt} under this LCD.",
          "source":"CMS LCD L33787 · ICD-10 Coverage Indicator Table · Plan Policy CODE-003"},
         {"rule_id":"KG-CODE-006", "check":"NCD Cross-Reference",
          "template":"NCD database queried for CPT {cpt}. If applicable NCD exists, billed diagnosis {icd10} must appear in covered indication list. Diagnosis fails coverage criteria — deny CO-167/N115.",
@@ -499,7 +508,7 @@ RESOLUTION_LOGIC_DESC = {
     "escalate_pricing_review": "Route to senior pricing review — the pricing exception exceeds standard SOP authority.",
     "deny_or_correct_code": "If the code can be corrected within policy, request correction (ADR); otherwise deny the invalid/non-covered code.",
     "deny_not_covered": "Deny — the CPT is not a covered benefit under the member's plan.",
-    "deny_lcd_ncd": "Deny — the ICD/CPT combination fails the applicable LCD/NCD coverage determination; clinical sign-off required before release.",
+    "deny_lcd_ncd": "Deny — the diagnosis is not a covered indication for the procedure under the applicable LCD/NCD. The agent applies the coverage policy and codes it CO-167 / N115; as an adverse coverage denial it routes for examiner sign-off before release.",
     "correct_sequencing": "Correct principal-diagnosis sequencing where permissible; otherwise request correction.",
     "process_crossover": "Apply the Medicare crossover: coordinate to the Medicare-allowed amount and process the secondary payment.",
     "calculate_cob_savings": "Apply the plan COB methodology using the primary EOB to compute the secondary payment.",
@@ -734,10 +743,10 @@ RESOLUTION_RULES = {
     },
     "deny_lcd_ncd": {
         "steps": [
-            "Query knowledge graph — retrieve applicable LCD/NCD for CPT + diagnosis",
-            "Check if diagnosis supports medical necessity per LCD/NCD criteria",
-            "If diagnosis fails LCD/NCD criteria: deny CO-167 / N115",
-            "Provide ABN-related language if Medicare beneficiary",
+            "Retrieve the applicable LCD/NCD coverage policy for the billed CPT",
+            "Look up the billed ICD-10 against the LCD's covered-indication (ICD) list for that CPT — a deterministic coverage check, not a medical-necessity review",
+            "If the diagnosis is a covered indication: pass; if it is not on the list: deny CO-167 / N115, citing the LCD",
+            "Apply Medicare ABN handling if applicable; route the adverse coverage denial for examiner sign-off before release",
         ],
         "outcome_logic": lambda c: "deny",
         "sop_ref": "SOP-CODE-003 §5.2",
@@ -1004,6 +1013,12 @@ def _obs_for_step(text, claim, ctx):
         return ("InterQual®/MCG® clinical criteria applied to the documented findings", "info")
     if ("retrieve" in t or "query" in t) and ("lcd" in t or "ncd" in t or "knowledge graph" in t):
         return (f"Retrieved applicable LCD/NCD policy for CPT {claim.get('cpt_code')} + ICD-10 {claim.get('icd10_principal')}", "info")
+    if "covered-indication" in t or ("look up" in t and "icd" in t):
+        return (f"ICD-10 {claim.get('icd10_principal')} checked against the LCD covered-indication list for CPT {claim.get('cpt_code')} — not listed", "fail")
+    if "covered indication: pass" in t or ("deny co-167" in t):
+        return (f"Diagnosis is not a covered indication for CPT {claim.get('cpt_code')} → deny CO-167 / N115 per the LCD", "fail")
+    if "abn" in t:
+        return ("Medicare ABN handling applied; adverse coverage denial routed for examiner sign-off before release", "info")
     if "documentation" in t and ("evaluate" in t or "against" in t):
         return ("Submitted clinical documentation evaluated against the coverage criteria", "info")
     if "identify missing" in t or "missing clinical" in t:
@@ -1422,12 +1437,41 @@ def _header_rollup(resolutions):
             "lines_paid": lines_paid}
 
 def _line_header(claim, lines):
-    return {k: claim.get(k) for k in (
+    h = {k: claim.get(k) for k in (
         "icn", "claim_type", "form", "type_of_bill", "label", "scenario_note",
         "member_id", "member_name", "member_dob", "plan",
         "provider_name", "provider_specialty", "npi_billing", "npi_rendering", "group_name",
         "dos", "received_date", "pend_date", "days_in_queue", "priority",
         "place_of_service", "billed_amount")}
+    h.update(_timely_fields(claim))
+    return h
+
+_STATES = ["CA","TX","NY","FL","IL","PA","OH","GA","NC","MI","NJ","VA","WA","AZ","MA","TN","MO","MD","CO","MN"]
+PAYMENT_SLA_DAYS = 30      # clean-claim prompt-pay window
+FILING_LIMIT_DAYS = 365    # timely-filing limit from date of service
+
+def _timely_fields(claim):
+    """Provider state + receipt/payment/timely-filing dates + status-today for the claim.
+    Payment-due = received + 30d (prompt-pay); filing limit = DOS + 365d. Status uses days-in-queue."""
+    from datetime import datetime, timedelta
+    def _p(d):
+        try: return datetime.strptime(d, "%Y-%m-%d")
+        except Exception: return None
+    npi = str(claim.get("npi_rendering") or claim.get("npi_billing") or "0")
+    prov = providers.get(npi, {})
+    state = prov.get("state") or _STATES[sum(ord(c) for c in npi) % len(_STATES)]
+    recd, dosd = _p(claim.get("received_date")), _p(claim.get("dos"))
+    pay_by = (recd + timedelta(days=PAYMENT_SLA_DAYS)).strftime("%Y-%m-%d") if recd else None
+    filing_due = (dosd + timedelta(days=FILING_LIMIT_DAYS)).strftime("%Y-%m-%d") if dosd else None
+    timely = None
+    if recd and dosd:
+        timely = "Filed timely" if (recd - dosd).days <= FILING_LIMIT_DAYS else "Late-filed"
+    dq = claim.get("days_in_queue") or 0
+    left = PAYMENT_SLA_DAYS - dq
+    status = (f"On time — {left}d to pay-by SLA" if left >= 0 else f"SLA breach — {-left}d over")
+    return {"provider_state": state, "received_date": claim.get("received_date"),
+            "payment_due_date": pay_by, "filing_limit_date": filing_due,
+            "timely_filing": timely, "status_today": status, "status_ok": left >= 0}
 
 # ── API Routes ────────────────────────────────────────────────────────────────
 
@@ -1590,8 +1634,14 @@ def api_claim_lines(icn):
     header = _line_header(claim, lines)
     header["billed_amount"] = round(sum(l["charge"] for l in lines), 2)
     out_lines = [dict(l) for l in lines]
-    # Attach the applicable SOP to each pended line up front (visible even before resolution)
+    _tf = _timely_fields(claim)   # claim-level timely-filing fields, shown on every line too
+    # Attach the applicable SOP + timely-filing fields to each line
     for ln in out_lines:
+        ln.setdefault("provider_state", _tf["provider_state"])
+        ln.setdefault("received_date", _tf["received_date"])
+        ln.setdefault("payment_due_date", _tf["payment_due_date"])
+        ln.setdefault("status_today", _tf["status_today"])
+        ln.setdefault("status_ok", _tf["status_ok"])
         if ln.get("pended"):
             rule = RESOLUTION_RULES.get(ln.get("resolution_path"))
             ln["applicable_sop"] = rule["sop_ref"] if rule else "N/A"
@@ -1671,27 +1721,34 @@ _REVIEW_AGG = None
 
 def _why_human(outcome, category, resolution_path, billed, hr_reason):
     """Return (routed?, why_human, recommendation) — the human-in-the-loop rule."""
-    if outcome == "human_review":
-        return True, (hr_reason or "Clinical / edge-case judgment required"), \
-               "Agent staged the case + evidence; examiner makes the call"
+    if outcome in ("human_review", "escalate"):
+        return True, "human_escalation", (hr_reason or "Edge-case judgment the agent will not make alone"), \
+               "Agent escalated the case with evidence; a human makes the call"
     if outcome == "deny":
-        if category == "Medical Necessity" or resolution_path in ("deny_medical_necessity", "deny_lcd_ncd"):
-            return True, "Medical-necessity / LCD-NCD denial — clinical sign-off required before it goes out", \
-                   "Agent recommends UPHOLD denial — examiner confirms or overrides"
-        if (billed or 0) >= HIGH_DOLLAR:
-            return True, f"High-dollar denial (${billed:,.0f} ≥ ${HIGH_DOLLAR:,.0f}) — senior review required", \
-                   "Agent recommends UPHOLD denial — examiner confirms or overrides"
-    return False, None, None
+        # 1) Adverse clinical / coverage determinations → clinician review
+        if resolution_path in ("deny_medical_necessity", "deny_lcd_ncd") or category == "Medical Necessity":
+            return True, "clinical_review", \
+                   "Adverse coverage / medical-necessity denial — a clinician must review before the determination is released", \
+                   "Agent applied the policy and recommends UPHOLD — the clinical team confirms or overturns"
+        # 2) Clear-cut denials are auto-issued (no review)
+        if resolution_path in ("deny_timely_filing", "deny_duplicate"):
+            return False, None, None, None
+        # 3) Every other agent-issued denial → examiner denial review before release
+        why = (f"High-dollar denial (${billed:,.0f} ≥ ${HIGH_DOLLAR:,.0f}) — senior examiner sign-off"
+               if (billed or 0) >= HIGH_DOLLAR else
+               "Agent-issued denial — examiner review / QA before release")
+        return True, "denial_review", why, "Agent recommends UPHOLD denial — examiner confirms or overrides"
+    return False, None, None, None
 
 def _work_item(icn, claim_disp, res, billed, line_no=None, rev_or_cpt=None):
-    routed, why, rec = _why_human(res["outcome"], claim_disp.get("edit_category"),
-                                  claim_disp.get("resolution_path"), billed,
-                                  res.get("human_review_reason"))
+    routed, route, why, rec = _why_human(res["outcome"], claim_disp.get("edit_category"),
+                                         claim_disp.get("resolution_path"), billed,
+                                         res.get("human_review_reason"))
     if not routed:
         return None
     return {
         "id": f'{icn}' + (f'-L{line_no}' if line_no else ''),
-        "icn": icn, "line_no": line_no, "svc": rev_or_cpt,
+        "icn": icn, "line_no": line_no, "svc": rev_or_cpt, "route": route,
         "member_name": claim_disp.get("member_name"), "claim_type": claim_disp.get("claim_type", "Professional"),
         "billed": billed, "edit_code": claim_disp.get("edit_code"), "edit_category": claim_disp.get("edit_category"),
         "edit_description": claim_disp.get("edit_description"),
@@ -1726,30 +1783,27 @@ def api_review_workflow():
             rev_or_cpt = f'REV {ln.get("rev_code")}' if ln.get("rev_code") else f'CPT {ln.get("cpt_code")}'
             it = _work_item(claim["icn"], disp, res, ln.get("charge") or 0, line_no=ln["line_no"], rev_or_cpt=rev_or_cpt)
             if it: items.append(it)
-    # order: human review first, then denials; high billed first
-    order = {"human_review": 0, "deny": 1}
-    items.sort(key=lambda x: (order.get(x["agent_outcome"], 2), -(x["billed"] or 0)))
+    # order: denial review, human escalation, clinical review
+    order = {"denial_review": 0, "human_escalation": 1, "clinical_review": 2}
+    items.sort(key=lambda x: (order.get(x.get("route"), 3), -(x["billed"] or 0)))
     # Full-queue referral counts so the workflow reconciles with what the agent referred
     # across all 5,318 pended lines (not just the sample of cards shown).
     global _REVIEW_AGG
     if _REVIEW_AGG is None:
-        full_hr = full_den = 0
+        agg = {"denial_review": 0, "human_escalation": 0, "clinical_review": 0}
         for c in pended_claims:
             r = _resolve_pended(c)
-            oc = r["outcome"]
-            if oc in ("human_review", "escalate"):
-                full_hr += 1
-            elif oc == "deny":
-                routed, _w, _r = _why_human("deny", c.get("edit_category"), c.get("resolution_path"),
-                                            c.get("billed_amount") or 0, r.get("human_review_reason"))
-                if routed:
-                    full_den += 1
-        _REVIEW_AGG = {"human_review": full_hr, "denial_review": full_den}
+            routed, route, _w, _r = _why_human(r["outcome"], c.get("edit_category"), c.get("resolution_path"),
+                                               c.get("billed_amount") or 0, r.get("human_review_reason"))
+            if routed:
+                agg[route] = agg.get(route, 0) + 1
+        _REVIEW_AGG = agg
     summary = {
-        "total":         _REVIEW_AGG["human_review"] + _REVIEW_AGG["denial_review"],
-        "human_review":  _REVIEW_AGG["human_review"],
-        "denial_review": _REVIEW_AGG["denial_review"],
-        "shown":         len(items),
+        "total":            sum(_REVIEW_AGG.values()),
+        "denial_review":    _REVIEW_AGG["denial_review"],
+        "human_escalation": _REVIEW_AGG["human_escalation"],
+        "clinical_review":  _REVIEW_AGG["clinical_review"],
+        "shown":            len(items),
     }
     return jsonify({"items": items, "summary": summary})
 

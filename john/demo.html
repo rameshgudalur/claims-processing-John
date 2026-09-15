@@ -320,6 +320,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <button class="nav-back" onclick="showView('hub-view')">← Hub</button>
     <span class="nav-title">Claims Pend Processing — Agent 1</span>
     <button class="nav-back" onclick="showView('trace-view');initTrace()" style="background:#dbeafe;border-color:#1d4ed8;color:#2563eb">▶ Single Claim Trace</button>
+    <button class="nav-back" style="margin-left:8px;background:#fffbeb;border-color:#b45309;color:#b45309" onclick="openPendCatalog()">📖 Pend Code Catalog</button>
     <button class="nav-back" style="margin-left:8px" onclick="showView('review-view');loadReviewQueue()">Human Review Queue <span id="hr-badge" style="background:#d8b4fe;color:#9333ea;border-radius:8px;padding:1px 8px;font-size:.68rem;margin-left:4px">—</span></button>
     <button class="nav-back" style="margin-left:8px;background:#fef2f2;border-color:#dc2626;color:#dc2626" onclick="showView('workflow-view');loadReviewWorkflow()">⚖ Review &amp; Denial Workflow</button>
     <button class="nav-back" style="margin-left:8px;background:#dcfce7;border-color:#166534;color:#15803d" onclick="showView('observe-view');startObs()">📊 Observability</button>
@@ -511,10 +512,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
   </div>
 
   <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#334155">
-    The agent <strong>never auto-issues</strong> these outcomes. It stages the full case — SOP, evidence, citations, and a recommendation — and routes it to a person. Routed here:
+    The agent stages the full case — SOP, evidence, citations, and a recommendation — and routes it to the right team. <strong>Three review workflows:</strong>
     <span style="display:inline-block;margin-top:6px">
-      <span class="badge-outcome purple" style="margin-right:6px">Human review</span> clinical / edge-case judgment ·
-      <span class="badge-outcome red" style="margin:0 6px">Denial — sign-off</span> medical-necessity / LCD-NCD, and high-dollar denials (≥ $2,000)
+      <span class="badge-outcome red" style="margin-right:6px">Denial review</span> agent-issued denials — examiner reviews/QA before release (clear-cut timely-filing &amp; exact duplicates auto-issue) &nbsp;·&nbsp;
+      <span class="badge-outcome purple" style="margin:0 6px">Human escalation</span> the agent won't decide alone (auth, adjustment, duplicate judgment) &nbsp;·&nbsp;
+      <span class="badge-outcome" style="background:#ccfbf1;color:#0e9f86;margin:0 6px">Clinical review</span> adverse coverage / medical-necessity denials (LCD-NCD, MN) — a clinician confirms before release
     </span>
   </div>
 
@@ -522,8 +524,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <button class="proc-btn" style="background:#0f172a" id="wf-load-btn" onclick="loadReviewWorkflow()">⚖ Assemble Work Queue</button>
     <div class="proc-counters">
       <div class="counter-box"><div class="counter-n purple" id="wf-queued">0</div><div class="counter-l">Queued</div></div>
-      <div class="counter-box"><div class="counter-n" id="wf-hr" style="color:#7c3aed">0</div><div class="counter-l">Human review</div></div>
-      <div class="counter-box"><div class="counter-n red" id="wf-den">0</div><div class="counter-l">Denial sign-off</div></div>
+      <div class="counter-box"><div class="counter-n red" id="wf-den">0</div><div class="counter-l">Denial Review</div></div>
+      <div class="counter-box"><div class="counter-n" id="wf-hr" style="color:#7c3aed">0</div><div class="counter-l">Human Escalation</div></div>
+      <div class="counter-box"><div class="counter-n" id="wf-clin" style="color:#0e9f86">0</div><div class="counter-l">Clinical Review</div></div>
       <div class="counter-box"><div class="counter-n green" id="wf-decided">0</div><div class="counter-l">Decided</div></div>
     </div>
   </div>
@@ -615,6 +618,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
 <!-- SOP document modal (autonomous + click-to-open) -->
 <div id="sop-modal" onclick="if(event.target===this)closeSopModal()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:1000;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px">
   <div id="sop-modal-body" style="background:#fff;border:1px solid #cbd5e1;border-radius:14px;max-width:760px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)"></div>
+</div>
+
+<!-- Pend Code Catalog modal -->
+<div id="catalog-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:1000;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px">
+  <div id="catalog-modal-body" style="background:#fff;border:1px solid #cbd5e1;border-radius:14px;max-width:920px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)"></div>
 </div>
 
 <script>
@@ -972,6 +980,41 @@ async function openSopDoc(editCode){
   catch(e){ body.innerHTML='<div style="padding:30px;color:#dc2626">SOP unavailable.</div>'; }
 }
 function closeSopModal(){ document.getElementById('sop-modal').style.display='none'; }
+
+// ── Pend Code Catalog — reference of every pend/edit code the agent handles ──────
+async function openPendCatalog(){
+  const modal=document.getElementById('catalog-modal'), body=document.getElementById('catalog-modal-body');
+  body.innerHTML='<div style="padding:30px;color:#64748b">📖 Loading pend code catalog…</div>';
+  modal.style.display='flex';
+  try{
+    const ec=await fetch(`${API}/api/edit-codes`).then(r=>r.json());
+    const byCat={};
+    Object.keys(ec).forEach(code=>{ const c=ec[code]; (byCat[c.category]=byCat[c.category]||[]).push({code,...c}); });
+    const cats=Object.keys(byCat).sort();
+    const rows=cats.map(cat=>`
+      <tr><td colspan="4" style="background:#f1f5f9;font-weight:800;color:#0f172a;padding:8px 10px;font-size:.78rem">${cat} <span style="color:#64748b;font-weight:600">(${byCat[cat].length})</span></td></tr>
+      ${byCat[cat].sort((a,b)=>a.code.localeCompare(b.code)).map(e=>`
+        <tr style="border-bottom:1px solid #e2e8f0">
+          <td style="padding:6px 10px;font-family:monospace;font-size:.72rem"><span onclick="event.stopPropagation();openSopDoc('${e.code}')" style="cursor:pointer;color:#1d4ed8;text-decoration:underline;text-decoration-style:dotted">${e.code}</span></td>
+          <td style="padding:6px 10px;font-size:.75rem;color:#334155">${e.desc}</td>
+          <td style="padding:6px 10px;font-family:monospace;font-size:.7rem;color:#b45309;white-space:nowrap">${e.carc} / ${e.rarc}</td>
+        </tr>`).join('')}`).join('');
+    body.innerHTML=`
+      <div style="position:relative;padding:20px 24px">
+        <button onclick="document.getElementById('catalog-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>
+        <div style="font-size:1.15rem;font-weight:800;color:#0f172a;margin-bottom:2px">Pend Code Catalog</div>
+        <div style="font-size:.75rem;color:#64748b;margin-bottom:14px">Every pend/edit code the agent adjudicates — ${Object.keys(ec).length} codes across ${cats.length} categories. Click a code to open its full SOP.</div>
+        <div style="overflow:auto;max-height:62vh"><table style="width:100%;border-collapse:collapse">
+          <thead><tr style="text-align:left;border-bottom:2px solid #1d4ed8">
+            <th style="padding:6px 10px;font-size:.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.4px">Code</th>
+            <th style="padding:6px 10px;font-size:.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.4px">What the pend is about</th>
+            <th style="padding:6px 10px;font-size:.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.4px">CARC / RARC</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>
+      </div>`;
+  }catch(e){ body.innerHTML='<div style="padding:30px;color:#dc2626">Catalog unavailable.</div>'; }
+}
 function _sopLink(editCode, label){ return `<span onclick="event.stopPropagation();openSopDoc('${editCode}')" style="cursor:pointer;color:#1d4ed8;text-decoration:underline;text-decoration-style:dotted" title="Open the full SOP">${label}</span>`; }
 
 function renderServiceLines(data, resolved) {
@@ -985,8 +1028,8 @@ function renderServiceLines(data, resolved) {
     const svc = isInst ? `<td style="font-family:monospace">${l.rev_code||'—'}</td><td style="font-family:monospace">${l.cpt_code||'—'}</td>`
                        : `<td style="font-family:monospace">${l.cpt_code||'—'}</td>`;
     const editCell = pend
-      ? `<span class="badge-cat" style="background:#ffedd5;color:#c2410c">${l.edit_code}</span>`
-      : `<span style="color:#15803d;font-size:.7rem">clean</span>`;
+      ? `<span class="badge-cat" style="background:#ffedd5;color:#c2410c">${l.edit_code}</span>${l.edit_description?`<div style="font-size:.66rem;color:#c2410c;margin-top:2px;white-space:normal;max-width:230px;line-height:1.35">${l.edit_description}</div>`:''}`
+      : `<span style="color:#15803d;font-size:.7rem">clean — auto-adjudicated</span>`;
     const sop = pend ? ((res && res.sop_ref) ? res.sop_ref : (l.applicable_sop || '—')) : '—';
     const sopCell = `<td style="font-family:monospace;font-size:.67rem">${pend && l.edit_code ? _sopLink(l.edit_code, sop) : `<span style="color:#94a3b8">${sop}</span>`}</td>`;
     let decCell = `<td style="color:#94a3b8">—</td>`, payCell = `<td style="color:#94a3b8">—</td>`;
@@ -996,6 +1039,11 @@ function renderServiceLines(data, resolved) {
       payCell = `<td style="color:${res.payment_amount>0?'#15803d':'#334155'}">${res.payment_amount>0?'$'+res.payment_amount.toFixed(2):'—'}</td>`;
     }
     const hi = pend ? 'style="background:#fffdf5;border-left:3px solid #f59e0b"' : '';
+    const tfCells = `
+      <td style="font-family:monospace;font-size:.7rem">${l.provider_state||'—'}</td>
+      <td style="font-size:.67rem;color:#334155">${l.received_date||'—'}</td>
+      <td style="font-size:.67rem;color:#334155">${l.payment_due_date||'—'}</td>
+      <td style="font-size:.64rem;font-weight:700;color:${l.status_ok?'#15803d':'#dc2626'};white-space:normal;max-width:150px">${l.status_today||'—'}</td>`;
     return `<tr ${hi}>
       <td style="font-weight:700">${l.line_no}</td>
       ${svc}
@@ -1005,11 +1053,13 @@ function renderServiceLines(data, resolved) {
       <td>${editCell}</td>
       ${sopCell}
       ${decCell}${payCell}
+      ${tfCells}
     </tr>`;
   }).join('');
-  const headCols = isInst
+  const tfHead = '<th>Prov St</th><th>Received</th><th>Pay-by</th><th>Status today</th>';
+  const headCols = (isInst
     ? '<th>Line</th><th>Rev</th><th>HCPCS</th><th>Description</th><th>Units</th><th>Charge</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>'
-    : '<th>Line</th><th>CPT</th><th>Description</th><th>Units</th><th>Charge</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>';
+    : '<th>Line</th><th>CPT</th><th>Description</th><th>Units</th><th>Charge</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>') + tfHead;
   let rollupBanner = '';
   if (resolved && data.rollup) {
     const r = data.rollup; const col = OKC[r.outcome] || '#334155';
@@ -1051,11 +1101,33 @@ function renderServiceLines(data, resolved) {
           <div style="font-size:.7rem;color:#854d0e;margin-top:5px"><strong>Determination:</strong> ${res.clinical.determination}</div>
         </div>` : ''}
         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:7px 9px;margin-top:5px;font-size:.72rem;color:#334155"><strong>Why:</strong> ${res.rationale||''}</div>
+        ${(res.outcome==='deny' && (l.resolution_path==='deny_lcd_ncd' || l.resolution_path==='deny_medical_necessity')) ? `
+        <div style="background:#ccfbf1;border:1px solid #5eead4;border-left:4px solid #0e9f86;border-radius:6px;padding:8px 11px;margin-top:6px;font-size:.73rem;color:#0f766e">
+          🩺 <strong>Needs Clinical Team Review.</strong> This is an adverse coverage/medical determination — the agent applied the policy and denied, but the determination is <strong>held for a clinician to confirm or overturn before it is released</strong>. Routed to the Clinical Team Review lane in the workflow.
+        </div>` : ''}
       </div>`;
     }).join('');
     if (reasoning) reasoning = `<div class="cp-box" style="margin-bottom:14px"><h4>How the agent adjudicated each pended line</h4>${reasoning}</div>`;
   }
+  const h = data.header || {};
+  const tfStrip = `
+    <div class="cp-box" style="margin-bottom:14px">
+      <h4>Provider &amp; Timely-Filing</h4>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${[['Provider state', h.provider_state],
+           ['Received date', h.received_date],
+           ['Allowed pay-by (SLA)', h.payment_due_date],
+           ['Timely-filing limit', h.filing_limit_date],
+           ['Timely filing', h.timely_filing],
+          ].map(([k,v])=>`<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:7px 11px;font-size:.72rem"><div style="color:#64748b;font-size:.62rem;text-transform:uppercase;letter-spacing:.4px">${k}</div><div style="color:#0f172a;font-weight:700;margin-top:2px">${v||'—'}</div></div>`).join('')}
+        <div style="background:${h.status_ok?'#dcfce7':'#fee2e2'};border:1px solid ${h.status_ok?'#86efac':'#fecaca'};border-radius:8px;padding:7px 11px;font-size:.72rem">
+          <div style="color:#64748b;font-size:.62rem;text-transform:uppercase;letter-spacing:.4px">Status today</div>
+          <div style="color:${h.status_ok?'#15803d':'#dc2626'};font-weight:700;margin-top:2px">${h.status_today||'—'}</div>
+        </div>
+      </div>
+    </div>`;
   return `
+    ${tfStrip}
     <div class="cp-box" style="margin-bottom:14px">
       <h4>Service Lines — ${lines.length} line${lines.length!==1?'s':''} ${isInst?'(billed by revenue code)':''} · ${lines.filter(l=>l.pended).length} pended</h4>
       <div style="overflow:auto"><table class="queue-table" style="font-size:.72rem">
@@ -1565,22 +1637,25 @@ async function loadReviewWorkflow() {
     wfItems = d.items || [];
     wfTotal = d.summary.total || 0;
     document.getElementById('wf-queued').textContent  = (d.summary.total||0).toLocaleString();
-    document.getElementById('wf-hr').textContent      = (d.summary.human_review||0).toLocaleString();
     document.getElementById('wf-den').textContent     = (d.summary.denial_review||0).toLocaleString();
+    document.getElementById('wf-hr').textContent      = (d.summary.human_escalation||0).toLocaleString();
+    document.getElementById('wf-clin').textContent    = (d.summary.clinical_review||0).toLocaleString();
     document.getElementById('wf-decided').textContent = '0';
     const shown = d.summary.shown || wfItems.length;
     document.getElementById('wf-list').innerHTML =
-      `<div style="font-size:.78rem;color:#334155;margin-bottom:12px">The agent referred <strong>${(d.summary.total||0).toLocaleString()}</strong> lines to a human across the queue — <strong>${(d.summary.human_review||0).toLocaleString()}</strong> for human review and <strong>${(d.summary.denial_review||0).toLocaleString()}</strong> denials needing sign-off. Showing <strong>${shown}</strong> representative items to work below.</div>`
+      `<div style="font-size:.78rem;color:#334155;margin-bottom:12px">Three review workflows, ${(d.summary.total||0).toLocaleString()} items total across the queue — <strong style="color:#dc2626">${(d.summary.denial_review||0).toLocaleString()}</strong> denial review · <strong style="color:#7c3aed">${(d.summary.human_escalation||0).toLocaleString()}</strong> human escalation · <strong style="color:#0e9f86">${(d.summary.clinical_review||0).toLocaleString()}</strong> clinical review. Showing <strong>${shown}</strong> representative items to work below.</div>`
       + wfItems.map((it, i) => renderWorkItem(it, i)).join('');
   } catch(e) { document.getElementById('wf-list').innerHTML = '<div style="color:#dc2626">Workflow unavailable — is the server running?</div>'; }
   if (btn) { btn.disabled = false; btn.textContent = '↻ Reassemble Work Queue'; }
 }
 
 function renderWorkItem(it, i) {
-  const isHR = it.agent_outcome === 'human_review';
-  const badge = isHR
-    ? `<span class="badge-outcome purple">Human review</span>`
-    : `<span class="badge-outcome red">Denial — sign-off</span>`;
+  const route = it.route || (it.agent_outcome === 'human_review' ? 'human_escalation' : 'denial_review');
+  const routeMeta = {
+    human_escalation: {badge:'<span class="badge-outcome purple">Human escalation</span>',          border:'#7c3aed'},
+    clinical_review:  {badge:'<span class="badge-outcome" style="background:#ccfbf1;color:#0e9f86">Clinical review</span>', border:'#0e9f86'},
+    denial_review:    {badge:'<span class="badge-outcome red">Denial review</span>',                 border:'#dc2626'},
+  }[route];
   const ln = it.line_no ? ` · Line ${it.line_no}` : '';
   const kg = (it.kg_rules || []).map(k => `
     <div style="border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;padding:6px 10px;margin-bottom:5px">
@@ -1588,18 +1663,25 @@ function renderWorkItem(it, i) {
       <div style="font-size:.71rem;color:#334155;line-height:1.5">${k.text}</div>
       <div style="font-size:.65rem;color:#64748b;font-style:italic;margin-top:2px">📖 ${k.source}</div>
     </div>`).join('');
-  const actions = isHR
-    ? `<button class="proc-btn" style="background:#15803d;padding:7px 14px;font-size:.78rem" onclick="workflowAct(${i},'Approve — overturn, medical necessity confirmed')">✓ Approve</button>
-       <button class="proc-btn" style="background:#dc2626;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Uphold denial — criteria not met')">✕ Uphold denial</button>
+  let actions;
+  if (route === 'human_escalation') {
+    actions = `<button class="proc-btn" style="background:#15803d;padding:7px 14px;font-size:.78rem" onclick="workflowAct(${i},'Approve — confirmed')">✓ Approve</button>
+       <button class="proc-btn" style="background:#dc2626;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Uphold denial — criteria not met')">✕ Deny</button>
        <button class="proc-btn" style="background:#2563eb;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Request additional documentation (ADR)')">↩ Request info</button>
-       <button class="proc-btn" style="background:#c2410c;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Escalate — medical director review')">↑ Escalate</button>`
-    : `<button class="proc-btn" style="background:#dc2626;padding:7px 14px;font-size:.78rem" onclick="workflowAct(${i},'Denial upheld — examiner confirmed')">✓ Uphold denial</button>
+       <button class="proc-btn" style="background:#c2410c;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Escalate — medical director review')">↑ Escalate</button>`;
+  } else if (route === 'clinical_review') {
+    actions = `<button class="proc-btn" style="background:#dc2626;padding:7px 14px;font-size:.78rem" onclick="workflowAct(${i},'Denial upheld — clinician confirmed the adverse determination')">✓ Clinician upholds denial</button>
+       <button class="proc-btn" style="background:#15803d;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Overturned — clinician found coverage/necessity met')">↺ Clinician overturns → approve</button>
+       <button class="proc-btn" style="background:#2563eb;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Peer-to-peer / additional records requested')">↩ Request records</button>`;
+  } else {
+    actions = `<button class="proc-btn" style="background:#dc2626;padding:7px 14px;font-size:.78rem" onclick="workflowAct(${i},'Denial upheld — examiner confirmed')">✓ Uphold denial</button>
        <button class="proc-btn" style="background:#15803d;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Denial overturned — approved on review')">↺ Overturn → approve</button>
        <button class="proc-btn" style="background:#2563eb;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Request additional documentation (ADR)')">↩ Request info</button>`;
+  }
   return `
-    <div class="cp-box" id="wf-item-${i}" style="margin-bottom:12px;border-left:4px solid ${isHR?'#7c3aed':'#dc2626'}">
+    <div class="cp-box" id="wf-item-${i}" style="margin-bottom:12px;border-left:4px solid ${routeMeta.border}">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-        ${badge}
+        ${routeMeta.badge}
         <span style="font-family:monospace;color:#2563eb;font-weight:700">${it.icn}${ln}</span>
         <span style="color:#334155">${it.svc}</span>
         <span style="color:#334155">${it.member_name}</span>
