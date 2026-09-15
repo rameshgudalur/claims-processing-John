@@ -6,263 +6,265 @@
 <title>Project John — Claims Pend Processing</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f0;min-height:100vh}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172a;min-height:100vh}
 
 /* ── Layout ── */
 .view{display:none;min-height:100vh;padding:28px 36px}
 .view.active{display:block}
 
 /* ── Hub ── */
-#hub-view{background:linear-gradient(135deg,#0a0f1a 0%,#0f172a 60%,#0a1628 100%)}
+#hub-view{background:linear-gradient(135deg,#f8fafc 0%,#f1f5f9 60%,#eef4fb 100%)}
 .hub-header{text-align:center;padding:36px 0 28px}
-.hub-header h1{font-size:2rem;font-weight:700;color:#f1f5f9;letter-spacing:-0.5px}
-.hub-header p{color:#64748b;font-size:.95rem;margin-top:6px}
+.hub-header h1{font-size:2rem;font-weight:700;color:#0f172a;letter-spacing:-0.5px}
+.hub-header p{color:#334155;font-size:.95rem;margin-top:6px}
 .agent-chain{display:flex;align-items:center;gap:0;justify-content:center;margin:32px 0 40px;overflow-x:auto;padding:0 16px}
-.agent-chip{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px 16px;font-size:.72rem;color:#94a3b8;text-align:center;white-space:nowrap;min-width:110px;transition:all .3s;cursor:default}
-.agent-chip.active{background:#1e3a5f;border-color:#2563eb;color:#93c5fd}
-.agent-chip.focus{background:#172554;border-color:#1d4ed8;color:#60a5fa;box-shadow:0 0 0 2px rgba(37,99,235,.3);transform:scale(1.05)}
-.chain-arrow{color:#334155;font-size:1rem;padding:0 4px}
+.agent-chip{background:#ffffff;border:1.5px solid #94a3b8;border-radius:8px;padding:10px 16px;font-size:.74rem;font-weight:600;color:#0f172a;text-align:center;white-space:nowrap;min-width:110px;transition:all .3s;cursor:default}
+.agent-chip.active{background:#bfdbfe;border-color:#1d4ed8;color:#1d4ed8}
+.agent-chip.focus{background:#dbeafe;border-color:#1d4ed8;color:#2563eb;box-shadow:0 0 0 2px rgba(37,99,235,.3);transform:scale(1.05)}
+.chain-arrow{color:#0f172a;font-size:1.05rem;font-weight:700;padding:0 6px}
 .hub-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:820px;margin:0 auto}
-.hub-card{background:#111827;border:1px solid #1e293b;border-radius:14px;padding:24px;cursor:pointer;transition:all .3s}
-.hub-card:hover{border-color:#2563eb;background:#0f1f38;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.hub-card{background:#ffffff;border:1px solid #cbd5e1;border-radius:14px;padding:24px;cursor:pointer;transition:all .3s}
+.hub-card:hover{border-color:#1d4ed8;background:#eaf1fb;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .hub-card-icon{font-size:2rem;margin-bottom:12px}
-.hub-card h3{font-size:1.05rem;font-weight:700;color:#f1f5f9;margin-bottom:6px}
-.hub-card p{font-size:.82rem;color:#64748b;line-height:1.5}
-.hub-card .badge{display:inline-block;background:#1e3a5f;color:#60a5fa;font-size:.68rem;padding:2px 8px;border-radius:10px;margin-top:10px;font-weight:600}
-.hub-card .badge.green{background:#14532d;color:#4ade80}
-.hub-card .badge.amber{background:#451a03;color:#fb923c}
+.hub-card h3{font-size:1.05rem;font-weight:700;color:#0f172a;margin-bottom:6px}
+.hub-card p{font-size:.82rem;color:#334155;line-height:1.5}
+.hub-card .badge{display:inline-block;background:#bfdbfe;color:#2563eb;font-size:.68rem;padding:2px 8px;border-radius:10px;margin-top:10px;font-weight:600}
+.hub-card .badge.green{background:#dcfce7;color:#15803d}
+.hub-card .badge.amber{background:#ffedd5;color:#c2410c}
 .hub-stat-row{display:flex;gap:16px;justify-content:center;margin-top:12px}
-.hub-stat{background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:10px 20px;text-align:center}
-.hub-stat-n{font-size:1.5rem;font-weight:700;color:#3b82f6}
-.hub-stat-l{font-size:.7rem;color:#475569;margin-top:2px}
+.hub-stat{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:10px 20px;text-align:center}
+.hub-stat-n{font-size:1.5rem;font-weight:700;color:#2563eb}
+.hub-stat-l{font-size:.7rem;color:#334155;margin-top:2px}
 
 /* ── Nav Bar ── */
 .nav{display:flex;align-items:center;gap:12px;margin-bottom:28px}
-.nav-back{background:#1e293b;border:1px solid #334155;color:#94a3b8;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;transition:all .2s}
-.nav-back:hover{background:#334155;color:#f1f5f9}
-.nav-title{font-size:1.05rem;font-weight:700;color:#f1f5f9}
-.nav-sub{font-size:.8rem;color:#475569;margin-left:auto}
+.nav-back{background:#cbd5e1;border:1px solid #94a3b8;color:#334155;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;transition:all .2s}
+.nav-back:hover{background:#94a3b8;color:#0f172a}
+.nav-title{font-size:1.05rem;font-weight:700;color:#0f172a}
+.nav-sub{font-size:.8rem;color:#334155;margin-left:auto}
 
 /* ── Act 1 — Pend Processing ── */
-#act1-view{background:#0a0f1a}
+#act1-view{background:#f8fafc}
 .db-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:24px}
-.db-card{background:#111827;border:1px solid #1e293b;border-radius:10px;padding:13px 12px;text-align:center;transition:all .35s;cursor:pointer;position:relative}
-.db-card:hover{border-color:#334155;background:#1a2535}
-.db-card.querying{border-color:#1d4ed8;background:#0f1f38;animation:pulse-border 1s infinite}
-.db-card.done{border-color:#16a34a;background:#0a1f12}
+.db-card{background:#ffffff;border:1px solid #cbd5e1;border-radius:10px;padding:13px 12px;text-align:center;transition:all .35s;cursor:pointer;position:relative}
+.db-card:hover{border-color:#334155;background:#eef2f7}
+.db-card.querying{border-color:#1d4ed8;background:#eaf1fb;animation:pulse-border 1s infinite}
+.db-card.done{border-color:#15803d;background:#dcfce7}
 .db-card-icon{font-size:1.4rem;margin-bottom:6px}
-.db-card-name{font-size:.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px}
-.db-card-count{font-size:.7rem;color:#475569;margin-top:3px}
-.db-card-hits{font-size:.8rem;font-weight:700;color:#4ade80;margin-top:4px;display:none}
+.db-card-name{font-size:.68rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.5px}
+.db-card-count{font-size:.7rem;color:#334155;margin-top:3px}
+.db-card-hits{font-size:.8rem;font-weight:700;color:#15803d;margin-top:4px;display:none}
 .db-card.done .db-card-hits{display:block}
 @keyframes pulse-border{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}50%{box-shadow:0 0 0 4px rgba(37,99,235,.1)}}
 
 /* DB Expand panel */
 .db-expand-wrap{margin-bottom:20px;display:none}
 .db-expand-wrap.open{display:block}
-.db-expand{background:#111827;border:1px solid #1e3a5f;border-radius:12px;padding:16px;overflow:auto;max-height:260px}
+.db-expand{background:#ffffff;border:1px solid #bfdbfe;border-radius:12px;padding:16px;overflow:auto;max-height:460px}
 .db-expand table{width:100%;border-collapse:collapse;font-size:.72rem}
-.db-expand th{color:#60a5fa;font-weight:700;padding:6px 10px;text-align:left;border-bottom:1px solid #1e3a5f;white-space:nowrap}
-.db-expand td{padding:5px 10px;color:#cbd5e1;border-bottom:1px solid #1e293b;white-space:nowrap}
+.db-expand th{color:#2563eb;font-weight:700;padding:6px 10px;text-align:left;border-bottom:1px solid #bfdbfe;white-space:nowrap}
+.db-expand td{padding:5px 10px;color:#334155;border-bottom:1px solid #cbd5e1;white-space:nowrap}
 .db-expand tr:last-child td{border-bottom:none}
-.db-expand-close{float:right;background:transparent;border:none;color:#475569;cursor:pointer;font-size:.75rem;padding:2px 6px}
-.db-expand-close:hover{color:#94a3b8}
+.db-expand-close{float:right;background:transparent;border:none;color:#334155;cursor:pointer;font-size:.75rem;padding:2px 6px}
+.db-expand-close:hover{color:#334155}
 
 /* Processing header row */
 .processing-header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
 .proc-btn{background:#2563eb;color:#fff;border:none;padding:11px 24px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s}
 .proc-btn:hover{background:#1d4ed8}
-.proc-btn:disabled{background:#1e293b;color:#475569;cursor:not-allowed}
+.proc-btn:disabled{background:#cbd5e1;color:#334155;cursor:not-allowed}
+.proc-btn.ready-pulse{animation:ready-pulse 1.2s infinite}
+@keyframes ready-pulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}50%{box-shadow:0 0 0 6px rgba(37,99,235,.12)}}
 .proc-counters{display:flex;gap:12px;margin-left:auto}
-.counter-box{background:#111827;border:1px solid #1e293b;border-radius:8px;padding:6px 14px;text-align:center;min-width:70px}
+.counter-box{background:#ffffff;border:1px solid #cbd5e1;border-radius:8px;padding:6px 14px;text-align:center;min-width:70px}
 .counter-n{font-size:1.1rem;font-weight:700}
-.counter-l{font-size:.62rem;color:#475569;text-transform:uppercase;letter-spacing:.5px}
-.counter-n.green{color:#4ade80}
-.counter-n.red{color:#f87171}
-.counter-n.yellow{color:#fbbf24}
-.counter-n.blue{color:#60a5fa}
-.counter-n.orange{color:#fb923c}
-.counter-n.purple{color:#c084fc}
+.counter-l{font-size:.62rem;color:#334155;text-transform:uppercase;letter-spacing:.5px}
+.counter-n.green{color:#15803d}
+.counter-n.red{color:#dc2626}
+.counter-n.yellow{color:#b45309}
+.counter-n.blue{color:#2563eb}
+.counter-n.orange{color:#c2410c}
+.counter-n.purple{color:#9333ea}
 
 /* Queue table */
-.queue-wrap{background:#111827;border:1px solid #1e293b;border-radius:12px;overflow:hidden;margin-bottom:20px}
+.queue-wrap{background:#ffffff;border:1px solid #cbd5e1;border-radius:12px;overflow:hidden;margin-bottom:20px}
 .queue-table{width:100%;border-collapse:collapse;font-size:.75rem}
-.queue-table thead th{background:#0f172a;color:#64748b;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #1e293b;white-space:nowrap}
-.queue-table tbody tr{border-bottom:1px solid #1e293b;cursor:pointer;transition:background .15s}
-.queue-table tbody tr:hover{background:#1a2535}
-.queue-table tbody tr.processing-row{background:#0f1f38;animation:row-pulse 1s infinite}
-@keyframes row-pulse{0%,100%{background:#0f1f38}50%{background:#111e35}}
+.queue-table thead th{background:#f1f5f9;color:#334155;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #cbd5e1;white-space:nowrap}
+.queue-table tbody tr{border-bottom:1px solid #cbd5e1;cursor:pointer;transition:background .15s}
+.queue-table tbody tr:hover{background:#eef2f7}
+.queue-table tbody tr.processing-row{background:#eaf1fb;animation:row-pulse 1s infinite}
+@keyframes row-pulse{0%,100%{background:#eaf1fb}50%{background:#f1f5f9}}
 .queue-table td{padding:8px 14px;white-space:nowrap}
 .badge-outcome{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.badge-outcome.green{background:#14532d;color:#4ade80}
-.badge-outcome.red{background:#450a0a;color:#f87171}
-.badge-outcome.yellow{background:#422006;color:#fbbf24}
-.badge-outcome.blue{background:#0c2d58;color:#60a5fa}
-.badge-outcome.orange{background:#431407;color:#fb923c}
-.badge-outcome.purple{background:#2e1065;color:#c084fc}
-.badge-outcome.gray{background:#1e293b;color:#94a3b8}
-.badge-cat{display:inline-block;background:#1e293b;color:#94a3b8;padding:2px 8px;border-radius:8px;font-size:.65rem;font-weight:600}
-.badge-hr{display:inline-block;background:#2e1065;color:#c084fc;padding:2px 7px;border-radius:8px;font-size:.62rem;font-weight:700;margin-left:4px}
+.badge-outcome.green{background:#dcfce7;color:#15803d}
+.badge-outcome.red{background:#fee2e2;color:#dc2626}
+.badge-outcome.yellow{background:#fef9c3;color:#b45309}
+.badge-outcome.blue{background:#dbeafe;color:#2563eb}
+.badge-outcome.orange{background:#ffedd5;color:#c2410c}
+.badge-outcome.purple{background:#ede9fe;color:#9333ea}
+.badge-outcome.gray{background:#cbd5e1;color:#334155}
+.badge-cat{display:inline-block;background:#cbd5e1;color:#334155;padding:2px 8px;border-radius:8px;font-size:.65rem;font-weight:600}
+.badge-hr{display:inline-block;background:#ede9fe;color:#9333ea;padding:2px 7px;border-radius:8px;font-size:.62rem;font-weight:700;margin-left:4px}
 
 /* Claim Detail Panel */
-.claim-panel{display:none;background:#111827;border:1px solid #1e3a5f;border-radius:14px;padding:24px;margin-bottom:20px}
+.claim-panel{display:none;background:#ffffff;border:1px solid #bfdbfe;border-radius:14px;padding:24px;margin-bottom:20px}
 .claim-panel.visible{display:block}
 .claim-panel-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
-.claim-panel-close{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.2rem;padding:2px 6px}
-.claim-panel-close:hover{color:#94a3b8}
+.claim-panel-close{background:transparent;border:none;color:#334155;cursor:pointer;font-size:1.2rem;padding:2px 6px}
+.claim-panel-close:hover{color:#334155}
 .cp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px}
 .cp-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
-.cp-box{background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px}
-.cp-box h4{font-size:.7rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.cp-box{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:10px;padding:14px}
+.cp-box h4{font-size:.7rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
 .cp-field{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:.76rem}
-.cp-field-label{color:#64748b}
-.cp-field-value{color:#e2e8f0;font-weight:600;text-align:right;max-width:180px}
-.cp-field-value.green{color:#4ade80}
-.cp-field-value.red{color:#f87171}
-.cp-field-value.yellow{color:#fbbf24}
-.cp-field-value.blue{color:#60a5fa}
-.cp-field-value.purple{color:#c084fc}
+.cp-field-label{color:#334155}
+.cp-field-value{color:#1e293b;font-weight:600;text-align:right;max-width:180px}
+.cp-field-value.green{color:#15803d}
+.cp-field-value.red{color:#dc2626}
+.cp-field-value.yellow{color:#b45309}
+.cp-field-value.blue{color:#2563eb}
+.cp-field-value.purple{color:#9333ea}
 .sop-steps{list-style:none}
-.sop-step{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:.75rem;color:#94a3b8}
-.sop-step .step-num{background:#1e3a5f;color:#60a5fa;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;flex-shrink:0;margin-top:1px}
-.db-query-pill{display:inline-flex;align-items:center;gap:5px;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:4px 10px;font-size:.7rem;color:#94a3b8;margin:3px;cursor:pointer;transition:all .2s}
-.db-query-pill:hover{border-color:#2563eb;color:#60a5fa}
-.db-query-pill.hit{border-color:#16a34a;color:#4ade80;background:#0a1f12}
-.hr-box{background:#130a2e;border:1px solid #581c87;border-radius:10px;padding:14px 16px;margin-top:14px}
-.hr-box h4{color:#c084fc;font-size:.78rem;font-weight:700;margin-bottom:6px}
-.hr-box p{color:#a78bfa;font-size:.74rem;line-height:1.5}
+.sop-step{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:.75rem;color:#334155}
+.sop-step .step-num{background:#bfdbfe;color:#2563eb;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;flex-shrink:0;margin-top:1px}
+.db-query-pill{display:inline-flex;align-items:center;gap:5px;background:#cbd5e1;border:1px solid #94a3b8;border-radius:6px;padding:4px 10px;font-size:.7rem;color:#334155;margin:3px;cursor:pointer;transition:all .2s}
+.db-query-pill:hover{border-color:#1d4ed8;color:#2563eb}
+.db-query-pill.hit{border-color:#15803d;color:#15803d;background:#dcfce7}
+.hr-box{background:#ede9fe;border:1px solid #d8b4fe;border-radius:10px;padding:14px 16px;margin-top:14px}
+.hr-box h4{color:#9333ea;font-size:.78rem;font-weight:700;margin-bottom:6px}
+.hr-box p{color:#7c3aed;font-size:.74rem;line-height:1.5}
 .hr-actions{display:flex;gap:8px;margin-top:10px}
 .hr-btn{padding:6px 14px;border-radius:6px;font-size:.74rem;font-weight:700;cursor:pointer;border:none;transition:all .2s}
-.hr-btn.approve{background:#14532d;color:#4ade80}
-.hr-btn.deny{background:#450a0a;color:#f87171}
-.hr-btn.escalate{background:#431407;color:#fb923c}
+.hr-btn.approve{background:#dcfce7;color:#15803d}
+.hr-btn.deny{background:#fee2e2;color:#dc2626}
+.hr-btn.escalate{background:#ffedd5;color:#c2410c}
 
 /* ── Gen 2 / Gen 3 panels ── */
 .gen-tabs{display:flex;gap:8px;margin-bottom:16px}
-.gen-tab{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:7px 16px;font-size:.78rem;font-weight:700;cursor:pointer;color:#64748b;transition:all .2s}
-.gen-tab.active{background:#1e3a5f;border-color:#2563eb;color:#60a5fa}
+.gen-tab{background:#cbd5e1;border:1px solid #94a3b8;border-radius:8px;padding:7px 16px;font-size:.78rem;font-weight:700;cursor:pointer;color:#334155;transition:all .2s}
+.gen-tab.active{background:#bfdbfe;border-color:#1d4ed8;color:#2563eb}
 .gen-panel{display:none}
 .gen-panel.active{display:block}
-.gen-table-wrap{background:#111827;border:1px solid #1e293b;border-radius:12px;overflow:hidden;max-height:280px;overflow-y:auto}
+.gen-table-wrap{background:#ffffff;border:1px solid #cbd5e1;border-radius:12px;overflow:hidden;max-height:280px;overflow-y:auto}
 .gen-table{width:100%;border-collapse:collapse;font-size:.74rem}
-.gen-table thead th{background:#0f172a;color:#64748b;font-weight:700;padding:9px 14px;text-align:left;border-bottom:1px solid #1e293b;position:sticky;top:0}
-.gen-table td{padding:7px 14px;color:#cbd5e1;border-bottom:1px solid #1e293b}
+.gen-table thead th{background:#f1f5f9;color:#334155;font-weight:700;padding:9px 14px;text-align:left;border-bottom:1px solid #cbd5e1;position:sticky;top:0}
+.gen-table td{padding:7px 14px;color:#334155;border-bottom:1px solid #cbd5e1}
 .gen-table tr:last-child td{border-bottom:none}
-.gap-flag{background:#450a0a;color:#f87171;padding:2px 8px;border-radius:6px;font-size:.65rem;font-weight:700}
-.bar-wrap{background:#1e293b;border-radius:4px;height:6px;width:80px;display:inline-block;vertical-align:middle}
-.bar-fill{height:6px;border-radius:4px;background:#f87171;transition:width .5s}
-.bar-fill.green{background:#4ade80}
-.bar-fill.amber{background:#fbbf24}
+.gap-flag{background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:6px;font-size:.65rem;font-weight:700}
+.bar-wrap{background:#cbd5e1;border-radius:4px;height:6px;width:80px;display:inline-block;vertical-align:middle}
+.bar-fill{height:6px;border-radius:4px;background:#fecaca;transition:width .5s}
+.bar-fill.green{background:#86efac}
+.bar-fill.amber{background:#fde68a}
 .pred-badge{padding:2px 8px;border-radius:8px;font-size:.65rem;font-weight:700}
-.pred-badge.resolved{background:#14532d;color:#4ade80}
-.pred-badge.sent{background:#0c2d58;color:#60a5fa}
-.pred-badge.pending{background:#1e293b;color:#94a3b8}
+.pred-badge.resolved{background:#dcfce7;color:#15803d}
+.pred-badge.sent{background:#dbeafe;color:#2563eb}
+.pred-badge.pending{background:#cbd5e1;color:#334155}
 
 /* ── Human Review Panel ── */
-#review-view{background:#0a0f1a}
+#review-view{background:#f8fafc}
 .review-grid{display:grid;grid-template-columns:320px 1fr;gap:20px;height:calc(100vh - 120px)}
-.review-list{background:#111827;border:1px solid #1e293b;border-radius:12px;overflow-y:auto}
-.review-list-header{padding:14px 16px;border-bottom:1px solid #1e293b;font-size:.82rem;font-weight:700;color:#f1f5f9;position:sticky;top:0;background:#111827;z-index:1}
-.review-item{padding:12px 16px;border-bottom:1px solid #1e293b;cursor:pointer;transition:background .15s}
-.review-item:hover{background:#1a2535}
-.review-item.selected{background:#0f1f38;border-left:3px solid #7c3aed}
-.review-item-icn{font-size:.72rem;font-weight:700;color:#7c3aed}
-.review-item-name{font-size:.8rem;color:#e2e8f0;margin:2px 0}
-.review-item-reason{font-size:.68rem;color:#a78bfa;margin-top:2px;line-height:1.4}
-.review-item-amount{font-size:.72rem;color:#fbbf24;font-weight:700;margin-top:3px}
-.review-detail{background:#111827;border:1px solid #1e293b;border-radius:12px;padding:24px;overflow-y:auto}
+.review-list{background:#ffffff;border:1px solid #cbd5e1;border-radius:12px;overflow-y:auto}
+.review-list-header{padding:14px 16px;border-bottom:1px solid #cbd5e1;font-size:.82rem;font-weight:700;color:#0f172a;position:sticky;top:0;background:#ffffff;z-index:1}
+.review-item{padding:12px 16px;border-bottom:1px solid #cbd5e1;cursor:pointer;transition:background .15s}
+.review-item:hover{background:#eef2f7}
+.review-item.selected{background:#eaf1fb;border-left:3px solid #c4b5fd}
+.review-item-icn{font-size:.72rem;font-weight:700;color:#6d28d9}
+.review-item-name{font-size:.8rem;color:#1e293b;margin:2px 0}
+.review-item-reason{font-size:.68rem;color:#7c3aed;margin-top:2px;line-height:1.4}
+.review-item-amount{font-size:.72rem;color:#b45309;font-weight:700;margin-top:3px}
+.review-detail{background:#ffffff;border:1px solid #cbd5e1;border-radius:12px;padding:24px;overflow-y:auto}
 .review-detail-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#334155;text-align:center}
 .review-detail-empty .icon{font-size:3rem;margin-bottom:12px}
-.review-examiner{background:#130a2e;border:1px solid #581c87;border-radius:12px;padding:18px;margin-top:18px}
-.review-examiner h3{color:#c084fc;font-size:.88rem;font-weight:700;margin-bottom:14px}
+.review-examiner{background:#ede9fe;border:1px solid #d8b4fe;border-radius:12px;padding:18px;margin-top:18px}
+.review-examiner h3{color:#9333ea;font-size:.88rem;font-weight:700;margin-bottom:14px}
 .exam-field{margin-bottom:12px}
-.exam-field label{font-size:.72rem;color:#7c3aed;font-weight:700;display:block;margin-bottom:4px}
-.exam-field textarea,.exam-field select{width:100%;background:#0f172a;border:1px solid #581c87;border-radius:6px;color:#e2e8f0;padding:8px 10px;font-size:.78rem;resize:vertical;outline:none}
-.exam-field textarea:focus,.exam-field select:focus{border-color:#7c3aed}
+.exam-field label{font-size:.72rem;color:#6d28d9;font-weight:700;display:block;margin-bottom:4px}
+.exam-field textarea,.exam-field select{width:100%;background:#f1f5f9;border:1px solid #d8b4fe;border-radius:6px;color:#1e293b;padding:8px 10px;font-size:.78rem;resize:vertical;outline:none}
+.exam-field textarea:focus,.exam-field select:focus{border-color:#6d28d9}
 .exam-actions{display:flex;gap:8px;margin-top:12px}
 .exam-btn{flex:1;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;border:none;transition:all .2s}
-.exam-btn.approve{background:#14532d;color:#4ade80}
-.exam-btn.approve:hover{background:#166534}
-.exam-btn.deny{background:#450a0a;color:#f87171}
-.exam-btn.deny:hover{background:#7f1d1d}
-.exam-btn.escalate{background:#431407;color:#fb923c}
-.exam-btn.escalate:hover{background:#7c2d12}
+.exam-btn.approve{background:#dcfce7;color:#15803d}
+.exam-btn.approve:hover{background:#86efac}
+.exam-btn.deny{background:#fee2e2;color:#dc2626}
+.exam-btn.deny:hover{background:#fecaca}
+.exam-btn.escalate{background:#ffedd5;color:#c2410c}
+.exam-btn.escalate:hover{background:#fed7aa}
 
 /* ── Progress bar ── */
-.progress-wrap{background:#1e293b;border-radius:4px;height:5px;width:100%;margin-bottom:16px;display:none}
+.progress-wrap{background:#cbd5e1;border-radius:4px;height:5px;width:100%;margin-bottom:16px;display:none}
 .progress-wrap.visible{display:block}
 .progress-bar{height:5px;border-radius:4px;background:#2563eb;width:0%;transition:width .3s}
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:#0f172a}
-::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+::-webkit-scrollbar-track{background:#f1f5f9}
+::-webkit-scrollbar-thumb{background:#94a3b8;border-radius:4px}
 
 /* ── Trace View ── */
-#trace-view{background:#0a0f1a}
+#trace-view{background:#f8fafc}
 .trace-layout{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
-.trace-claim-card{background:#111827;border:1px solid #1e3a5f;border-radius:14px;padding:20px;position:sticky;top:20px}
-.trace-claim-card h3{font-size:.72rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.trace-claim-card{background:#ffffff;border:1px solid #bfdbfe;border-radius:14px;padding:20px;position:sticky;top:20px}
+.trace-claim-card h3{font-size:.72rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
 .tcc-field{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;font-size:.78rem;gap:8px}
-.tcc-label{color:#64748b;white-space:nowrap}
-.tcc-value{color:#e2e8f0;font-weight:600;text-align:right}
-.tcc-icn{font-family:monospace;color:#60a5fa}
-.tcc-edit{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px;margin-top:12px}
-.tcc-edit-code{font-family:monospace;color:#f87171;font-size:.8rem;font-weight:700}
-.tcc-edit-desc{color:#94a3b8;font-size:.74rem;margin-top:3px;line-height:1.4}
-.tcc-cat{display:inline-block;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:2px 8px;font-size:.66rem;color:#94a3b8;margin-top:6px}
+.tcc-label{color:#334155;white-space:nowrap}
+.tcc-value{color:#1e293b;font-weight:600;text-align:right}
+.tcc-icn{font-family:monospace;color:#2563eb}
+.tcc-edit{background:#cbd5e1;border:1px solid #94a3b8;border-radius:8px;padding:10px;margin-top:12px}
+.tcc-edit-code{font-family:monospace;color:#dc2626;font-size:.8rem;font-weight:700}
+.tcc-edit-desc{color:#334155;font-size:.74rem;margin-top:3px;line-height:1.4}
+.tcc-cat{display:inline-block;background:#cbd5e1;border:1px solid #94a3b8;border-radius:6px;padding:2px 8px;font-size:.66rem;color:#334155;margin-top:6px}
 
 /* Trace flow steps */
 .trace-flow{display:flex;flex-direction:column;gap:0}
 .trace-step{opacity:0;transform:translateY(12px);transition:opacity .4s,transform .4s;margin-bottom:0}
 .trace-step.visible{opacity:1;transform:translateY(0)}
-.trace-connector{width:2px;height:24px;background:linear-gradient(to bottom,#1e3a5f,#1e293b);margin-left:23px;opacity:0;transition:opacity .3s}
+.trace-connector{width:2px;height:24px;background:linear-gradient(to bottom,#bfdbfe,#cbd5e1);margin-left:23px;opacity:0;transition:opacity .3s}
 .trace-connector.visible{opacity:1}
-.trace-step-card{background:#111827;border:1px solid #1e293b;border-radius:12px;padding:16px 18px;transition:border-color .3s}
-.trace-step-card.active-step{border-color:#2563eb;background:#0f1f38}
-.trace-step-card.done-step{border-color:#16a34a;background:#0a1812}
+.trace-step-card{background:#ffffff;border:1px solid #cbd5e1;border-radius:12px;padding:16px 18px;transition:border-color .3s}
+.trace-step-card.active-step{border-color:#1d4ed8;background:#eaf1fb}
+.trace-step-card.done-step{border-color:#15803d;background:#dcfce7}
 .trace-step-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .trace-step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0}
-.trace-step-num.pending{background:#1e293b;color:#475569}
-.trace-step-num.running{background:#1e3a5f;color:#60a5fa;animation:spin-glow .8s infinite}
-.trace-step-num.done{background:#14532d;color:#4ade80}
+.trace-step-num.pending{background:#cbd5e1;color:#334155}
+.trace-step-num.running{background:#bfdbfe;color:#2563eb;animation:spin-glow .8s infinite}
+.trace-step-num.done{background:#dcfce7;color:#15803d}
 @keyframes spin-glow{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}50%{box-shadow:0 0 0 4px rgba(37,99,235,.1)}}
-.trace-step-title{font-size:.82rem;font-weight:700;color:#f1f5f9}
-.trace-step-subtitle{font-size:.72rem;color:#475569;margin-left:auto}
-.trace-step-body{font-size:.78rem;color:#94a3b8;line-height:1.6;padding-left:38px}
+.trace-step-title{font-size:.82rem;font-weight:700;color:#0f172a}
+.trace-step-subtitle{font-size:.72rem;color:#334155;margin-left:auto}
+.trace-step-body{font-size:.78rem;color:#334155;line-height:1.6;padding-left:38px}
 .trace-typing{display:inline-block}
 .trace-typing::after{content:'▊';animation:blink .7s step-end infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
 /* Trace sub-elements */
-.trace-sop-box{background:#0f172a;border:1px solid #1e3a5f;border-radius:8px;padding:12px;margin-top:8px}
-.trace-sop-ref{font-family:monospace;color:#60a5fa;font-size:.75rem;font-weight:700}
-.trace-sop-path{color:#475569;font-size:.7rem;margin-top:2px}
+.trace-sop-box{background:#f1f5f9;border:1px solid #bfdbfe;border-radius:8px;padding:12px;margin-top:8px}
+.trace-sop-ref{font-family:monospace;color:#2563eb;font-size:.75rem;font-weight:700}
+.trace-sop-path{color:#334155;font-size:.7rem;margin-top:2px}
 .trace-sop-steps{margin-top:10px;list-style:none}
-.trace-sop-item{display:flex;align-items:flex-start;gap:8px;font-size:.74rem;color:#64748b;margin-bottom:6px;opacity:.4;transition:all .3s}
-.trace-sop-item.lit{opacity:1;color:#94a3b8}
-.trace-sop-item.checked{color:#4ade80;opacity:1}
+.trace-sop-item{display:flex;align-items:flex-start;gap:8px;font-size:.74rem;color:#334155;margin-bottom:6px;opacity:.4;transition:all .3s}
+.trace-sop-item.lit{opacity:1;color:#334155}
+.trace-sop-item.checked{color:#15803d;opacity:1}
 .trace-sop-item .sop-icon{flex-shrink:0;margin-top:1px}
-.trace-db-hit{background:#0a1812;border:1px solid #16a34a;border-radius:8px;padding:12px;margin-top:8px}
-.trace-db-miss{background:#1a0a0a;border:1px solid #7f1d1d;border-radius:8px;padding:12px;margin-top:8px}
+.trace-db-hit{background:#dcfce7;border:1px solid #86efac;border-radius:8px;padding:12px;margin-top:8px}
+.trace-db-miss{background:#fee2e2;border:1px solid #fecaca;border-radius:8px;padding:12px;margin-top:8px}
 .trace-db-header{font-size:.72rem;font-weight:700;margin-bottom:8px}
-.trace-db-header.hit{color:#4ade80}
-.trace-db-header.miss{color:#f87171}
+.trace-db-header.hit{color:#15803d}
+.trace-db-header.miss{color:#dc2626}
 .trace-db-row{display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:4px}
-.trace-db-row span:first-child{color:#475569}
-.trace-db-row span:last-child{color:#cbd5e1;font-family:monospace}
-.trace-kg-rule{background:#0f172a;border-left:3px solid #7c3aed;padding:8px 12px;margin-top:6px;border-radius:0 6px 6px 0;font-size:.75rem;color:#c084fc}
-.trace-decision-box{background:#0f172a;border-radius:10px;padding:16px;margin-top:8px;text-align:center}
+.trace-db-row span:first-child{color:#334155}
+.trace-db-row span:last-child{color:#334155;font-family:monospace}
+.trace-kg-rule{background:#f1f5f9;border-left:3px solid #c4b5fd;padding:8px 12px;margin-top:6px;border-radius:0 6px 6px 0;font-size:.75rem;color:#9333ea}
+.trace-decision-box{background:#f1f5f9;border-radius:10px;padding:16px;margin-top:8px;text-align:center}
 .trace-decision-outcome{font-size:1.4rem;font-weight:700;margin-bottom:6px}
-.trace-decision-codes{font-family:monospace;font-size:.75rem;color:#475569;margin-bottom:4px}
-.trace-decision-payment{font-size:.85rem;color:#94a3b8}
+.trace-decision-codes{font-family:monospace;font-size:.75rem;color:#334155;margin-bottom:4px}
+.trace-decision-payment{font-size:.85rem;color:#334155}
 
 /* Trace selector */
 .trace-selector-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
-.trace-select{background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:8px 12px;border-radius:8px;font-size:.8rem;cursor:pointer;min-width:280px}
+.trace-select{background:#cbd5e1;border:1px solid #94a3b8;color:#1e293b;padding:8px 12px;border-radius:8px;font-size:.8rem;cursor:pointer;min-width:280px}
 .trace-run-btn{background:#2563eb;color:#fff;border:none;padding:9px 20px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s}
 .trace-run-btn:hover{background:#1d4ed8}
-.trace-run-btn:disabled{background:#1e293b;color:#475569;cursor:not-allowed}
+.trace-run-btn:disabled{background:#cbd5e1;color:#334155;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -279,43 +281,34 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
   <div class="agent-chain">
     <div class="agent-chip">Intake</div>
     <span class="chain-arrow">→</span>
-    <div class="agent-chip focus">Pend Processing</div>
+    <div class="agent-chip focus">Pend Management</div>
     <span class="chain-arrow">→</span>
-    <div class="agent-chip active">Adjustment</div>
-    <span class="chain-arrow">→</span>
-    <div class="agent-chip">Payment</div>
-    <span class="chain-arrow">→</span>
-    <div class="agent-chip">Collections</div>
+    <div class="agent-chip">Adjustment</div>
     <span class="chain-arrow">→</span>
     <div class="agent-chip">Appeals</div>
     <span class="chain-arrow">→</span>
     <div class="agent-chip">Reporting</div>
-    <span class="chain-arrow">→</span>
-    <div class="agent-chip">Financial Close</div>
   </div>
 
-  <div class="hub-cards" style="max-width:900px;margin:0 auto 28px">
-    <div class="hub-card" onclick="showView('act1-view');loadAct1Stats()">
+  <div class="hub-cards" style="grid-template-columns:1fr;max-width:760px;margin:0 auto 28px">
+    <div class="hub-card" onclick="showView('act1-view');loadAct1Stats()" style="padding:32px 36px">
       <div class="hub-card-icon">⚡</div>
-      <h3>Claims Pend Processing</h3>
-      <p>~20% of claims fall out of auto-adjudication and enter the pend queue. Agentic AI resolves each pend against 6 live databases using deterministic SOP rules.</p>
+      <h3 style="font-size:1.25rem">Claims Pend Processing</h3>
+      <p style="font-size:.9rem">~20% of claims fall out of auto-adjudication and enter the pend queue. Agentic AI resolves each pend against 6 live databases using deterministic SOP rules.</p>
       <span class="badge green">Gen 1 Live</span>
       <span class="badge" style="margin-left:4px">Gen 2 Signal</span>
       <span class="badge amber" style="margin-left:4px">Enterprise Insights</span>
     </div>
-    <div class="hub-card" onclick="alert('Provider Adjustment workflow — coming next')">
-      <div class="hub-card-icon">🔄</div>
-      <h3>Provider Adjustment</h3>
-      <p>~7% of paid claims are contested by providers. Agent reviews post-payment disputes, validates adjustment requests, and processes approved corrections.</p>
-      <span class="badge" style="background:#451a03;color:#fb923c">In Development</span>
-    </div>
   </div>
 
   <div id="hub-stats" class="hub-stat-row" style="display:none">
-    <div class="hub-stat"><div class="hub-stat-n" id="hs-pended">—</div><div class="hub-stat-l">Pended Claims</div></div>
-    <div class="hub-stat"><div class="hub-stat-n" id="hs-edits">—</div><div class="hub-stat-l">Edit Types</div></div>
-    <div class="hub-stat"><div class="hub-stat-n" id="hs-hr">—</div><div class="hub-stat-l">Human Review</div></div>
+    <div class="hub-stat"><div class="hub-stat-n" id="hs-pended">—</div><div class="hub-stat-l">Claims Extracted</div></div>
+    <div class="hub-stat"><div class="hub-stat-n" id="hs-edits">—</div><div class="hub-stat-l">Service Lines</div></div>
+    <div class="hub-stat"><div class="hub-stat-n" id="hs-cats">—</div><div class="hub-stat-l">Lines Pended</div></div>
     <div class="hub-stat"><div class="hub-stat-n" id="hs-dbs">6</div><div class="hub-stat-l">Database Connectors</div></div>
+  </div>
+  <div id="hub-ingest-note" style="display:none;text-align:center;font-size:.72rem;color:#334155;margin-top:10px">
+    Raw inventory <strong style="color:#334155">extracted from the payer database</strong> — pends occur at the <strong>line</strong> level. The agent resolves the <strong>pended lines</strong>; the rest auto-adjudicate. No decisions made yet.
   </div>
 </div>
 
@@ -326,10 +319,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
   <div class="nav">
     <button class="nav-back" onclick="showView('hub-view')">← Hub</button>
     <span class="nav-title">Claims Pend Processing — Agent 1</span>
-    <button class="nav-back" onclick="showView('trace-view');initTrace()" style="background:#172554;border-color:#2563eb;color:#60a5fa">▶ Single Claim Trace</button>
-    <button class="nav-back" style="margin-left:8px" onclick="showView('review-view');loadReviewQueue()">Human Review Queue <span id="hr-badge" style="background:#581c87;color:#c084fc;border-radius:8px;padding:1px 8px;font-size:.68rem;margin-left:4px">—</span></button>
-    <button class="nav-back" style="margin-left:8px;background:#0b2e1a;border-color:#166534;color:#4ade80" onclick="showView('observe-view');startObs()">📊 Observability</button>
-    <button class="nav-back" style="margin-left:8px;background:#2a1a4a;border-color:#7c3aed;color:#c4b5fd" onclick="showView('adaptive-view');loadAdaptive()">🧠 Adaptive Intelligence</button>
+    <button class="nav-back" onclick="showView('trace-view');initTrace()" style="background:#dbeafe;border-color:#1d4ed8;color:#2563eb">▶ Single Claim Trace</button>
+    <button class="nav-back" style="margin-left:8px" onclick="showView('review-view');loadReviewQueue()">Human Review Queue <span id="hr-badge" style="background:#d8b4fe;color:#9333ea;border-radius:8px;padding:1px 8px;font-size:.68rem;margin-left:4px">—</span></button>
+    <button class="nav-back" style="margin-left:8px;background:#fef2f2;border-color:#dc2626;color:#dc2626" onclick="showView('workflow-view');loadReviewWorkflow()">⚖ Review &amp; Denial Workflow</button>
+    <button class="nav-back" style="margin-left:8px;background:#dcfce7;border-color:#166534;color:#15803d" onclick="showView('observe-view');startObs()">📊 Observability</button>
+    <button class="nav-back" style="margin-left:8px;background:#ede9fe;border-color:#6d28d9;color:#7c3aed" onclick="showView('adaptive-view');loadAdaptive()">🧠 Adaptive Intelligence</button>
   </div>
 
   <!-- 6 DB Cards -->
@@ -374,7 +368,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
       <div class="db-card-icon">💠</div>
       <div class="db-card-name">Pricing Engine</div>
       <div class="db-card-count" id="dbc-6-count">Burgess / Multiplan / Zelis</div>
-      <div class="db-card-hits" id="dbc-6-hits" style="color:#fbbf24">representative</div>
+      <div class="db-card-hits" id="dbc-6-hits" style="color:#b45309">representative</div>
     </div>
   </div>
 
@@ -388,10 +382,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
 
   <!-- Processing controls + counters -->
   <div class="processing-header">
-    <button class="proc-btn" id="start-btn" onclick="startProcessing()">▶ Start Live Processing</button>
-    <button class="proc-btn" style="background:#1e293b;color:#94a3b8;margin-left:8px" id="reset-btn" onclick="resetAct1()">↺ Reset</button>
+    <button class="proc-btn" style="background:#0f172a" id="ingest-btn" onclick="ingestRawPends()">⬇ Extract Raw Pends</button>
+    <button class="proc-btn" id="start-btn" onclick="startProcessing()" disabled>▶ Start Live Processing</button>
+    <button class="proc-btn" style="background:#cbd5e1;color:#334155;margin-left:8px" id="reset-btn" onclick="resetAct1()">↺ Reset</button>
     <div class="proc-counters">
-      <div class="counter-box"><div class="counter-n" id="cnt-total">0</div><div class="counter-l">Total</div></div>
+      <div class="counter-box"><div class="counter-n" id="cnt-extracted" style="color:#0f172a">0</div><div class="counter-l">Pended Lines</div></div>
+      <div class="counter-box"><div class="counter-n" id="cnt-total">0</div><div class="counter-l">Resolved</div></div>
       <div class="counter-box"><div class="counter-n green" id="cnt-approved">0</div><div class="counter-l">Approved</div></div>
       <div class="counter-box"><div class="counter-n red" id="cnt-denied">0</div><div class="counter-l">Denied</div></div>
       <div class="counter-box"><div class="counter-n yellow" id="cnt-partial">0</div><div class="counter-l">Partial</div></div>
@@ -407,8 +403,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
   <div class="claim-panel" id="claim-panel">
     <div class="claim-panel-header">
       <div>
-        <div style="font-size:.75rem;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Claim Detail</div>
-        <div id="cp-title" style="font-size:1rem;font-weight:700;color:#f1f5f9;margin-top:2px"></div>
+        <div style="font-size:.75rem;color:#334155;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Claim Detail</div>
+        <div id="cp-title" style="font-size:1rem;font-weight:700;color:#0f172a;margin-top:2px"></div>
       </div>
       <button class="claim-panel-close" onclick="closeClaimPanel()">✕</button>
     </div>
@@ -435,6 +431,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
       <tbody id="queue-tbody"></tbody>
     </table>
   </div>
+  <div id="queue-sample-note" style="font-size:.75rem;color:#64748b;margin:-8px 0 16px 2px"></div>
 
   <!-- Gen 2 / Gen 3 tabs -->
   <div class="gen-tabs">
@@ -445,8 +442,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
 
   <!-- Gen 1 panel (results summary) -->
   <div class="gen-panel active" id="gen1-panel">
-    <div style="background:#111827;border:1px solid #1e293b;border-radius:12px;padding:18px;font-size:.8rem;color:#475569">
-      Click "Start Live Processing" to run the agent across 29 edit types in real time. Each row represents 1 featured claim per edit type. Click any row to inspect the full reasoning trail.
+    <div style="background:#ffffff;border:1px solid #cbd5e1;border-radius:12px;padding:18px;font-size:.8rem;color:#334155">
+      <strong>Step 1 — ⬇ Extract Raw Pends:</strong> pulls the raw pended claims from the payer database. Click any row to inspect the full <strong>raw input</strong> in detail — member, provider, service, financials, the auto-adjudication edit — before any decision. <strong>Step 2 — ▶ Start Live Processing:</strong> the agent resolves each pend in place against 6 databases + SOP rules. Each row represents 1 claim per edit type; click a resolved row for the full reasoning trail.
     </div>
   </div>
 
@@ -464,10 +461,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
 
   <!-- Enterprise Insights panel (pends as an upstream sensor) -->
   <div class="gen-panel" id="gen3-panel">
-    <div style="background:#111827;border:1px solid #1e3a5f;border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:.78rem;color:#60a5fa">
+    <div style="background:#ffffff;border:1px solid #bfdbfe;border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:.78rem;color:#2563eb">
       📈 <strong>Enterprise Insights:</strong> the pends we resolve are a signal. We mine them for recurring drivers — by edit category, provider and code — and hand the payer evidence-backed patterns so <strong>they</strong> can tune their auto-adjudication rules at the source. We surface the evidence; the payer decides; we never touch their engine.
     </div>
-    <div id="ei-summary" style="background:#0b2e1a;border:1px solid #166534;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:.82rem;color:#4ade80"></div>
+    <div id="ei-summary" style="background:#dcfce7;border:1px solid #86efac;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:.82rem;color:#15803d"></div>
     <div class="gen-table-wrap">
       <table class="gen-table">
         <thead>
@@ -476,7 +473,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
         <tbody id="gen3-tbody"></tbody>
       </table>
     </div>
-    <div style="font-size:.68rem;color:#64748b;margin-top:10px">Volumes and outcomes are computed live from the resolved pend queue; root-cause patterns and recommended actions are representative. This is the honest, in-scope value — <strong>downstream work as an upstream sensor</strong> — not interception of the payer's adjudication engine.</div>
+    <div style="font-size:.68rem;color:#334155;margin-top:10px">Volumes and outcomes are computed live from the resolved pend queue; root-cause patterns and recommended actions are representative. This is the honest, in-scope value — <strong>downstream work as an upstream sensor</strong> — not interception of the payer's adjudication engine.</div>
   </div>
 </div>
 
@@ -492,16 +489,46 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
 
   <div class="review-grid">
     <div class="review-list">
-      <div class="review-list-header">Claims Requiring Human Review <span id="review-count-badge" style="background:#581c87;color:#c084fc;border-radius:8px;padding:1px 8px;font-size:.7rem;margin-left:6px">0</span></div>
+      <div class="review-list-header">Claims Requiring Human Review <span id="review-count-badge" style="background:#d8b4fe;color:#9333ea;border-radius:8px;padding:1px 8px;font-size:.7rem;margin-left:6px">0</span></div>
       <div id="review-list-body"></div>
     </div>
     <div class="review-detail" id="review-detail">
       <div class="review-detail-empty">
         <div class="icon">🔍</div>
-        <div style="color:#475569;font-size:.85rem">Select a claim to review</div>
+        <div style="color:#334155;font-size:.85rem">Select a claim to review</div>
       </div>
     </div>
   </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     REVIEW & DENIAL WORKFLOW
+══════════════════════════════════════════════════════ -->
+<div id="workflow-view" class="view">
+  <div class="nav">
+    <button class="nav-back" onclick="showView('act1-view')">← Pend Queue</button>
+    <span class="nav-title">⚖ Review &amp; Denial Workflow — Human in the Loop</span>
+  </div>
+
+  <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#334155">
+    The agent <strong>never auto-issues</strong> these outcomes. It stages the full case — SOP, evidence, citations, and a recommendation — and routes it to a person. Routed here:
+    <span style="display:inline-block;margin-top:6px">
+      <span class="badge-outcome purple" style="margin-right:6px">Human review</span> clinical / edge-case judgment ·
+      <span class="badge-outcome red" style="margin:0 6px">Denial — sign-off</span> medical-necessity / LCD-NCD, and high-dollar denials (≥ $2,000)
+    </span>
+  </div>
+
+  <div class="processing-header" style="margin-bottom:16px">
+    <button class="proc-btn" style="background:#0f172a" id="wf-load-btn" onclick="loadReviewWorkflow()">⚖ Assemble Work Queue</button>
+    <div class="proc-counters">
+      <div class="counter-box"><div class="counter-n purple" id="wf-queued">0</div><div class="counter-l">Queued</div></div>
+      <div class="counter-box"><div class="counter-n" id="wf-hr" style="color:#7c3aed">0</div><div class="counter-l">Human review</div></div>
+      <div class="counter-box"><div class="counter-n red" id="wf-den">0</div><div class="counter-l">Denial sign-off</div></div>
+      <div class="counter-box"><div class="counter-n green" id="wf-decided">0</div><div class="counter-l">Decided</div></div>
+    </div>
+  </div>
+
+  <div id="wf-list"></div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════
@@ -518,7 +545,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
       <option value="">Loading claims…</option>
     </select>
     <button class="trace-run-btn" id="trace-run-btn" onclick="runTrace()">▶ Run Agent</button>
-    <button class="trace-run-btn" style="background:#1e293b;color:#94a3b8" onclick="resetTrace()">↺ Reset</button>
+    <button class="trace-run-btn" style="background:#cbd5e1;color:#334155" onclick="resetTrace()">↺ Reset</button>
   </div>
 
   <div class="trace-layout">
@@ -542,27 +569,27 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
   <div class="nav">
     <button class="nav-back" onclick="showView('act1-view')">← Pend Queue</button>
     <span class="nav-title">Live Observability — Claims Pend Processing</span>
-    <span id="obs-updated" style="margin-left:auto;color:#64748b;font-size:.72rem">—</span>
+    <span id="obs-updated" style="margin-left:auto;color:#334155;font-size:.72rem">—</span>
   </div>
   <div style="max-width:1120px;margin:0 auto;padding:6px 16px 30px">
     <div id="obs-throughput" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px">
-      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px">
-        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px">Decision mix</div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:12px">Decision mix</div>
         <div id="obs-outcomes"></div></div>
-      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px">
-        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px">By edit category</div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:12px">By edit category</div>
         <div id="obs-categories"></div></div>
-      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px">
-        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px">Turnaround — days in queue</div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:12px">Turnaround — days in queue</div>
         <div id="obs-dq"></div></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 2fr;gap:14px">
-      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px">
-        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px">Guardrail verification</div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:12px">Guardrail verification</div>
         <div id="obs-guardrails"></div></div>
-      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px">
-        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px">What the agent is doing — audit trail</div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:12px">What the agent is doing — audit trail</div>
         <div id="obs-audit" style="max-height:360px;overflow:auto"></div></div>
     </div>
   </div>
@@ -575,14 +602,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0f1a;color:#e2e8f
   <div class="nav">
     <button class="nav-back" onclick="showView('act1-view')">← Pend Queue</button>
     <span class="nav-title">🧠 Adaptive Intelligence — the agent learns &amp; adapts</span>
-    <button class="nav-back" style="margin-left:auto;background:#2a1a4a;border-color:#7c3aed;color:#c4b5fd" onclick="resetAdaptive()">↺ Reset scenarios</button>
+    <button class="nav-back" style="margin-left:auto;background:#ede9fe;border-color:#6d28d9;color:#7c3aed" onclick="resetAdaptive()">↺ Reset scenarios</button>
   </div>
   <div style="max-width:1080px;margin:0 auto;padding:6px 16px 30px">
-    <div style="background:#1a1333;border:1px solid #7c3aed;border-radius:12px;padding:14px 18px;margin-bottom:18px;font-size:.82rem;color:#c4b5fd">
+    <div style="background:#ede9fe;border:1px solid #c4b5fd;border-radius:12px;padding:14px 18px;margin-bottom:18px;font-size:.82rem;color:#7c3aed">
       🧠 <strong>Adaptive, not static.</strong> The agent doesn't just apply fixed rules — it responds to real interventions and gets smarter. Each card shows the pend the agent <strong>couldn't</strong> resolve, the intervention, and the <strong>live re-resolution</strong>. Nothing scripted — each action changes real state (rules / source data) and the agent re-runs.
     </div>
     <div id="adaptive-cards"></div>
   </div>
+</div>
+
+<!-- SOP document modal (autonomous + click-to-open) -->
+<div id="sop-modal" onclick="if(event.target===this)closeSopModal()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:1000;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px">
+  <div id="sop-modal-body" style="background:#fff;border:1px solid #cbd5e1;border-radius:14px;max-width:760px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)"></div>
 </div>
 
 <script>
@@ -598,20 +630,20 @@ function showView(id) {
 
 // ── Live Observability ──────────────────────────────────────────────────────────
 let _obsTimer = null;
-const OKC = {approve:'#22c55e', deny:'#ef4444', partial_pay:'#f59e0b', request_info:'#3b82f6', escalate:'#fb923c', human_review:'#a855f7'};
-const OCOL = {green:'#22c55e', red:'#ef4444', yellow:'#f59e0b', blue:'#3b82f6', orange:'#fb923c', purple:'#a855f7', gray:'#94a3b8'};
+const OKC = {approve:'#15803d', deny:'#dc2626', partial_pay:'#b45309', request_info:'#2563eb', escalate:'#c2410c', human_review:'#7c3aed'};
+const OCOL = {green:'#15803d', red:'#dc2626', yellow:'#b45309', blue:'#2563eb', orange:'#c2410c', purple:'#7c3aed', gray:'#334155'};
 function startObs(){ loadObservability(); if (_obsTimer) clearInterval(_obsTimer); _obsTimer = setInterval(loadObservability, 3000); }
 function _obar(label, val, total, color){
   const pct = total ? Math.round(val/total*100) : 0;
   return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
-    <span style="width:118px;font-size:.72rem;color:#94a3b8;flex-shrink:0">${label}</span>
-    <div style="flex:1;height:7px;background:#0b1120;border-radius:99px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${color};border-radius:99px"></div></div>
-    <span style="width:62px;text-align:right;font-size:.72rem;color:#e2e8f0;font-weight:700">${val} · ${pct}%</span></div>`;
+    <span style="width:118px;font-size:.72rem;color:#334155;flex-shrink:0">${label}</span>
+    <div style="flex:1;height:7px;background:#f8fafc;border-radius:99px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${color};border-radius:99px"></div></div>
+    <span style="width:62px;text-align:right;font-size:.72rem;color:#1e293b;font-weight:700">${val} · ${pct}%</span></div>`;
 }
 function _ocard(n, l, color){
-  return `<div style="flex:1;min-width:145px;background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:15px;text-align:center">
-    <div style="font-size:1.7rem;font-weight:800;color:${color||'#e2e8f0'}">${n}</div>
-    <div style="font-size:.68rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-top:4px">${l}</div></div>`;
+  return `<div style="flex:1;min-width:145px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:15px;text-align:center">
+    <div style="font-size:1.7rem;font-weight:800;color:${color||'#1e293b'}">${n}</div>
+    <div style="font-size:.68rem;color:#334155;text-transform:uppercase;letter-spacing:.05em;margin-top:4px">${l}</div></div>`;
 }
 async function loadObservability(){
   try {
@@ -619,51 +651,45 @@ async function loadObservability(){
     document.getElementById('obs-updated').textContent = 'updated ' + d.updated + ' · auto-refresh 3s';
     const t = d.throughput;
     document.getElementById('obs-throughput').innerHTML =
-      _ocard(t.pended.toLocaleString(),'Pended claims','#60a5fa')
-     + _ocard(t.auto_resolved.toLocaleString(),'Auto-resolved','#22c55e')
-     + _ocard(t.human_review.toLocaleString(),'Human review','#a855f7')
-     + _ocard(t.auto_pct + '%','Agent-driven','#22c55e')
-     + _ocard(t.edit_types,'Edit categories','#f59e0b');
+      _ocard(t.pended.toLocaleString(),'Pended claims','#2563eb')
+     + _ocard(t.auto_resolved.toLocaleString(),'Auto-resolved','#15803d')
+     + _ocard(t.human_review.toLocaleString(),'Human review','#7c3aed')
+     + _ocard(t.auto_pct + '%','Agent-driven','#15803d')
+     + _ocard(t.edit_types,'Edit categories','#b45309');
     const otot = d.outcomes.reduce((a,b) => a + b.count, 0);
-    document.getElementById('obs-outcomes').innerHTML = d.outcomes.map(o => _obar(o.label, o.count, otot, OCOL[o.color] || '#94a3b8')).join('');
+    document.getElementById('obs-outcomes').innerHTML = d.outcomes.map(o => _obar(o.label, o.count, otot, OCOL[o.color] || '#334155')).join('');
     const cats = d.categories, ctot = Object.values(cats).reduce((a,b) => a + b, 0);
-    document.getElementById('obs-categories').innerHTML = Object.keys(cats).sort((a,b) => cats[b]-cats[a]).map(k => _obar(k, cats[k], ctot, '#3b82f6')).join('');
+    document.getElementById('obs-categories').innerHTML = Object.keys(cats).sort((a,b) => cats[b]-cats[a]).map(k => _obar(k, cats[k], ctot, '#2563eb')).join('');
     const dq = d.days_in_queue, dtot = Object.values(dq).reduce((a,b) => a + b, 0);
-    const dcol = {'< 15 days':'#22c55e','15-30 days':'#f59e0b','30-60 days':'#fb923c','60+ days':'#ef4444'};
-    document.getElementById('obs-dq').innerHTML = Object.keys(dq).map(k => _obar(k, dq[k], dtot, dcol[k] || '#3b82f6')).join('');
+    const dcol = {'< 15 days':'#15803d','15-30 days':'#b45309','30-60 days':'#c2410c','60+ days':'#dc2626'};
+    document.getElementById('obs-dq').innerHTML = Object.keys(dq).map(k => _obar(k, dq[k], dtot, dcol[k] || '#2563eb')).join('');
     document.getElementById('obs-guardrails').innerHTML = d.guardrails.map(g =>
-      `<div style="background:#0b1120;border:1px solid #1e293b;border-radius:9px;padding:10px 12px;margin-bottom:8px">
+      `<div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:9px;padding:10px 12px;margin-bottom:8px">
         <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-          <span style="font-size:.75rem;color:#e2e8f0;font-weight:600">${g.check}</span>
-          <span style="font-size:.68rem;font-weight:800;color:#4ade80;background:#052e1a;padding:2px 8px;border-radius:99px;white-space:nowrap">${g.count.toLocaleString()}</span>
+          <span style="font-size:.75rem;color:#1e293b;font-weight:600">${g.check}</span>
+          <span style="font-size:.68rem;font-weight:800;color:#15803d;background:#dcfce7;padding:2px 8px;border-radius:99px;white-space:nowrap">${g.count.toLocaleString()}</span>
         </div></div>`).join('');
     document.getElementById('obs-audit').innerHTML =
-      '<table style="width:100%;border-collapse:collapse;font-size:.72rem"><thead><tr style="color:#64748b;text-align:left">'
-      + ['ICN','Member','Edit','Category','Outcome','CARC/RARC','SOP'].map(h => `<th style="padding:5px 8px;position:sticky;top:0;background:#0f172a">${h}</th>`).join('')
+      '<table style="width:100%;border-collapse:collapse;font-size:.72rem"><thead><tr style="color:#334155;text-align:left">'
+      + ['ICN','Member','Edit','Category','Outcome','CARC/RARC','SOP'].map(h => `<th style="padding:5px 8px;position:sticky;top:0;background:#f1f5f9">${h}</th>`).join('')
       + '</tr></thead><tbody>'
-      + d.audit.map(r => `<tr style="border-top:1px solid #1e293b">
-          <td style="padding:5px 8px;color:#60a5fa;font-family:monospace">${r.icn}</td>
-          <td style="padding:5px 8px;color:#e2e8f0">${r.member}</td>
-          <td style="padding:5px 8px;color:#94a3b8">${r.edit_code}</td>
-          <td style="padding:5px 8px;color:#94a3b8">${r.category}</td>
-          <td style="padding:5px 8px;font-weight:700;color:${OKC[r.outcome_key] || '#e2e8f0'}">${r.outcome}</td>
-          <td style="padding:5px 8px;color:#94a3b8;font-family:monospace">${r.carc}/${r.rarc}</td>
-          <td style="padding:5px 8px;color:#64748b">${r.sop}</td></tr>`).join('')
+      + d.audit.map(r => `<tr style="border-top:1px solid #cbd5e1">
+          <td style="padding:5px 8px;color:#2563eb;font-family:monospace">${r.icn}</td>
+          <td style="padding:5px 8px;color:#1e293b">${r.member}</td>
+          <td style="padding:5px 8px;color:#334155">${r.edit_code}</td>
+          <td style="padding:5px 8px;color:#334155">${r.category}</td>
+          <td style="padding:5px 8px;font-weight:700;color:${OKC[r.outcome_key] || '#1e293b'}">${r.outcome}</td>
+          <td style="padding:5px 8px;color:#334155;font-family:monospace">${r.carc}/${r.rarc}</td>
+          <td style="padding:5px 8px;color:#334155">${r.sop}</td></tr>`).join('')
       + '</tbody></table>';
   } catch(e) {}
 }
 
 // ── Hub stats ─────────────────────────────────────────────────────────────────
 
-async function loadAct1Stats() {
-  try {
-    const s = await fetch(`${API}/api/stats`).then(r => r.json());
-    document.getElementById('hs-pended').textContent = s.total_pended;
-    document.getElementById('hs-edits').textContent  = s.edit_types;
-    document.getElementById('hs-hr').textContent     = s.human_review_count;
-    document.getElementById('hub-stats').style.display = 'flex';
-    document.getElementById('hr-badge').textContent  = s.human_review_count;
-  } catch(e) {}
+function loadAct1Stats() {
+  // Hub counts stay hidden until the raw pends are actually extracted (see ingestRawPends).
+  const hb = document.getElementById('hr-badge'); if (hb) hb.textContent = '—';
   loadGen2();
   loadGen3();
   loadPricingStatus();
@@ -673,14 +699,14 @@ async function loadPricingStatus(){
   try {
     const s = await fetch(`${API}/api/pricing/status`).then(r=>r.json());
     const el = document.getElementById('dbc-6-hits');
-    if (el){ el.textContent = s.live ? (s.vendor + ' API · live') : 'representative'; el.style.color = s.live ? '#4ade80' : '#fbbf24'; }
+    if (el){ el.textContent = s.live ? (s.vendor + ' API · live') : 'representative'; el.style.color = s.live ? '#15803d' : '#b45309'; }
   } catch(e){}
 }
 
 // ── Adaptive Intelligence ─────────────────────────────────────────────────────
-const OUTCOME_COLORS = { "Approved":"#4ade80","Partial Pay":"#fbbf24","Denied":"#f87171",
-  "Human Review":"#c084fc","Escalated":"#fb923c","ADR Sent":"#60a5fa" };
-function _oc(label){ for (const k in OUTCOME_COLORS) if ((label||'').indexOf(k)>=0) return OUTCOME_COLORS[k]; return '#94a3b8'; }
+const OUTCOME_COLORS = { "Approved":"#15803d","Partial Pay":"#b45309","Denied":"#dc2626",
+  "Human Review":"#9333ea","Escalated":"#c2410c","ADR Sent":"#2563eb" };
+function _oc(label){ for (const k in OUTCOME_COLORS) if ((label||'').indexOf(k)>=0) return OUTCOME_COLORS[k]; return '#334155'; }
 
 async function loadAdaptive(){
   try {
@@ -700,29 +726,41 @@ async function applyAdaptive(id){
 function renderAdaptiveCard(sc){
   const before = sc.before||{}, after = sc.after||null, cl = sc.claim||{};
   const beforeBadge = `<span style="font-weight:800;color:${_oc(before.outcome_label)}">${before.outcome_label||'—'}</span>`;
+  const noSop = !before.sop_ref || before.sop_ref === 'N/A' || /no sop/i.test(before.sop_ref||'');
+  const needsSopBanner = noSop ? `
+    <div style="background:#fef9c3;border:1px solid #fde68a;border-radius:8px;padding:9px 12px;margin:8px 0;font-size:.75rem;color:#854d0e">
+      ⚠ <strong>No SOP on file for this edit.</strong> The agent will not guess — it flags the gap and routes the claim to the <strong>SOP-Governance workflow: NEEDS SOP</strong>. It cannot adjudicate until a procedure exists.
+    </div>` : '';
+  const ingestedSop = (after && sc.sop_text) ? `
+    <div style="margin-top:8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px">
+      <div style="font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#1d4ed8;margin-bottom:4px">📥 SOP ingested from the SFTP landing zone</div>
+      <div style="font-size:.72rem;color:#334155;white-space:pre-wrap;line-height:1.5">${sc.sop_text}</div>
+    </div>` : '';
   let afterHtml = '';
   if (after){
     afterHtml = `
-      <div style="margin-top:12px;padding-top:12px;border-top:1px dashed #334155">
-        <div style="font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#4ade80;margin-bottom:6px">✓ After intervention — live re-resolution</div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px dashed #94a3b8">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#15803d;margin-bottom:6px">✓ After intervention — live re-resolution</div>
         <div style="font-size:.9rem;margin-bottom:6px">Outcome: <span style="font-weight:800;color:${_oc(after.outcome_label)}">${after.outcome_label}</span></div>
-        ${after.sop_ref?`<div style="font-size:.7rem;color:#94a3b8;margin-bottom:6px">Rule/SOP: <span style="font-family:monospace;color:#cbd5e1">${after.sop_ref}</span></div>`:''}
-        ${after.steps?`<ul style="margin:4px 0 0 16px;padding:0;font-size:.72rem;color:#cbd5e1">${after.steps.map(s=>`<li>${s}</li>`).join('')}</ul>`:''}
-        ${after.proposed_adjustment?`<div style="margin-top:8px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px;font-size:.72rem;color:#cbd5e1"><strong style="color:#c084fc">Proposed rule adjustment:</strong> ${after.proposed_adjustment.change}<br><span style="color:#64748b">Evidence: ${after.proposed_adjustment.evidence}</span><br><span style="color:#fbbf24">Status: ${after.proposed_adjustment.status}</span></div>`:''}
-        ${after.draft?`<div style="margin-top:8px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px;font-size:.72rem;color:#cbd5e1"><strong style="color:#c084fc">Agent-drafted candidate rule</strong> (${after.draft.sop_ref}):<ul style="margin:4px 0 0 16px;padding:0">${after.draft.steps.map(s=>`<li>${s}</li>`).join('')}</ul><span style="color:#fbbf24">Proposed outcome: ${after.draft.proposed_outcome} · pending examiner approval</span></div>`:''}
-        <div style="margin-top:8px;font-size:.72rem;color:#4ade80;font-style:italic">${after.note||''}</div>
+        ${ingestedSop}
+        ${after.sop_ref?`<div style="font-size:.7rem;color:#334155;margin:6px 0">Rule/SOP: <span style="font-family:monospace;color:#334155">${after.sop_ref}</span></div>`:''}
+        ${after.steps?`<ul style="margin:4px 0 0 16px;padding:0;font-size:.72rem;color:#334155">${after.steps.map(s=>`<li>${s}</li>`).join('')}</ul>`:''}
+        ${after.proposed_adjustment?`<div style="margin-top:8px;background:#f1f5f9;border:1px solid #94a3b8;border-radius:8px;padding:10px;font-size:.72rem;color:#334155"><strong style="color:#9333ea">Proposed rule adjustment:</strong> ${after.proposed_adjustment.change}<br><span style="color:#334155">Evidence: ${after.proposed_adjustment.evidence}</span><br><span style="color:#b45309">Status: ${after.proposed_adjustment.status}</span></div>`:''}
+        ${after.draft?`<div style="margin-top:8px;background:#f1f5f9;border:1px solid #94a3b8;border-radius:8px;padding:10px;font-size:.72rem;color:#334155"><strong style="color:#9333ea">Agent-drafted candidate rule</strong> (${after.draft.sop_ref}):<ul style="margin:4px 0 0 16px;padding:0">${after.draft.steps.map(s=>`<li>${s}</li>`).join('')}</ul><span style="color:#b45309">Proposed outcome: ${after.draft.proposed_outcome} · pending examiner approval</span></div>`:''}
+        <div style="margin-top:8px;font-size:.72rem;color:#15803d;font-style:italic">${after.note||''}</div>
       </div>`;
   } else {
-    afterHtml = `<div style="margin-top:12px"><button id="adpt-btn-${sc.id}" class="nav-back" style="background:#2a1a4a;border-color:#7c3aed;color:#c4b5fd;cursor:pointer" onclick="applyAdaptive('${sc.id}')">▶ ${sc.intervention}</button></div>`;
+    afterHtml = `<div style="margin-top:12px"><button id="adpt-btn-${sc.id}" class="nav-back" style="background:#ede9fe;border-color:#6d28d9;color:#7c3aed;cursor:pointer" onclick="applyAdaptive('${sc.id}')">▶ ${sc.intervention}</button></div>`;
   }
-  return `<div id="adpt-card-${sc.id}" style="background:#0f172a;border:1px solid ${after?'#166534':'#1e293b'};border-radius:12px;padding:16px 18px;margin-bottom:14px">
+  return `<div id="adpt-card-${sc.id}" style="background:#f1f5f9;border:1px solid ${after?'#166534':'#1e293b'};border-radius:12px;padding:16px 18px;margin-bottom:14px">
     <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
       <span style="background:#7c3aed;color:#fff;border-radius:6px;font-size:.7rem;font-weight:800;padding:1px 8px">${sc.order}</span>
-      <span style="font-weight:800;font-size:.95rem;color:#e2e8f0">${sc.title}</span>
+      <span style="font-weight:800;font-size:.95rem;color:#1e293b">${sc.title}</span>
     </div>
-    <div style="font-size:.76rem;color:#94a3b8;margin-bottom:8px">${sc.situation}</div>
-    <div style="font-size:.72rem;color:#64748b;margin-bottom:8px">Claim <span style="font-family:monospace;color:#94a3b8">${cl.icn}</span> · ${cl.edit_code} ${cl.edit_description?('· '+cl.edit_description):''} · billed $${cl.billed_amount}</div>
-    <div style="font-size:.86rem">Agent (before): ${beforeBadge} <span style="color:#64748b;font-size:.72rem">— ${before.sop_ref||'no SOP match'}</span></div>
+    <div style="font-size:.76rem;color:#334155;margin-bottom:8px">${sc.situation}</div>
+    <div style="font-size:.72rem;color:#334155;margin-bottom:8px">Claim <span style="font-family:monospace;color:#334155">${cl.icn}</span> · ${cl.edit_code} ${cl.edit_description?('· '+cl.edit_description):''} · billed $${cl.billed_amount}</div>
+    <div style="font-size:.86rem">Agent (before): ${beforeBadge} <span style="color:#334155;font-size:.72rem">— ${before.sop_ref||'no SOP match'}</span></div>
+    ${needsSopBanner}
     ${afterHtml}
   </div>`;
 }
@@ -734,8 +772,8 @@ const DB_META = [
   { name:"Authorization DB",endpoint:"/api/db/authorizations",   cols:["Auth #","Member","CPT","DOS Start","DOS End","Units Auth","Status"] },
   { name:"COB DB",          endpoint:"/api/db/cob",              cols:["Member","Carrier","Policy #","COB Order","Plan Type","Effective"] },
   { name:"Fee Schedule",    endpoint:"/api/db/fee-schedule",     cols:["CPT","Description","Specialty","Allowed","Max Units","Auth Req"] },
-  { name:"Claims History",  endpoint:"/api/db/claims-history/MBR-10001", cols:["ICN","CPT","ICD-10","DOS","Billed","Paid","Status"] },
-  { name:"Eligibility DB",  endpoint:"/api/db/eligibility/MBR-10001",    cols:["Member ID","Name","DOB","Plan","Status","Effective"] },
+  { name:"Claims History",  endpoint:"/api/db/claims-history", cols:["ICN","CPT","ICD-10","DOS","Billed","Paid","Status"] },
+  { name:"Eligibility DB",  endpoint:"/api/db/eligibility",    cols:["Member ID","Name","DOB","Plan","Status","Effective"] },
   { name:"Pricing Engine (Burgess / Multiplan / Zelis)", endpoint:"/api/pricing/recent", cols:["ICN","CPT","Billed","Allowed","Methodology","Mode"] },
 ];
 
@@ -760,18 +798,22 @@ async function toggleDbExpand(n) {
   }
   openDb = n;
   wrap.classList.add('open');
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   const inner = document.getElementById('db-expand-inner');
-  inner.innerHTML = `<div style="color:#475569;font-size:.78rem;padding:8px">Loading ${DB_META[n].name}…</div>`;
+  inner.innerHTML = `<div style="color:#334155;font-size:.78rem;padding:8px">Loading ${DB_META[n].name}…</div>`;
   try {
     const data = await fetch(`${API}${DB_META[n].endpoint}`).then(r => r.json());
     const rows = data.records || (Array.isArray(data) ? data : [data]);
     const cols = DB_META[n].cols;
     const fn   = DB_ROW_FNS[n];
-    inner.innerHTML = `<div style="font-size:.75rem;color:#60a5fa;font-weight:700;margin-bottom:8px">${DB_META[n].name} — ${data.total || rows.length} records</div>
+    const total = data.total || rows.length;
+    const shown = Math.min(rows.length, 200);
+    inner.innerHTML = `<div style="font-size:.75rem;color:#2563eb;font-weight:700;margin-bottom:2px">${DB_META[n].name} — ${total.toLocaleString()} records in the directory</div>
+      <div style="font-size:.68rem;color:#64748b;margin-bottom:8px">This is the live source system the agent queries during adjudication. Showing ${shown.toLocaleString()} of ${total.toLocaleString()} — scroll to browse.</div>
       <table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-      <tbody>${rows.slice(0,12).map(r=>`<tr>${fn(r).map(v=>`<td>${v ?? '—'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      <tbody>${rows.slice(0,200).map(r=>`<tr>${fn(r).map(v=>`<td>${v ?? '—'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
   } catch(e) {
-    inner.innerHTML = `<div style="color:#f87171;font-size:.78rem">Could not load — is server running?</div>`;
+    inner.innerHTML = `<div style="color:#dc2626;font-size:.78rem">Could not load — is server running?</div>`;
   }
 }
 
@@ -796,11 +838,274 @@ const DB_CATEGORY_MAP = {
 };
 let dbQueryCounts = [0,0,0,0,0,0];
 let processedResults = [];
+let rawClaimsByIcn = {};
+let ingesting = false;
+
+// ── Step 1: Live raw ingestion (extract pends from payer database) ──────────────
+async function ingestRawPends() {
+  if (ingesting) return;
+  ingesting = true;
+  const ib = document.getElementById('ingest-btn');
+  ib.disabled = true; ib.textContent = '⬇ Extracting…';
+  document.getElementById('queue-tbody').innerHTML = '';
+  rawClaimsByIcn = {};
+
+  // Highlight the source connectors while extracting
+  _blankDbCounts();
+  for (let i = 0; i <= 6; i++) document.getElementById(`dbc-${i}`)?.classList.add('querying');
+
+  let totalPends = 0;
+  try {
+    const [stats, raw] = await Promise.all([
+      fetch(`${API}/api/stats`).then(r => r.json()),
+      fetch(`${API}/api/pend-queue?featured=true`).then(r => r.json()),
+    ]);
+    totalPends = stats.total_pended || 0;
+    const claims = raw.claims || [];
+
+    document.getElementById('proc-progress').classList.add('visible');
+    for (let i = 0; i < claims.length; i++) {
+      const c = claims[i];
+      rawClaimsByIcn[c.icn] = c;
+      streamRawRow(c);
+      // race the "Extracted" counter toward the true total for scale
+      const shown = Math.round(((i + 1) / claims.length) * totalPends);
+      document.getElementById('cnt-extracted').textContent = shown.toLocaleString();
+      document.getElementById('proc-bar').style.width = `${((i+1)/claims.length)*100}%`;
+      await delay(70);
+    }
+    document.getElementById('cnt-extracted').textContent = totalPends.toLocaleString();
+    // Now that pends are actually extracted, reveal the Hub summary numbers
+    document.getElementById('hs-pended').textContent = (stats.claims_extracted||totalPends).toLocaleString();
+    document.getElementById('hs-edits').textContent  = (stats.total_lines||0).toLocaleString();
+    document.getElementById('hs-cats').textContent   = (stats.pended_lines||totalPends).toLocaleString();
+    // Drive the connected-DB tile counts from the real directory sizes
+    DB_COUNTS[0] = (stats.total_providers||0).toLocaleString() + ' providers';
+    DB_COUNTS[1] = (stats.total_authorizations||0).toLocaleString() + ' authorizations';
+    DB_COUNTS[2] = (stats.total_cob_records||0).toLocaleString() + ' COB records';
+    DB_COUNTS[3] = (stats.fee_schedule_codes||0).toLocaleString() + ' CPT codes';
+    DB_COUNTS[4] = (stats.total_history_claims||0).toLocaleString() + ' claims';
+    DB_COUNTS[5] = (stats.total_members||0).toLocaleString() + ' members';
+    document.getElementById('hub-stats').style.display = 'flex';
+    document.getElementById('hub-ingest-note').style.display = 'block';
+  } catch(e) { console.error(e); }
+
+  for (let i = 0; i <= 6; i++) {
+    const card = document.getElementById(`dbc-${i}`);
+    card?.classList.remove('querying'); card?.classList.add('done');
+    _revealDbCount(i);
+    if (i < 6) { const h = document.getElementById(`dbc-${i}-hits`); if (h) h.textContent = 'connected'; }
+  }
+  loadPricingStatus();
+  document.getElementById('proc-bar').style.width = '0%';
+  ib.textContent = '✓ Raw Pends Extracted';
+  const sb = document.getElementById('start-btn');
+  sb.disabled = false; sb.classList.add('ready-pulse');
+  ingesting = false;
+}
+
+function streamRawRow(c) {
+  const tbody = document.getElementById('queue-tbody');
+  const tr = document.createElement('tr');
+  tr.id = `row-${c.icn}`;
+  tr.onclick = () => openRawPanel(c);
+  tr.innerHTML = `
+    <td style="font-family:monospace;color:#2563eb;font-size:.72rem">${c.icn}</td>
+    <td>${c.member_name}</td>
+    <td style="color:#334155">${c.provider_name?.split(' ').slice(0,3).join(' ')}</td>
+    <td style="font-family:monospace">${c.cpt_code}</td>
+    <td style="color:#b45309">$${c.billed_amount?.toFixed(2)}</td>
+    <td style="font-family:monospace;color:#334155;font-size:.7rem">${c.edit_code}</td>
+    <td><span class="badge-cat">${c.edit_category}</span></td>
+    <td><span class="badge-outcome gray">pending</span></td>
+    <td style="color:#334155">—</td>
+    <td style="font-size:.68rem;color:#334155">—</td>
+  `;
+  tbody.appendChild(tr);
+}
+
+// Raw INPUT detail — every field as extracted, no decision yet
+// Shared: render a header + service-line table. `resolved`=true shows per-line decisions + rollup.
+// ── SOP library — document renderer + modal (autonomous + clickable) ────────────
+function _sopSec(title, body){ return `<div style="margin-bottom:14px"><div style="font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:6px">${title}</div>${body}</div>`; }
+function sopDocHtml(doc, opts) {
+  opts = opts || {};
+  const crit = (doc.decision_criteria||[]).map(c=>`
+    <div style="border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;padding:7px 10px;margin-bottom:6px">
+      <div style="font-size:.72rem;font-weight:700;color:#6d28d9">${c.rule_id} · ${c.check}</div>
+      <div style="font-size:.72rem;color:#334155;line-height:1.5">${c.detail}</div>
+      <div style="font-size:.65rem;color:#64748b;font-style:italic;margin-top:2px">📖 ${c.source}</div>
+    </div>`).join('') || '<div style="font-size:.72rem;color:#64748b">See decision rule and procedure below.</div>';
+  const steps = (doc.procedure||[]).map((s,i)=>`<li style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #e2e8f0;font-size:.74rem;color:#334155"><span style="background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 7px;font-size:.64rem;font-weight:700;flex-shrink:0">${i+1}</span>${s}</li>`).join('');
+  const refs = (doc.references||[]).map(r=>`<li style="font-size:.7rem;color:#334155;margin-bottom:2px">${r}</li>`).join('');
+  const closeBtn = opts.modal ? `<button onclick="closeSopModal()" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>` : '';
+  return `
+  <div style="position:relative;padding:22px 26px">
+    ${closeBtn}
+    <div style="border-bottom:2px solid #1d4ed8;padding-bottom:12px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:.64rem;font-weight:700;letter-spacing:.5px;color:#1d4ed8;background:#dbeafe;padding:2px 8px;border-radius:5px">📚 STANDARD OPERATING PROCEDURE</span>
+        <span style="background:#dcfce7;color:#15803d;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:6px">${doc.status}</span>
+      </div>
+      <div style="font-size:1.12rem;font-weight:800;color:#0f172a;margin-top:8px">${doc.sop_ref} — ${doc.title}</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:.68rem;color:#64748b;margin-top:6px">
+        <span>Category: <strong style="color:#334155">${doc.category}</strong></span>
+        <span>Version: <strong style="color:#334155">${doc.version}</strong></span>
+        <span>Effective: <strong style="color:#334155">${doc.effective_date}</strong></span>
+        <span>Owner: <strong style="color:#334155">${doc.owner}</strong></span>
+      </div>
+    </div>
+    ${_sopSec('1 · Purpose', `<div style="font-size:.8rem;color:#334155;line-height:1.6">${doc.purpose}</div>`)}
+    ${_sopSec('2 · Scope / Applicability', `<div style="font-size:.8rem;color:#334155;line-height:1.6">${doc.scope}</div>`)}
+    ${_sopSec('3 · Decision rule', `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#1e3a5f;line-height:1.6">${doc.decision_logic}</div>`)}
+    ${_sopSec('4 · Decision criteria & policy basis', crit)}
+    ${_sopSec('5 · Procedure', `<ol style="list-style:none;padding:0;margin:0">${steps}</ol>`)}
+    ${_sopSec('6 · Coding', `<div style="font-size:.8rem;color:#334155">Apply <strong style="font-family:monospace;color:#b45309">CARC ${doc.coding.carc||'—'}</strong> / <strong style="font-family:monospace;color:#b45309">RARC ${doc.coding.rarc||'—'}</strong></div>`)}
+    ${_sopSec('7 · References & citations', `<ul style="margin:0;padding-left:18px">${refs}</ul>`)}
+  </div>`;
+}
+async function openSopDoc(editCode){
+  const modal=document.getElementById('sop-modal'), body=document.getElementById('sop-modal-body');
+  body.innerHTML='<div style="padding:30px;color:#64748b">📚 Retrieving SOP…</div>';
+  modal.style.display='flex';
+  try{ const doc=await fetch(`${API}/api/sop/${editCode}`).then(r=>r.json()); body.innerHTML=sopDocHtml(doc,{modal:true}); }
+  catch(e){ body.innerHTML='<div style="padding:30px;color:#dc2626">SOP unavailable.</div>'; }
+}
+function closeSopModal(){ document.getElementById('sop-modal').style.display='none'; }
+function _sopLink(editCode, label){ return `<span onclick="event.stopPropagation();openSopDoc('${editCode}')" style="cursor:pointer;color:#1d4ed8;text-decoration:underline;text-decoration-style:dotted" title="Open the full SOP">${label}</span>`; }
+
+function renderServiceLines(data, resolved) {
+  const lines = data.lines || [];
+  const isInst = lines.some(l => l.rev_code);
+  const OKC = {approve:'#15803d', deny:'#dc2626', partial_pay:'#b45309', request_info:'#2563eb', escalate:'#c2410c', human_review:'#7c3aed'};
+  const rows = lines.map(l => {
+    const pend = l.pended;
+    const res = l.resolution;
+    const chg = `$${(l.charge||0).toFixed(2)}`;
+    const svc = isInst ? `<td style="font-family:monospace">${l.rev_code||'—'}</td><td style="font-family:monospace">${l.cpt_code||'—'}</td>`
+                       : `<td style="font-family:monospace">${l.cpt_code||'—'}</td>`;
+    const editCell = pend
+      ? `<span class="badge-cat" style="background:#ffedd5;color:#c2410c">${l.edit_code}</span>`
+      : `<span style="color:#15803d;font-size:.7rem">clean</span>`;
+    const sop = pend ? ((res && res.sop_ref) ? res.sop_ref : (l.applicable_sop || '—')) : '—';
+    const sopCell = `<td style="font-family:monospace;font-size:.67rem">${pend && l.edit_code ? _sopLink(l.edit_code, sop) : `<span style="color:#94a3b8">${sop}</span>`}</td>`;
+    let decCell = `<td style="color:#94a3b8">—</td>`, payCell = `<td style="color:#94a3b8">—</td>`;
+    if (resolved && res) {
+      const col = OKC[res.outcome] || '#334155';
+      decCell = `<td style="font-weight:700;color:${col}">${res.outcome_label}</td>`;
+      payCell = `<td style="color:${res.payment_amount>0?'#15803d':'#334155'}">${res.payment_amount>0?'$'+res.payment_amount.toFixed(2):'—'}</td>`;
+    }
+    const hi = pend ? 'style="background:#fffdf5;border-left:3px solid #f59e0b"' : '';
+    return `<tr ${hi}>
+      <td style="font-weight:700">${l.line_no}</td>
+      ${svc}
+      <td>${l.description||''}</td>
+      <td style="text-align:center">${l.units||1}</td>
+      <td style="color:#b45309">${chg}</td>
+      <td>${editCell}</td>
+      ${sopCell}
+      ${decCell}${payCell}
+    </tr>`;
+  }).join('');
+  const headCols = isInst
+    ? '<th>Line</th><th>Rev</th><th>HCPCS</th><th>Description</th><th>Units</th><th>Charge</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>'
+    : '<th>Line</th><th>CPT</th><th>Description</th><th>Units</th><th>Charge</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>';
+  let rollupBanner = '';
+  if (resolved && data.rollup) {
+    const r = data.rollup; const col = OKC[r.outcome] || '#334155';
+    rollupBanner = `<div style="background:#f1f5f9;border:1px solid #cbd5e1;border-left:4px solid ${col};border-radius:8px;padding:10px 14px;margin-top:10px;font-size:.82rem">
+      <strong>Header disposition:</strong> <span style="color:${col};font-weight:700">${r.outcome_label}</span>
+      &nbsp;·&nbsp; Total paid <strong style="color:#15803d">$${r.payment_amount.toFixed(2)}</strong>
+      &nbsp;·&nbsp; ${r.lines_paid}/${r.lines_total} lines paid, ${r.lines_pended} pended
+      <div style="font-size:.72rem;color:#334155;margin-top:4px">The claim pays only what its lines support — one line's edit does not have to hold the whole claim.</div>
+    </div>`;
+  }
+  // Per-pended-line "why" — SOP, rationale, KG rules + policy/data sources
+  let reasoning = '';
+  if (resolved) {
+    const pendedLines = lines.filter(l => l.pended && l.resolution);
+    reasoning = pendedLines.map(l => {
+      const res = l.resolution; const col = OKC[res.outcome] || '#334155';
+      const tag = isInst ? `REV ${l.rev_code}` : `CPT ${l.cpt_code}`;
+      const kg = (res.kg_rules || []).map(k=>`
+        <div style="border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;padding:6px 10px;margin-bottom:5px">
+          <div style="font-size:.71rem;font-weight:700;color:#6d28d9">${k.rule_id} · ${k.check}</div>
+          <div style="font-size:.71rem;color:#334155;line-height:1.5">${k.text}</div>
+          <div style="font-size:.65rem;color:#64748b;font-style:italic;margin-top:2px">📖 ${k.source}</div>
+        </div>`).join('');
+      const sopSteps = (res.sop_steps||[]).map(s=>`<li style="font-size:.71rem;color:#334155;margin-bottom:2px">${s}</li>`).join('');
+      return `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-weight:700">Line ${l.line_no} · ${tag}</span>
+          <span class="badge-cat" style="background:#ffedd5;color:#c2410c">${l.edit_code}</span>
+          <span style="margin-left:auto;font-weight:700;color:${col}">${res.outcome_label}</span>
+        </div>
+        <div style="font-size:.7rem;color:#1d4ed8;font-weight:700;margin-bottom:4px">📋 SOP applied: ${_sopLink(l.edit_code, res.sop_ref)}</div>
+        <ul style="margin:0 0 6px 16px;padding:0">${sopSteps}</ul>
+        <div style="font-size:.62rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Data & policy checked</div>
+        ${kg}
+        ${res.clinical ? `
+        <div style="font-size:.62rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin:6px 0 3px">Clinical review — ${res.clinical.guideline_id} (MCG-style)</div>
+        <div style="border:1px solid #bfdbfe;background:#f8fbff;border-radius:6px;padding:7px 10px;margin-bottom:5px">
+          ${res.clinical.criteria.map(c=>`<div style="display:flex;gap:6px;padding:3px 0;font-size:.71rem"><span style="color:${c.status==='met'?'#15803d':'#dc2626'}">${c.status==='met'?'✓':'✕'}</span><span style="flex:1;color:#334155">${c.criterion}</span><span style="font-size:.58rem;font-weight:700;color:${c.status==='met'?'#15803d':'#dc2626'}">${c.status==='met'?'MET':'NOT MET'}</span></div>`).join('')}
+          <div style="font-size:.7rem;color:#854d0e;margin-top:5px"><strong>Determination:</strong> ${res.clinical.determination}</div>
+        </div>` : ''}
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:7px 9px;margin-top:5px;font-size:.72rem;color:#334155"><strong>Why:</strong> ${res.rationale||''}</div>
+      </div>`;
+    }).join('');
+    if (reasoning) reasoning = `<div class="cp-box" style="margin-bottom:14px"><h4>How the agent adjudicated each pended line</h4>${reasoning}</div>`;
+  }
+  return `
+    <div class="cp-box" style="margin-bottom:14px">
+      <h4>Service Lines — ${lines.length} line${lines.length!==1?'s':''} ${isInst?'(billed by revenue code)':''} · ${lines.filter(l=>l.pended).length} pended</h4>
+      <div style="overflow:auto"><table class="queue-table" style="font-size:.72rem">
+        <thead><tr>${headCols}</tr></thead><tbody>${rows}</tbody>
+      </table></div>
+      ${rollupBanner}
+    </div>
+    ${reasoning}`;
+}
+
+async function openRawPanel(c) {
+  const panel = document.getElementById('claim-panel');
+  const multi = c.is_multi_line;
+  document.getElementById('cp-title').textContent =
+    `${c.icn} — ${c.claim_type||'Professional'} claim · RAW INPUT (extracted — not yet processed)`;
+  const F = (l,v)=>`<div class="cp-field"><span class="cp-field-label">${l}</span><span class="cp-field-value">${v ?? '—'}</span></div>`;
+  document.getElementById('cp-body').innerHTML = `
+    <div class="cp-grid">
+      <div class="cp-box">
+        <h4>Header — Member &amp; Eligibility</h4>
+        ${F('Member', c.member_name)}${F('Member ID', c.member_id)}${F('DOB', c.member_dob)}${F('Plan', c.plan)}
+      </div>
+      <div class="cp-box">
+        <h4>Header — Provider</h4>
+        ${F('Name', c.provider_name)}${F('Specialty', c.provider_specialty)}${F('NPI (billing)', c.npi_billing)}${F('Group', c.group_name)}${c.type_of_bill?F('Type of bill', c.type_of_bill):F('Place of service', c.place_of_service)}
+      </div>
+      <div class="cp-box">
+        <h4>Header — Claim</h4>
+        ${F('Claim type', c.claim_type||'Professional')}${F('Form', c.form||(c.claim_type==='Institutional'?'UB-04 / 837I':'CMS-1500 / 837P'))}${F('Total billed', c.billed_amount!=null?'$'+c.billed_amount.toFixed(2):'—')}${F('DOS', c.dos)}${F('Days in queue', c.days_in_queue)}${F('Priority', c.priority)}
+      </div>
+    </div>
+    ${c.scenario_note?`<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:9px 13px;margin-bottom:12px;font-size:.76rem;color:#1e3a5f">${c.scenario_note}</div>`:''}
+    <div id="cp-lines" style="color:#64748b;font-size:.8rem;padding:6px 0">Loading service lines…</div>
+    <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:10px 14px;font-size:.75rem;color:#334155">
+      This is the <strong>raw input</strong> exactly as extracted from the payer database — header plus service lines. Pended lines are highlighted. No agent decision has been made yet — press <strong>▶ Start Live Processing</strong> to resolve each line.
+    </div>
+  `;
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  try {
+    const data = await fetch(`${API}/api/claim-lines/${c.icn}?resolve=0`).then(r=>r.json());
+    document.getElementById('cp-lines').innerHTML = renderServiceLines(data, false);
+  } catch(e) { document.getElementById('cp-lines').textContent = 'Service lines unavailable.'; }
+}
 
 async function startProcessing() {
   if (processing) return;
   processing = true;
   document.getElementById('start-btn').disabled = true;
+  document.getElementById('start-btn').classList.remove('ready-pulse');
 
   // Show progress bar
   document.getElementById('proc-progress').classList.add('visible');
@@ -840,12 +1145,62 @@ async function startProcessing() {
       document.getElementById('cnt-partial').textContent  = counts.partial_pay;
       document.getElementById('cnt-adr').textContent      = counts.request_info;
       document.getElementById('cnt-hr').textContent       = counts.human_review;
+      const _hb = document.getElementById('hr-badge'); if (_hb) _hb.textContent = counts.human_review;
 
       // Progress bar
       document.getElementById('proc-bar').style.width = `${((i+1)/total)*100}%`;
 
       await delay(90);
     }
+
+    // Resolve the multi-line hero claims (real per-line resolution → header rollup)
+    const heroRows = Object.values(rawClaimsByIcn).filter(c => c.is_multi_line);
+    for (const c of heroRows) {
+      const d = await fetch(`${API}/api/claim-lines/${c.icn}?resolve=1`).then(x=>x.json());
+      const ru = d.rollup;
+      const rr = {
+        icn: c.icn, member_name: c.member_name, provider_name: c.provider_name,
+        cpt_code: (c.claim_type||'MULTI').slice(0,4), billed_amount: d.header.billed_amount,
+        edit_code: `${ru.lines_pended} pends`, edit_category: c.claim_type,
+        outcome: ru.outcome, outcome_label: ru.outcome_label, outcome_color: ru.outcome_color,
+        payment_amount: ru.payment_amount, sop_ref: `${ru.lines_paid}/${ru.lines_total} lines paid`,
+        human_review: ru.outcome === 'human_review', is_multi_line: true,
+      };
+      await streamRow(rr);
+      counts.total++;
+      if (ru.outcome === 'approve') counts.approve++;
+      else if (ru.outcome === 'deny') counts.deny++;
+      else if (ru.outcome === 'partial_pay') counts.partial_pay++;
+      else if (ru.outcome === 'request_info') counts.request_info++;
+      else if (ru.outcome === 'escalate') counts.escalate++;
+      else if (ru.outcome === 'human_review') counts.human_review++;
+      document.getElementById('cnt-total').textContent    = counts.total;
+      document.getElementById('cnt-approved').textContent = counts.approve;
+      document.getElementById('cnt-denied').textContent   = counts.deny;
+      document.getElementById('cnt-partial').textContent  = counts.partial_pay;
+      document.getElementById('cnt-adr').textContent      = counts.request_info;
+      document.getElementById('cnt-hr').textContent       = counts.human_review;
+      const _hb2 = document.getElementById('hr-badge'); if (_hb2) _hb2.textContent = counts.human_review;
+      await delay(120);
+    }
+
+    // Roll the counters up to the FULL extracted queue so Resolved reconciles to Extracted.
+    // The table above shows a representative sample; the agent resolved the entire queue.
+    try {
+      const sum = await fetch(`${API}/api/resolve-summary`).then(r => r.json());
+      const shownRows = document.querySelectorAll('#queue-tbody tr').length;
+      await animateCount('cnt-total',    counts.total,        sum.total);
+      await Promise.all([
+        animateCount('cnt-approved', counts.approve,      sum.approve),
+        animateCount('cnt-denied',   counts.deny,         sum.deny),
+        animateCount('cnt-partial',  counts.partial_pay,  sum.partial_pay),
+        animateCount('cnt-adr',      counts.request_info, sum.request_info),
+        animateCount('cnt-hr',       counts.human_review, sum.human_review),
+      ]);
+      const _hb3 = document.getElementById('hr-badge'); if (_hb3) _hb3.textContent = sum.human_review.toLocaleString();
+      const note = document.getElementById('queue-sample-note');
+      if (note) note.innerHTML = `Showing <strong>${shownRows}</strong> representative rows · the agent resolved all <strong>${sum.total.toLocaleString()}</strong> pended lines (Approved + Denied + Partial + ADR + Human Review = ${sum.total.toLocaleString()}); counters above reflect the full queue.`;
+    } catch(e) { console.error(e); }
   } catch(e) {
     console.error(e);
   }
@@ -855,59 +1210,104 @@ async function startProcessing() {
 
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+// Animate a counter element from -> to (with thousands separators)
+function animateCount(id, from, to, ms=900) {
+  return new Promise(res => {
+    const el = document.getElementById(id); if (!el) return res();
+    const start = performance.now(); from = from||0; to = to||0;
+    function tick(now){
+      const p = Math.min((now-start)/ms, 1);
+      const v = Math.round(from + (to-from)*(1-Math.pow(1-p,3)));
+      el.textContent = v.toLocaleString();
+      if (p < 1) requestAnimationFrame(tick); else { el.textContent = to.toLocaleString(); res(); }
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
 async function streamRow(r, idx) {
   const tbody = document.getElementById('queue-tbody');
-  const tr = document.createElement('tr');
-  tr.id = `row-${r.icn}`;
-  tr.onclick = () => openClaimPanel(r);
-
   const color = r.outcome_color || 'gray';
   const payment = r.payment_amount > 0 ? `$${r.payment_amount.toFixed(2)}` : '—';
   const hrBadge = r.human_review ? `<span class="badge-hr">HR</span>` : '';
-
-  tr.innerHTML = `
-    <td style="font-family:monospace;color:#60a5fa;font-size:.72rem">${r.icn}</td>
+  const rowHtml = `
+    <td style="font-family:monospace;color:#2563eb;font-size:.72rem">${r.icn}</td>
     <td>${r.member_name}</td>
-    <td style="color:#94a3b8">${r.provider_name?.split(' ').slice(0,3).join(' ')}</td>
+    <td style="color:#334155">${r.provider_name?.split(' ').slice(0,3).join(' ')}</td>
     <td style="font-family:monospace">${r.cpt_code}</td>
-    <td style="color:#fbbf24">$${r.billed_amount?.toFixed(2)}</td>
-    <td style="font-family:monospace;color:#94a3b8;font-size:.7rem">${r.edit_code}</td>
+    <td style="color:#b45309">$${r.billed_amount?.toFixed(2)}</td>
+    <td style="font-family:monospace;color:#334155;font-size:.7rem">${r.edit_code}</td>
     <td><span class="badge-cat">${r.edit_category}</span></td>
     <td><span class="badge-outcome ${color}">${r.outcome_label}</span>${hrBadge}</td>
-    <td style="color:${color === 'green' || color === 'yellow' ? '#4ade80' : '#475569'}">${payment}</td>
-    <td style="font-size:.68rem;color:#475569">${r.sop_ref}</td>
+    <td style="color:${color === 'green' || color === 'yellow' ? '#15803d' : '#334155'}">${payment}</td>
+    <td style="font-size:.68rem;color:#334155">${r.sop_ref}</td>
   `;
-  tbody.insertBefore(tr, tbody.firstChild);
+  // If this pend was already ingested as a raw row, resolve it in place; else insert.
+  const existing = document.getElementById(`row-${r.icn}`);
+  if (existing) {
+    existing.innerHTML = rowHtml;
+    existing.onclick = () => openClaimPanel(r);
+    existing.classList.add('processing-row');
+    setTimeout(() => existing.classList.remove('processing-row'), 700);
+    existing.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } else {
+    const tr = document.createElement('tr');
+    tr.id = `row-${r.icn}`;
+    tr.onclick = () => openClaimPanel(r);
+    tr.innerHTML = rowHtml;
+    tbody.insertBefore(tr, tbody.firstChild);
+  }
 }
 
 function resetAct1() {
   processing = false;
+  ingesting = false;
   processedResults = [];
+  rawClaimsByIcn = {};
   dbQueryCounts = [0,0,0,0,0,0];
   Object.keys(counts).forEach(k => counts[k] = 0);
   ['total','approved','denied','partial','adr','hr'].forEach(k => {
     const el = document.getElementById(`cnt-${k}`);
     if (el) el.textContent = '0';
   });
+  const _ex = document.getElementById('cnt-extracted'); if (_ex) _ex.textContent = '0';
   document.getElementById('queue-tbody').innerHTML = '';
+  const _qn = document.getElementById('queue-sample-note'); if (_qn) _qn.innerHTML = '';
+  const _hbr = document.getElementById('hr-badge'); if (_hbr) _hbr.textContent = '—';
   document.getElementById('proc-progress').classList.remove('visible');
   document.getElementById('proc-bar').style.width = '0%';
-  document.getElementById('start-btn').disabled = false;
+  const ib = document.getElementById('ingest-btn'); if (ib) { ib.disabled = false; ib.textContent = '⬇ Extract Raw Pends'; }
+  const sb = document.getElementById('start-btn'); if (sb) { sb.disabled = true; sb.classList.remove('ready-pulse'); }
   for (let i = 0; i < 6; i++) {
     const card = document.getElementById(`dbc-${i}`);
     card.classList.remove('done','querying');
     document.getElementById(`dbc-${i}-hits`).textContent = '0 queries';
   }
+  document.getElementById('dbc-6')?.classList.remove('done','querying');
+  _blankDbCounts();
   closeClaimPanel();
   closeDbExpand();
 }
 
 // ── Claim Detail Panel ────────────────────────────────────────────────────────
 
-function openClaimPanel(r) {
+async function openClaimPanel(r) {
   const panel = document.getElementById('claim-panel');
   const title = document.getElementById('cp-title');
   const body  = document.getElementById('cp-body');
+
+  // Multi-line hero claims: show the header + resolved service lines + rollup
+  if (r.is_multi_line) {
+    title.textContent = `${r.icn} — ${r.claim_type||''} claim — RESOLVED (line-by-line)`;
+    body.innerHTML = `<div id="cp-lines" style="color:#64748b;font-size:.8rem;padding:6px 0">Resolving service lines…</div>`;
+    panel.classList.add('visible');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    try {
+      const data = await fetch(`${API}/api/claim-lines/${r.icn}?resolve=1`).then(x=>x.json());
+      document.getElementById('cp-lines').innerHTML = renderServiceLines(data, true);
+    } catch(e) { document.getElementById('cp-lines').textContent = 'Service lines unavailable.'; }
+    return;
+  }
 
   title.textContent = `${r.icn} — ${r.member_name} — ${r.cpt_code} — ${r.edit_description}`;
 
@@ -937,7 +1337,7 @@ function openClaimPanel(r) {
     <div class="cp-grid">
       <div class="cp-box">
         <h4>Claim</h4>
-        <div class="cp-field"><span class="cp-field-label">ICN</span><span class="cp-field-value" style="font-family:monospace;color:#60a5fa">${r.icn}</span></div>
+        <div class="cp-field"><span class="cp-field-label">ICN</span><span class="cp-field-value" style="font-family:monospace;color:#2563eb">${r.icn}</span></div>
         <div class="cp-field"><span class="cp-field-label">Member</span><span class="cp-field-value">${r.member_name}</span></div>
         <div class="cp-field"><span class="cp-field-label">CPT</span><span class="cp-field-value" style="font-family:monospace">${r.cpt_code}</span></div>
         <div class="cp-field"><span class="cp-field-label">Billed</span><span class="cp-field-value yellow">$${r.billed_amount?.toFixed(2)}</span></div>
@@ -946,7 +1346,7 @@ function openClaimPanel(r) {
       </div>
       <div class="cp-box">
         <h4>Edit &amp; Decision</h4>
-        <div class="cp-field"><span class="cp-field-label">Edit Code</span><span class="cp-field-value" style="font-family:monospace;color:#60a5fa">${r.edit_code}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Edit Code</span><span class="cp-field-value" style="font-family:monospace;color:#2563eb">${r.edit_code}</span></div>
         <div class="cp-field"><span class="cp-field-label">Category</span><span class="cp-field-value">${r.edit_category}</span></div>
         <div class="cp-field"><span class="cp-field-label">Description</span><span class="cp-field-value" style="font-size:.7rem">${r.edit_description}</span></div>
         <div class="cp-field"><span class="cp-field-label">Decision</span><span class="cp-field-value ${color}">${r.outcome_label}</span></div>
@@ -955,7 +1355,7 @@ function openClaimPanel(r) {
       </div>
       <div class="cp-box">
         <h4>Knowledge Graph — SOP Execution</h4>
-        <div style="font-size:.68rem;color:#475569;margin-bottom:8px">${r.sop_ref} · ${r.processing_ms}ms</div>
+        <div style="font-size:.68rem;color:#334155;margin-bottom:8px">${r.sop_ref} · ${r.processing_ms}ms</div>
         <ul class="sop-steps">${stepsHtml}</ul>
       </div>
     </div>
@@ -964,10 +1364,15 @@ function openClaimPanel(r) {
       <div style="margin-top:6px">${dbsHtml}</div>
     </div>
     ${hrBlock}
+    <div id="cp-lines" style="color:#64748b;font-size:.8rem;padding:6px 0">Loading service lines…</div>
   `;
 
   panel.classList.add('visible');
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  try {
+    const data = await fetch(`${API}/api/claim-lines/${r.icn}?resolve=1`).then(x=>x.json());
+    document.getElementById('cp-lines').innerHTML = renderServiceLines(data, true);
+  } catch(e) { const el=document.getElementById('cp-lines'); if(el) el.textContent=''; }
 }
 
 function closeClaimPanel() {
@@ -1002,14 +1407,14 @@ async function loadGen2() {
       const barColor = pct > 30 ? 'red' : pct > 20 ? 'amber' : 'green';
       const gapHtml  = row.sop_gap_flag
         ? `<span class="gap-flag">⚠ Gap Detected</span>`
-        : `<span style="color:#4ade80;font-size:.7rem">✓ SOP OK</span>`;
+        : `<span style="color:#15803d;font-size:.7rem">✓ SOP OK</span>`;
       return `<tr>
-        <td style="font-family:monospace;color:#60a5fa;font-size:.7rem">${row.edit_code}</td>
+        <td style="font-family:monospace;color:#2563eb;font-size:.7rem">${row.edit_code}</td>
         <td><span class="badge-cat">${row.category}</span></td>
         <td>${row.total_processed.toLocaleString()}</td>
-        <td>${row.auto_resolved.toLocaleString()} <span style="color:#475569;font-size:.68rem">(${Math.round(row.auto_resolved/row.total_processed*100)}%)</span></td>
+        <td>${row.auto_resolved.toLocaleString()} <span style="color:#334155;font-size:.68rem">(${Math.round(row.auto_resolved/row.total_processed*100)}%)</span></td>
         <td>
-          <span style="margin-right:6px;font-weight:700;color:${pct>30?'#f87171':pct>20?'#fbbf24':'#4ade80'}">${pct}%</span>
+          <span style="margin-right:6px;font-weight:700;color:${pct>30?'#dc2626':pct>20?'#b45309':'#15803d'}">${pct}%</span>
           <span class="bar-wrap"><span class="bar-fill ${barColor}" style="width:${Math.min(pct*2,100)}%"></span></span>
         </td>
         <td>${row.avg_processing_min} min</td>
@@ -1030,14 +1435,14 @@ async function loadGen3() {
     const tbody = document.getElementById('gen3-tbody');
     tbody.innerHTML = (data.drivers || []).map(row => {
       const lift = row.lift;
-      const liftColor = lift >= 65 ? '#4ade80' : lift >= 45 ? '#fbbf24' : '#f87171';
+      const liftColor = lift >= 65 ? '#15803d' : lift >= 45 ? '#b45309' : '#dc2626';
       return `<tr>
         <td style="font-weight:700">${row.category}</td>
-        <td><span style="font-weight:700">${row.volume}</span> <span style="color:#64748b;font-size:.7rem">(${row.pct}%)</span></td>
-        <td style="font-size:.72rem;color:#94a3b8">${row.top_outcome}</td>
-        <td style="font-size:.68rem;color:#94a3b8;max-width:230px;white-space:normal">${row.pattern}</td>
-        <td style="font-size:.68rem;color:#cbd5e1;max-width:230px;white-space:normal">${row.action}</td>
-        <td><span style="font-weight:700;color:${liftColor}">${row.recoverable}</span> <span style="color:#64748b;font-size:.7rem">(~${lift}%)</span></td>
+        <td><span style="font-weight:700">${row.volume}</span> <span style="color:#334155;font-size:.7rem">(${row.pct}%)</span></td>
+        <td style="font-size:.72rem;color:#334155">${row.top_outcome}</td>
+        <td style="font-size:.68rem;color:#334155;max-width:230px;white-space:normal">${row.pattern}</td>
+        <td style="font-size:.68rem;color:#334155;max-width:230px;white-space:normal">${row.action}</td>
+        <td><span style="font-weight:700;color:${liftColor}">${row.recoverable}</span> <span style="color:#334155;font-size:.7rem">(~${lift}%)</span></td>
       </tr>`;
     }).join('');
   } catch(e) {}
@@ -1079,13 +1484,13 @@ function renderReviewDetail(c) {
   const detail = document.getElementById('review-detail');
   detail.innerHTML = `
     <div style="margin-bottom:16px">
-      <div style="font-size:.72rem;color:#7c3aed;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Human Review — ${c.icn}</div>
-      <div style="font-size:1rem;font-weight:700;color:#f1f5f9;margin-top:3px">${c.member_name} · ${c.cpt_code} · ${c.edit_description}</div>
+      <div style="font-size:.72rem;color:#6d28d9;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Human Review — ${c.icn}</div>
+      <div style="font-size:1rem;font-weight:700;color:#0f172a;margin-top:3px">${c.member_name} · ${c.cpt_code} · ${c.edit_description}</div>
     </div>
     <div class="cp-grid">
       <div class="cp-box">
         <h4>Claim Details</h4>
-        <div class="cp-field"><span class="cp-field-label">ICN</span><span class="cp-field-value" style="font-family:monospace;color:#60a5fa">${c.icn}</span></div>
+        <div class="cp-field"><span class="cp-field-label">ICN</span><span class="cp-field-value" style="font-family:monospace;color:#2563eb">${c.icn}</span></div>
         <div class="cp-field"><span class="cp-field-label">Member</span><span class="cp-field-value">${c.member_name}</span></div>
         <div class="cp-field"><span class="cp-field-label">Provider</span><span class="cp-field-value">${c.provider_name}</span></div>
         <div class="cp-field"><span class="cp-field-label">CPT</span><span class="cp-field-value" style="font-family:monospace">${c.cpt_code}</span></div>
@@ -1096,17 +1501,17 @@ function renderReviewDetail(c) {
         <h4>Financial &amp; Edit</h4>
         <div class="cp-field"><span class="cp-field-label">Billed</span><span class="cp-field-value yellow">$${c.billed_amount?.toFixed(2)}</span></div>
         <div class="cp-field"><span class="cp-field-label">Allowed</span><span class="cp-field-value">$${c.allowed_amount?.toFixed(2)}</span></div>
-        <div class="cp-field"><span class="cp-field-label">Edit Code</span><span class="cp-field-value" style="font-family:monospace;color:#f87171">${c.edit_code}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Edit Code</span><span class="cp-field-value" style="font-family:monospace;color:#dc2626">${c.edit_code}</span></div>
         <div class="cp-field"><span class="cp-field-label">Category</span><span class="cp-field-value">${c.edit_category}</span></div>
         <div class="cp-field"><span class="cp-field-label">CARC</span><span class="cp-field-value" style="font-family:monospace">${c.carc_code}</span></div>
         <div class="cp-field"><span class="cp-field-label">RARC</span><span class="cp-field-value" style="font-family:monospace">${c.rarc_code}</span></div>
       </div>
       <div class="cp-box">
         <h4>Review Trigger</h4>
-        <div style="background:#130a2e;border:1px solid #581c87;border-radius:8px;padding:10px;font-size:.75rem;color:#a78bfa;line-height:1.6">
+        <div style="background:#ede9fe;border:1px solid #d8b4fe;border-radius:8px;padding:10px;font-size:.75rem;color:#7c3aed;line-height:1.6">
           ${c.human_review_reason || 'Manual review required'}
         </div>
-        <div style="margin-top:10px;font-size:.7rem;color:#475569">
+        <div style="margin-top:10px;font-size:.7rem;color:#334155">
           Plan: ${c.plan}<br>
           Days in queue: ${c.days_in_queue}<br>
           Priority: ${c.priority}
@@ -1148,33 +1553,120 @@ function submitExaminerDecision(action) {
   alert(`Decision logged:\n\nAction: ${action.toUpperCase()}\nClaim: ${claim.icn}\nRationale: ${notes || sel || '(none)'}\n\nIn production: written to adjudication system with examiner ID + timestamp. Downstream payment or denial workflow triggered.`);
 }
 
+// ── Review & Denial Workflow ────────────────────────────────────────────────────
+let wfItems = [], wfDecided = 0, wfTotal = 0;
+
+async function loadReviewWorkflow() {
+  const btn = document.getElementById('wf-load-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⚖ Assembling…'; }
+  wfDecided = 0;
+  try {
+    const d = await fetch(`${API}/api/review-workflow`).then(r => r.json());
+    wfItems = d.items || [];
+    wfTotal = d.summary.total || 0;
+    document.getElementById('wf-queued').textContent  = (d.summary.total||0).toLocaleString();
+    document.getElementById('wf-hr').textContent      = (d.summary.human_review||0).toLocaleString();
+    document.getElementById('wf-den').textContent     = (d.summary.denial_review||0).toLocaleString();
+    document.getElementById('wf-decided').textContent = '0';
+    const shown = d.summary.shown || wfItems.length;
+    document.getElementById('wf-list').innerHTML =
+      `<div style="font-size:.78rem;color:#334155;margin-bottom:12px">The agent referred <strong>${(d.summary.total||0).toLocaleString()}</strong> lines to a human across the queue — <strong>${(d.summary.human_review||0).toLocaleString()}</strong> for human review and <strong>${(d.summary.denial_review||0).toLocaleString()}</strong> denials needing sign-off. Showing <strong>${shown}</strong> representative items to work below.</div>`
+      + wfItems.map((it, i) => renderWorkItem(it, i)).join('');
+  } catch(e) { document.getElementById('wf-list').innerHTML = '<div style="color:#dc2626">Workflow unavailable — is the server running?</div>'; }
+  if (btn) { btn.disabled = false; btn.textContent = '↻ Reassemble Work Queue'; }
+}
+
+function renderWorkItem(it, i) {
+  const isHR = it.agent_outcome === 'human_review';
+  const badge = isHR
+    ? `<span class="badge-outcome purple">Human review</span>`
+    : `<span class="badge-outcome red">Denial — sign-off</span>`;
+  const ln = it.line_no ? ` · Line ${it.line_no}` : '';
+  const kg = (it.kg_rules || []).map(k => `
+    <div style="border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;padding:6px 10px;margin-bottom:5px">
+      <div style="font-size:.71rem;font-weight:700;color:#6d28d9">${k.rule_id} · ${k.check}</div>
+      <div style="font-size:.71rem;color:#334155;line-height:1.5">${k.text}</div>
+      <div style="font-size:.65rem;color:#64748b;font-style:italic;margin-top:2px">📖 ${k.source}</div>
+    </div>`).join('');
+  const actions = isHR
+    ? `<button class="proc-btn" style="background:#15803d;padding:7px 14px;font-size:.78rem" onclick="workflowAct(${i},'Approve — overturn, medical necessity confirmed')">✓ Approve</button>
+       <button class="proc-btn" style="background:#dc2626;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Uphold denial — criteria not met')">✕ Uphold denial</button>
+       <button class="proc-btn" style="background:#2563eb;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Request additional documentation (ADR)')">↩ Request info</button>
+       <button class="proc-btn" style="background:#c2410c;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Escalate — medical director review')">↑ Escalate</button>`
+    : `<button class="proc-btn" style="background:#dc2626;padding:7px 14px;font-size:.78rem" onclick="workflowAct(${i},'Denial upheld — examiner confirmed')">✓ Uphold denial</button>
+       <button class="proc-btn" style="background:#15803d;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Denial overturned — approved on review')">↺ Overturn → approve</button>
+       <button class="proc-btn" style="background:#2563eb;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Request additional documentation (ADR)')">↩ Request info</button>`;
+  return `
+    <div class="cp-box" id="wf-item-${i}" style="margin-bottom:12px;border-left:4px solid ${isHR?'#7c3aed':'#dc2626'}">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+        ${badge}
+        <span style="font-family:monospace;color:#2563eb;font-weight:700">${it.icn}${ln}</span>
+        <span style="color:#334155">${it.svc}</span>
+        <span style="color:#334155">${it.member_name}</span>
+        <span class="badge-cat" style="background:#ffedd5;color:#c2410c">${it.edit_code}</span>
+        <span style="margin-left:auto;color:#b45309;font-weight:700">$${(it.billed||0).toLocaleString()}</span>
+      </div>
+      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:7px 10px;font-size:.75rem;color:#c2410c;margin-bottom:8px">
+        <strong>Why a human:</strong> ${it.why_human}
+      </div>
+      <div style="font-size:.76rem;color:#334155;margin-bottom:6px"><strong>Agent recommendation:</strong> ${it.recommendation}</div>
+      <div style="font-size:.7rem;color:#1d4ed8;font-weight:700;margin-bottom:6px">📋 SOP applied: ${_sopLink(it.edit_code, it.sop_ref)} · CARC ${it.carc||'—'} / RARC ${it.rarc||'—'}</div>
+      <div style="font-size:.62rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Evidence the agent staged</div>
+      ${kg}
+      <div id="wf-actions-${i}" style="margin-top:10px">${actions}</div>
+      <div id="wf-result-${i}"></div>
+    </div>`;
+}
+
+function workflowAct(i, decision) {
+  document.getElementById(`wf-actions-${i}`).style.display = 'none';
+  document.getElementById(`wf-result-${i}`).innerHTML = `
+    <div style="background:#dcfce7;border:1px solid #86efac;border-radius:6px;padding:9px 12px;font-size:.77rem;color:#15803d;margin-top:6px">
+      ✓ <strong>Examiner decision recorded:</strong> ${decision}
+      <div style="font-size:.68rem;color:#334155;margin-top:3px">Logged with examiner ID + timestamp · written back to the adjudication system · downstream payment/denial workflow triggered.</div>
+    </div>`;
+  const card = document.getElementById(`wf-item-${i}`);
+  if (card) card.style.borderLeftColor = '#15803d';
+  wfDecided++;
+  document.getElementById('wf-decided').textContent = wfDecided;
+  document.getElementById('wf-queued').textContent = Math.max(0, wfTotal - wfDecided).toLocaleString();
+}
+
 // ── Trace View ───────────────────────────────────────────────────────────────
 
 let traceClaims = [];
 let traceMultiClaims = [];
+let traceLineClaims = [];
 let traceRunning = false;
 
 async function initTrace() {
   if (traceClaims.length) return;
   try {
-    const [single, multi] = await Promise.all([
+    const [single, multi, lineC] = await Promise.all([
       fetch(`${API}/api/pend-queue?featured=true`).then(r => r.json()),
       fetch(`${API}/api/multi-edit-claims`).then(r => r.json()),
+      fetch(`${API}/api/line-claims`).then(r => r.json()),
     ]);
-    traceClaims      = single.claims || [];
+    // exclude the hero line claims from the single list (they're surfaced in their own group)
+    traceClaims      = (single.claims || []).filter(c => !c.is_multi_line);
     traceMultiClaims = multi.claims  || [];
+    traceLineClaims  = lineC.claims  || [];
 
     const sel = document.getElementById('trace-claim-select');
+    const lineOpts = traceLineClaims.map(c =>
+      `<option value="${c.icn}">🧾 HEADER + LINES: ${c.claim_type} — ${c.pended_lines} lines pended — ${c.member_name}</option>`
+    ).join('');
     const multiOpts = traceMultiClaims.map(c =>
       `<option value="${c.icn}" data-multi="true">⚡ MULTI-EDIT: ${c.label} — ${c.member_name}</option>`
     ).join('');
     const singleOpts = traceClaims.map(c =>
       `<option value="${c.icn}">${c.icn} — ${c.member_name} — ${c.edit_code}: ${c.edit_description.substring(0,40)}</option>`
     ).join('');
-    sel.innerHTML = `<optgroup label="── Multi-Edit Claims (3 SOPs)">${multiOpts}</optgroup>
+    sel.innerHTML = `<optgroup label="── Header + Service Lines (line-level pends)">${lineOpts}</optgroup>
+                     <optgroup label="── Multi-Edit Claims (3 SOPs, one line)">${multiOpts}</optgroup>
                      <optgroup label="── Single-Edit Claims (1 SOP)">${singleOpts}</optgroup>`;
 
-    const allClaims = [...traceMultiClaims, ...traceClaims];
+    const allClaims = [...traceLineClaims, ...traceMultiClaims, ...traceClaims];
     renderTraceClaimCard(allClaims[0]);
     sel.onchange = () => {
       const c = allClaims.find(x => x.icn === sel.value);
@@ -1185,18 +1677,38 @@ async function initTrace() {
 
 function renderTraceClaimCard(c) {
   const card = document.getElementById('trace-claim-card');
+  if (c.is_multi_line) {
+    const lines = c.lines || [];
+    const isInst = lines.some(l => l.rev_code);
+    card.innerHTML = `
+      <h3>🧾 ${c.claim_type} Claim — Header + ${lines.length} Lines</h3>
+      <div class="tcc-field"><span class="tcc-label">ICN</span><span class="tcc-value tcc-icn">${c.icn}</span></div>
+      <div class="tcc-field"><span class="tcc-label">Member</span><span class="tcc-value">${c.member_name}</span></div>
+      <div class="tcc-field"><span class="tcc-label">Provider</span><span class="tcc-value" style="font-size:.72rem">${c.provider_name}</span></div>
+      <div class="tcc-field"><span class="tcc-label">Form</span><span class="tcc-value" style="font-size:.72rem">${c.form||''}</span></div>
+      <div class="tcc-field"><span class="tcc-label">Total billed</span><span class="tcc-value" style="color:#b45309">$${c.billed_amount?.toFixed(2)}</span></div>
+      <div style="margin-top:10px;font-size:.63rem;color:#334155;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${lines.length} service lines · ${c.pended_lines} pended</div>
+      ${lines.map(l=>`<div class="tcc-edit" style="margin-bottom:5px;${l.pended?'border-color:#f59e0b':''}">
+        <div style="display:flex;justify-content:space-between"><span style="font-family:monospace;font-size:.7rem">L${l.line_no} · ${isInst?('REV '+(l.rev_code||'')):('CPT '+(l.cpt_code||''))}</span><span style="color:#b45309;font-size:.7rem">$${(l.charge||0).toFixed(2)}</span></div>
+        <div class="tcc-edit-desc">${l.description||''}</div>
+        ${l.pended?`<span class="tcc-cat" style="background:#ffedd5;color:#c2410c">PEND ${l.edit_code}</span>`:'<span style="color:#15803d;font-size:.68rem">clean — auto-adjudicated</span>'}
+      </div>`).join('')}
+      ${c.scenario_note?`<div style="background:#f1f5f9;border:1px solid #bfdbfe;border-radius:6px;padding:8px;font-size:.7rem;color:#2563eb;margin-top:8px;line-height:1.5">${c.scenario_note}</div>`:''}
+    `;
+    return;
+  }
   const isMulti = c.is_multi_edit;
   const editBlock = isMulti
     ? `<div style="margin-top:12px">
-        <div style="font-size:.63rem;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${c.edit_codes.length} Edit Codes — Stamped by Auto-Adjudication</div>
+        <div style="font-size:.63rem;color:#334155;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${c.edit_codes.length} Edit Codes — Stamped by Auto-Adjudication</div>
         ${(c.edits_detail || []).map((e,i) => `
-          <div class="tcc-edit" style="margin-bottom:6px;border-color:${['#7f1d1d','#451a03','#1e3a5f'][i]||'#334155'}">
-            <div style="font-size:.6rem;color:#475569;margin-bottom:2px">Edit ${i+1} of ${c.edit_codes.length}</div>
+          <div class="tcc-edit" style="margin-bottom:6px;border-color:${['#991b1b','#9a3412','#1e3a5f'][i]||'#334155'}">
+            <div style="font-size:.6rem;color:#334155;margin-bottom:2px">Edit ${i+1} of ${c.edit_codes.length}</div>
             <div class="tcc-edit-code">${e.edit_code}</div>
             <div class="tcc-edit-desc">${e.edit_description}</div>
             <span class="tcc-cat">${e.edit_category}</span>
           </div>`).join('')}
-        ${c.scenario_note ? `<div style="background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:8px;font-size:.7rem;color:#60a5fa;margin-top:8px;line-height:1.5">${c.scenario_note}</div>` : ''}
+        ${c.scenario_note ? `<div style="background:#f1f5f9;border:1px solid #bfdbfe;border-radius:6px;padding:8px;font-size:.7rem;color:#2563eb;margin-top:8px;line-height:1.5">${c.scenario_note}</div>` : ''}
       </div>`
     : `<div class="tcc-edit">
         <div class="tcc-edit-code">${c.edit_code}</div>
@@ -1215,10 +1727,10 @@ function renderTraceClaimCard(c) {
     <div class="tcc-field"><span class="tcc-label">CPT</span><span class="tcc-value" style="font-family:monospace">${c.cpt_code}</span></div>
     <div class="tcc-field"><span class="tcc-label">Description</span><span class="tcc-value" style="font-size:.68rem">${c.cpt_description?.substring(0,36)}…</span></div>
     <div class="tcc-field"><span class="tcc-label">ICD-10</span><span class="tcc-value" style="font-family:monospace">${c.icd10_principal}</span></div>
-    <div class="tcc-field"><span class="tcc-label">Billed</span><span class="tcc-value" style="color:#fbbf24">$${c.billed_amount?.toFixed(2)}</span></div>
+    <div class="tcc-field"><span class="tcc-label">Billed</span><span class="tcc-value" style="color:#b45309">$${c.billed_amount?.toFixed(2)}</span></div>
     <div class="tcc-field"><span class="tcc-label">Allowed</span><span class="tcc-value">$${c.allowed_amount?.toFixed(2)}</span></div>
     <div class="tcc-field"><span class="tcc-label">DOS</span><span class="tcc-value">${c.dos}</span></div>
-    <div class="tcc-field"><span class="tcc-label">Days in Queue</span><span class="tcc-value" style="color:${c.days_in_queue>14?'#f87171':'#94a3b8'}">${c.days_in_queue} days</span></div>
+    <div class="tcc-field"><span class="tcc-label">Days in Queue</span><span class="tcc-value" style="color:${c.days_in_queue>14?'#dc2626':'#334155'}">${c.days_in_queue} days</span></div>
     ${editBlock}
   `;
 }
@@ -1235,11 +1747,13 @@ async function runTrace() {
   const icn = sel.value;
   if (!icn) return;
 
-  const allClaims = [...traceMultiClaims, ...traceClaims];
+  const allClaims = [...traceLineClaims, ...traceMultiClaims, ...traceClaims];
   const claim = allClaims.find(c => c.icn === icn);
   if (!claim) return;
 
   if (claim.is_multi_edit) { await runMultiTrace(claim); return; }
+  // Every claim is header + service lines — each pended line gets the deep walk-through
+  await runLineTrace(claim); return;
 
   traceRunning = true;
   document.getElementById('trace-run-btn').disabled = true;
@@ -1251,7 +1765,7 @@ async function runTrace() {
   try {
     ctx = await fetch(`${API}/api/claim-context/${icn}`).then(r => r.json());
   } catch(e) {
-    flow.innerHTML = '<div style="color:#f87171">Server not reachable — is it running on port 5002?</div>';
+    flow.innerHTML = '<div style="color:#dc2626">Server not reachable — is it running on port 5002?</div>';
     traceRunning = false;
     document.getElementById('trace-run-btn').disabled = false;
     return;
@@ -1262,74 +1776,74 @@ async function runTrace() {
   // ── STEP 1: CLAIM RECEIVED ────────────────────────────────────────────────
   await addTraceStep(flow, 1, '📥 Claim Received', 'Auto-adjudication engine — fallout detected', `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
-      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:8px">
-        <div style="font-size:.65rem;color:#475569;margin-bottom:4px">CLAIM</div>
-        <div style="font-family:monospace;color:#60a5fa;font-size:.78rem">${claim.icn}</div>
-        <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">${claim.cpt_code} · $${claim.billed_amount?.toFixed(2)} billed</div>
-        <div style="font-size:.72rem;color:#94a3b8;margin-top:1px">ICD-10: ${claim.icd10_principal}</div>
-        <div style="font-size:.72rem;color:#94a3b8;margin-top:1px">DOS: ${claim.dos}</div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:8px">
+        <div style="font-size:.65rem;color:#334155;margin-bottom:4px">CLAIM</div>
+        <div style="font-family:monospace;color:#2563eb;font-size:.78rem">${claim.icn}</div>
+        <div style="font-size:.72rem;color:#334155;margin-top:2px">${claim.cpt_code} · $${claim.billed_amount?.toFixed(2)} billed</div>
+        <div style="font-size:.72rem;color:#334155;margin-top:1px">ICD-10: ${claim.icd10_principal}</div>
+        <div style="font-size:.72rem;color:#334155;margin-top:1px">DOS: ${claim.dos}</div>
       </div>
-      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:8px">
-        <div style="font-size:.65rem;color:#475569;margin-bottom:4px">MEMBER</div>
-        <div style="font-size:.78rem;color:#e2e8f0">${claim.member_name}</div>
-        <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">${claim.plan}</div>
-        <div style="font-size:.72rem;color:#94a3b8;margin-top:1px">${claim.provider_name}</div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:8px">
+        <div style="font-size:.65rem;color:#334155;margin-bottom:4px">MEMBER</div>
+        <div style="font-size:.78rem;color:#1e293b">${claim.member_name}</div>
+        <div style="font-size:.72rem;color:#334155;margin-top:2px">${claim.plan}</div>
+        <div style="font-size:.72rem;color:#334155;margin-top:1px">${claim.provider_name}</div>
       </div>
     </div>
-    <div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:6px;padding:8px;margin-top:8px;display:flex;align-items:center;gap:12px">
+    <div style="background:#fee2e2;border:1px solid #fecaca;border-radius:6px;padding:8px;margin-top:8px;display:flex;align-items:center;gap:12px">
       <div>
-        <div style="font-size:.63rem;color:#7f1d1d;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Edit Code — Stamped by Auto-Adjudication Engine</div>
-        <span style="font-family:monospace;font-weight:700;color:#f87171;font-size:.85rem">${claim.edit_code}</span>
-        <span style="color:#fca5a5;font-size:.75rem;margin-left:10px">${claim.edit_description}</span>
+        <div style="font-size:.63rem;color:#991b1b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Edit Code — Stamped by Auto-Adjudication Engine</div>
+        <span style="font-family:monospace;font-weight:700;color:#dc2626;font-size:.85rem">${claim.edit_code}</span>
+        <span style="color:#dc2626;font-size:.75rem;margin-left:10px">${claim.edit_description}</span>
       </div>
-      <span style="margin-left:auto;background:#450a0a;color:#f87171;border-radius:6px;padding:3px 10px;font-size:.68rem;font-weight:700;white-space:nowrap">${claim.edit_category}</span>
+      <span style="margin-left:auto;background:#fee2e2;color:#dc2626;border-radius:6px;padding:3px 10px;font-size:.68rem;font-weight:700;white-space:nowrap">${claim.edit_category}</span>
     </div>
   `, 600);
 
   // ── STEP 2: EDIT IDENTIFICATION ───────────────────────────────────────────
   await addTraceStep(flow, 2, '⚡ Edit Code Identified', `Auto-adjudication flagged reason code`, `
-    <div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:8px;padding:12px;margin-top:6px">
-      <div style="font-family:monospace;font-size:.9rem;font-weight:700;color:#f87171">${claim.edit_code}</div>
-      <div style="font-size:.8rem;color:#fca5a5;margin-top:4px">${claim.edit_description}</div>
+    <div style="background:#fee2e2;border:1px solid #fecaca;border-radius:8px;padding:12px;margin-top:6px">
+      <div style="font-family:monospace;font-size:.9rem;font-weight:700;color:#dc2626">${claim.edit_code}</div>
+      <div style="font-size:.8rem;color:#dc2626;margin-top:4px">${claim.edit_description}</div>
       <div style="display:flex;gap:10px;margin-top:8px;font-size:.72rem">
-        <span style="color:#475569">Category: <span style="color:#94a3b8">${claim.edit_category}</span></span>
-        <span style="color:#475569">CARC: <span style="font-family:monospace;color:#fbbf24">${claim.carc_code}</span></span>
-        <span style="color:#475569">RARC: <span style="font-family:monospace;color:#fbbf24">${claim.rarc_code}</span></span>
+        <span style="color:#334155">Category: <span style="color:#334155">${claim.edit_category}</span></span>
+        <span style="color:#334155">CARC: <span style="font-family:monospace;color:#b45309">${claim.carc_code}</span></span>
+        <span style="color:#334155">RARC: <span style="font-family:monospace;color:#b45309">${claim.rarc_code}</span></span>
       </div>
     </div>
   `, 800);
 
   // ── STEP 3: SOP LOOKUP ────────────────────────────────────────────────────
   await addTraceStep(flow, 3, '📚 SOP Database Lookup', `Querying SOP library for ${claim.edit_code}…`, `
-    <div style="font-size:.75rem;color:#60a5fa;margin-top:4px;font-family:monospace">SELECT * FROM sop_library WHERE edit_code = '${claim.edit_code}'…</div>
+    <div style="font-size:.75rem;color:#2563eb;margin-top:4px;font-family:monospace">SELECT * FROM sop_library WHERE edit_code = '${claim.edit_code}'…</div>
   `, 400, async (body) => {
     await sleep(900);
     body.innerHTML += `
       <div class="trace-sop-box" style="margin-top:10px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <div class="trace-sop-ref">&#10003; SOP Retrieved: ${res.sop_ref}</div>
-          <span style="background:#14532d;color:#4ade80;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:6px">ACTIVE</span>
+          <span style="background:#dcfce7;color:#15803d;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:6px">ACTIVE</span>
         </div>
-        <div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:8px;padding:14px">
-          <div style="font-size:.65rem;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Standard Operating Procedure</div>
-          <div style="font-size:.82rem;font-weight:700;color:#f1f5f9;margin-bottom:4px">${claim.edit_description}</div>
+        <div style="background:#f8fafc;border:1px solid #bfdbfe;border-radius:8px;padding:14px">
+          <div style="font-size:.65rem;color:#334155;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Standard Operating Procedure</div>
+          <div style="font-size:.82rem;font-weight:700;color:#0f172a;margin-bottom:4px">${claim.edit_description}</div>
           <div style="display:flex;gap:12px;font-size:.7rem;margin-bottom:12px;flex-wrap:wrap">
-            <span style="color:#475569">Edit: <span style="font-family:monospace;color:#60a5fa">${claim.edit_code}</span></span>
-            <span style="color:#475569">Category: <span style="color:#94a3b8">${claim.edit_category}</span></span>
-            <span style="color:#475569">CARC: <span style="font-family:monospace;color:#fbbf24">${claim.carc_code}</span></span>
-            <span style="color:#475569">RARC: <span style="font-family:monospace;color:#fbbf24">${claim.rarc_code}</span></span>
+            <span style="color:#334155">Edit: <span style="font-family:monospace;color:#2563eb">${claim.edit_code}</span></span>
+            <span style="color:#334155">Category: <span style="color:#334155">${claim.edit_category}</span></span>
+            <span style="color:#334155">CARC: <span style="font-family:monospace;color:#b45309">${claim.carc_code}</span></span>
+            <span style="color:#334155">RARC: <span style="font-family:monospace;color:#b45309">${claim.rarc_code}</span></span>
           </div>
-          <div style="font-size:.65rem;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Procedural Steps</div>
+          <div style="font-size:.65rem;color:#334155;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Procedural Steps</div>
           <ol style="list-style:none;padding:0;margin:0">
             ${(res.sop_steps || []).map((s, i) => `
-              <li style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #1e293b;font-size:.74rem;color:#94a3b8">
-                <span style="background:#1e3a5f;color:#60a5fa;border-radius:4px;padding:1px 7px;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:1px">${i+1}</span>
+              <li style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #cbd5e1;font-size:.74rem;color:#334155">
+                <span style="background:#bfdbfe;color:#2563eb;border-radius:4px;padding:1px 7px;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:1px">${i+1}</span>
                 ${s}
               </li>`).join('')}
           </ol>
-          <div style="margin-top:10px;padding-top:8px;border-top:1px solid #1e293b;font-size:.7rem">
-            <span style="color:#475569">Resolution path: </span>
-            <span style="font-family:monospace;color:#a78bfa">${claim.resolution_path}</span>
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid #cbd5e1;font-size:.7rem">
+            <span style="color:#334155">Resolution path: </span>
+            <span style="font-family:monospace;color:#7c3aed">${claim.resolution_path}</span>
           </div>
         </div>
       </div>
@@ -1365,7 +1879,7 @@ async function runTrace() {
   for (const dbName of dbs) {
     const dbData = getDbData(ctx, dbName);
     await addTraceStep(flow, 5, `🔍 Database Query — ${dbName}`, `Agent querying ${dbName}…`, `
-      <div style="font-size:.74rem;color:#60a5fa;margin-top:4px;font-family:monospace">SELECT * FROM ${dbName.replace(/ /g,'_').toUpperCase()} WHERE member_id = '${claim.member_id}' AND …</div>
+      <div style="font-size:.74rem;color:#2563eb;margin-top:4px;font-family:monospace">SELECT * FROM ${dbName.replace(/ /g,'_').toUpperCase()} WHERE member_id = '${claim.member_id}' AND …</div>
     `, 400, async (body) => {
       await sleep(800);
       if (dbData.found) {
@@ -1378,7 +1892,7 @@ async function runTrace() {
         body.innerHTML += `
           <div class="trace-db-miss">
             <div class="trace-db-header miss">✗ No record found in ${dbName}</div>
-            <div style="font-size:.72rem;color:#94a3b8;margin-top:4px">${dbData.message}</div>
+            <div style="font-size:.72rem;color:#334155;margin-top:4px">${dbData.message}</div>
           </div>`;
       }
     });
@@ -1389,23 +1903,23 @@ async function runTrace() {
   const kgRulesHtml = kgRules.map((r, i) => `
     <div class="trace-kg-rule" style="margin-bottom:8px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-        <span style="font-family:monospace;font-size:.68rem;font-weight:700;color:#7c3aed;background:#1e1035;padding:1px 7px;border-radius:4px">${r.rule_id}</span>
-        <span style="font-size:.75rem;font-weight:700;color:#c084fc">${r.check}</span>
+        <span style="font-family:monospace;font-size:.68rem;font-weight:700;color:#6d28d9;background:#ede9fe;padding:1px 7px;border-radius:4px">${r.rule_id}</span>
+        <span style="font-size:.75rem;font-weight:700;color:#9333ea">${r.check}</span>
       </div>
-      <div style="font-size:.74rem;color:#94a3b8;line-height:1.5;margin-bottom:3px">${r.text}</div>
-      <div style="font-size:.67rem;color:#475569;font-style:italic">Source: ${r.source}</div>
+      <div style="font-size:.74rem;color:#334155;line-height:1.5;margin-bottom:3px">${r.text}</div>
+      <div style="font-size:.67rem;color:#334155;font-style:italic">Source: ${r.source}</div>
     </div>
   `).join('');
 
   await addTraceStep(flow, 6, '🧠 Knowledge Graph Reasoning', `${kgRules.length} rule${kgRules.length!==1?'s':''} evaluated — deterministic`, `
-    <div style="margin-top:6px">${kgRulesHtml || '<div style="color:#475569">No specific KG rules for this edit type.</div>'}</div>
-    ${claim.human_review_flag ? `<div class="trace-kg-rule" style="border-left-color:#7c3aed;color:#c084fc;margin-top:8px"><span style="font-family:monospace;font-size:.68rem;font-weight:700;background:#1e1035;padding:1px 7px;border-radius:4px;margin-right:6px">KG-HR-001</span>Human review threshold: ${claim.human_review_reason}</div>` : ''}
-    <div style="font-size:.72rem;color:#4ade80;margin-top:10px;padding-top:8px;border-top:1px solid #1e293b">✓ ${kgRules.length} rule${kgRules.length!==1?'s':''} fired · Confidence: 100% · 0 ambiguous rules · All citations auditable</div>
+    <div style="margin-top:6px">${kgRulesHtml || '<div style="color:#334155">No specific KG rules for this edit type.</div>'}</div>
+    ${claim.human_review_flag ? `<div class="trace-kg-rule" style="border-left-color:#6d28d9;color:#9333ea;margin-top:8px"><span style="font-family:monospace;font-size:.68rem;font-weight:700;background:#ede9fe;padding:1px 7px;border-radius:4px;margin-right:6px">KG-HR-001</span>Human review threshold: ${claim.human_review_reason}</div>` : ''}
+    <div style="font-size:.72rem;color:#15803d;margin-top:10px;padding-top:8px;border-top:1px solid #cbd5e1">✓ ${kgRules.length} rule${kgRules.length!==1?'s':''} fired · Confidence: 100% · 0 ambiguous rules · All citations auditable</div>
   `, 700);
 
   // ── STEP 7: DECISION ──────────────────────────────────────────────────────
-  const colorMap = {approve:'#4ade80',deny:'#f87171',partial_pay:'#fbbf24',request_info:'#60a5fa',escalate:'#fb923c',human_review:'#c084fc'};
-  const outcomeColor = colorMap[res.outcome] || '#94a3b8';
+  const colorMap = {approve:'#15803d',deny:'#dc2626',partial_pay:'#b45309',request_info:'#2563eb',escalate:'#c2410c',human_review:'#9333ea'};
+  const outcomeColor = colorMap[res.outcome] || '#334155';
   const payment = res.payment_amount > 0 ? `$${res.payment_amount.toFixed(2)}` : '$0.00';
 
   await addTraceStep(flow, 7, '✅ Decision', 'Episode complete — route to payment system', `
@@ -1413,10 +1927,143 @@ async function runTrace() {
       <div class="trace-decision-outcome" style="color:${outcomeColor}">${res.outcome_label}</div>
       <div class="trace-decision-codes">${res.carc} / ${res.rarc}</div>
       <div class="trace-decision-payment">Payment: <strong style="color:${outcomeColor}">${payment}</strong></div>
-      ${res.human_review ? `<div style="background:#130a2e;border:1px solid #581c87;border-radius:8px;padding:8px;margin-top:10px;font-size:.74rem;color:#c084fc">⚠ Routed to Human Review Queue — examiner decision required</div>` : ''}
-      <div style="margin-top:12px;font-size:.7rem;color:#475569">Processing time: ${res.processing_ms}ms · SOP: ${res.sop_ref}</div>
+      ${res.human_review ? `<div style="background:#ede9fe;border:1px solid #d8b4fe;border-radius:8px;padding:8px;margin-top:10px;font-size:.74rem;color:#9333ea">⚠ Routed to Human Review Queue — examiner decision required</div>` : ''}
+      <div style="margin-top:12px;font-size:.7rem;color:#334155">Processing time: ${res.processing_ms}ms · SOP: ${res.sop_ref}</div>
     </div>
   `, 600);
+
+  traceRunning = false;
+  document.getElementById('trace-run-btn').disabled = false;
+}
+
+async function runLineTrace(claim) {
+  traceRunning = true;
+  document.getElementById('trace-run-btn').disabled = true;
+  const flow = document.getElementById('trace-flow');
+  flow.innerHTML = '';
+  let d;
+  try { d = await fetch(`${API}/api/claim-lines/${claim.icn}?resolve=1`).then(r => r.json()); }
+  catch(e) { flow.innerHTML = '<div style="color:#dc2626">Server not reachable — is it running on port 5002?</div>'; traceRunning = false; document.getElementById('trace-run-btn').disabled = false; return; }
+
+  const lines = d.lines || [];
+  const isInst = lines.some(l => l.rev_code);
+  const colorMap = {approve:'#15803d',deny:'#dc2626',partial_pay:'#b45309',request_info:'#2563eb',escalate:'#c2410c',human_review:'#7c3aed'};
+
+  // Step 1 — header + all service lines received
+  const lineRows = lines.map(l => `
+    <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #e2e8f0;font-size:.72rem;${l.pended?'':'opacity:.8'}">
+      <span style="font-family:monospace;color:#334155;min-width:96px">L${l.line_no} · ${isInst?('REV '+(l.rev_code||'')):('CPT '+(l.cpt_code||''))}</span>
+      <span style="flex:1">${l.description||''}</span>
+      <span style="color:#b45309">$${(l.charge||0).toFixed(2)}</span>
+      ${l.pended?`<span class="badge-cat" style="background:#ffedd5;color:#c2410c">PEND ${l.edit_code}</span>`:'<span style="color:#15803d">clean</span>'}
+    </div>`).join('');
+  await addTraceStep(flow, 1, '📥 Claim Received — Header + Service Lines',
+    `${d.header.claim_type} · ${d.header.form||''} · ${lines.length} lines (${d.rollup.lines_pended} pended)`, `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0">
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px">
+        <div style="font-size:.65rem;color:#334155;margin-bottom:4px">HEADER</div>
+        <div style="font-size:.78rem">${d.header.member_name}</div>
+        <div style="font-size:.72rem;color:#334155">${d.header.plan}</div>
+        <div style="font-size:.72rem;color:#334155">${d.header.provider_name}</div>
+        <div style="font-size:.72rem;color:#334155;margin-top:2px">Total billed: <span style="color:#b45309">$${d.header.billed_amount.toFixed(2)}</span></div>
+      </div>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px;font-size:.72rem;color:#334155">
+        Only the <strong>pended lines</strong> need the agent. Clean lines auto-adjudicate. Each pended line is resolved independently, then rolled up to the header.
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px">${lineRows}</div>
+  `, 700);
+
+  // Per pended line — real resolution
+  let step = 2;
+  for (const l of lines.filter(x => x.pended)) {
+    const res = l.resolution; const col = colorMap[res.outcome] || '#334155';
+    const dbHtml = (res.dbs_queried || []).map(db=>`<span class="db-query-pill hit">✓ ${db}</span>`).join(' ');
+    const kgHtml = (res.kg_rules || []).map(k=>`
+      <div style="border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;padding:7px 10px;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px"><span style="font-family:monospace;font-size:.64rem;font-weight:700;color:#7c3aed;background:#ede9fe;padding:1px 6px;border-radius:4px">${k.rule_id}</span><span style="font-size:.72rem;font-weight:700;color:#6d28d9">${k.check}</span></div>
+        <div style="font-size:.72rem;color:#334155;line-height:1.5">${k.text}</div>
+        <div style="font-size:.66rem;color:#64748b;font-style:italic;margin-top:3px">📖 Source: ${k.source}</div>
+      </div>`).join('');
+
+    // ── Autonomous SOP retrieval: the agent pulls the governing SOP document ──
+    let sopDoc = null;
+    try { sopDoc = await fetch(`${API}/api/sop/${l.edit_code}`).then(r=>r.json()); } catch(e){}
+    await addTraceStep(flow, step++, `📚 Line ${l.line_no} — retrieving SOP ${res.sop_ref}`,
+      `Agent pulls the governing procedure from the SOP library`,
+      sopDoc ? `<div style="border:1px solid #bfdbfe;border-radius:10px;overflow:hidden;margin-top:4px">${sopDocHtml(sopDoc)}</div>`
+             : `<div style="color:#64748b;font-size:.75rem">SOP ${res.sop_ref}</div>`, 650);
+
+    // ── Clinical / medical-necessity: evaluate against the MCG-style guideline ──
+    if (res.clinical) {
+      const cl = res.clinical;
+      const critHtml = (cl.criteria||[]).map(c=>`
+        <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0">
+          <span style="flex-shrink:0;font-size:.9rem;color:${c.status==='met'?'#15803d':'#dc2626'}">${c.status==='met'?'✓':'✕'}</span>
+          <div style="flex:1">
+            <div style="font-size:.73rem;color:#0f172a;font-weight:600">${c.criterion}</div>
+            <div style="font-size:.7rem;color:#334155;margin-top:1px">↳ ${c.note}</div>
+          </div>
+          <span style="flex-shrink:0;font-size:.6rem;font-weight:700;padding:1px 7px;border-radius:5px;${c.status==='met'?'background:#dcfce7;color:#15803d':'background:#fee2e2;color:#dc2626'}">${c.status==='met'?'MET':'NOT MET'}</span>
+        </div>`).join('');
+      const _clcol = {approve:'#15803d',deny:'#dc2626',partial_pay:'#b45309'}[cl.outcome]||'#854d0e';
+      await addTraceStep(flow, step++, `🩺 Line ${l.line_no} — clinical determination (MCG-style guideline) → ${cl.outcome_label}`,
+        `${cl.guideline_id} · ${cl.title}`, `
+        <div style="border:1px solid #bfdbfe;background:#f8fbff;border-radius:8px;padding:11px 13px">
+          <div style="font-size:.74rem;color:#1d4ed8;font-weight:700;margin-bottom:6px">📖 ${cl.guideline_id} — ${cl.title}</div>
+          <div style="font-size:.62rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">Guideline criteria evaluated against the claim — ${cl.criteria_met}/${cl.criteria_total} met</div>
+          ${critHtml}
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid ${_clcol};border-radius:6px;padding:9px 11px;margin-top:9px;font-size:.74rem;color:#334155"><strong style="color:${_clcol}">Determination — ${cl.outcome_label}:</strong> ${cl.determination}</div>
+          <div style="font-size:.65rem;color:#64748b;font-style:italic;margin-top:5px">Source: ${cl.source}</div>
+        </div>`, 750);
+    }
+
+    // ── Apply the SOP to this line → decision ──
+    const execHtml = (res.executed_steps||[]).map(s=>`
+      <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #e2e8f0">
+        <span style="flex-shrink:0;font-size:.85rem;color:${s.status==='pass'?'#15803d':s.status==='fail'?'#dc2626':'#64748b'}">${s.status==='pass'?'✓':s.status==='fail'?'✕':'•'}</span>
+        <div style="flex:1">
+          <div style="font-size:.73rem;color:#0f172a;font-weight:600">${s.text}</div>
+          <div style="font-size:.71rem;color:#334155;margin-top:1px">↳ ${s.observation}${s.decisive?` &nbsp;<span style="color:#1d4ed8;font-weight:700">→ decision: ${res.outcome_label}</span>`:''}</div>
+        </div>
+      </div>`).join('');
+    await addTraceStep(flow, step++, `⚙ Line ${l.line_no} — executing SOP → ${res.outcome_label}`,
+      `${isInst?('REV '+l.rev_code):('CPT '+l.cpt_code)} · ${l.description}`, `
+      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:8px 10px;margin:4px 0;font-size:.74rem;color:#c2410c"><strong>${l.edit_code}</strong> — ${res.edit_description||l.description}</div>
+      <div style="font-size:.72rem;color:#1d4ed8;font-weight:700;margin-bottom:6px">📋 Executing ${_sopLink(l.edit_code, res.sop_ref)} against this claim · CARC ${res.carc||'—'} / RARC ${res.rarc||'—'}</div>
+      <div style="font-size:.63rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">SOP executed step-by-step (live against source records)</div>
+      <div style="margin-bottom:8px">${execHtml}</div>
+      <div style="font-size:.63rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Policy basis / citations</div>
+      ${kgHtml}
+      <div style="font-size:.63rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin:6px 0 4px">Databases queried</div>
+      <div style="margin-bottom:8px">${dbHtml}</div>
+      <div class="trace-decision-box" style="padding:10px">
+        <div class="trace-decision-outcome" style="color:${col};font-size:1rem">${res.outcome_label}</div>
+        <div class="trace-decision-codes">${res.carc||'—'} / ${res.rarc||'—'}</div>
+        <div class="trace-decision-payment">Line payment: <strong style="color:${col}">${res.payment_amount>0?'$'+res.payment_amount.toFixed(2):'$0.00'}</strong></div>
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px;margin-top:8px;font-size:.73rem;color:#334155"><strong>Why:</strong> ${res.rationale||''}</div>
+      </div>
+    `, 700);
+  }
+
+  // Clean lines summary
+  const clean = lines.filter(x => !x.pended);
+  const cleanPaid = clean.reduce((a,l)=>a+(l.resolution?.payment_amount||0),0);
+  await addTraceStep(flow, step++, '✅ Clean Lines Auto-Adjudicated',
+    `${clean.length} lines paid without review`, `
+    <div style="font-size:.74rem;color:#334155">${clean.length} clean service lines auto-adjudicated at their allowed amounts — total <strong style="color:#15803d">$${cleanPaid.toFixed(2)}</strong>. No agent decision needed.</div>
+  `, 400);
+
+  // Header rollup
+  const r = d.rollup; const rcol = colorMap[r.outcome] || '#334155';
+  await addTraceStep(flow, step++, '🧾 Header Rollup — Claim Disposition',
+    `${r.lines_paid}/${r.lines_total} lines paid · ${r.lines_pended} pended`, `
+    <div class="trace-decision-box">
+      <div class="trace-decision-outcome" style="color:${rcol}">${r.outcome_label}</div>
+      <div class="trace-decision-payment">Total claim payment: <strong style="color:${rcol}">$${r.payment_amount.toFixed(2)}</strong> of $${d.header.billed_amount.toFixed(2)} billed</div>
+      <div style="margin-top:10px;font-size:.72rem;color:#334155">The claim pays only what its lines support — one line's edit does not hold the whole claim.</div>
+    </div>
+  `, 700);
 
   traceRunning = false;
   document.getElementById('trace-run-btn').disabled = false;
@@ -1432,38 +2079,38 @@ async function runMultiTrace(claim) {
   try {
     ctx = await fetch(`${API}/api/multi-edit-context/${claim.icn}`).then(r => r.json());
   } catch(e) {
-    flow.innerHTML = '<div style="color:#f87171">Server not reachable — is it running on port 5002?</div>';
+    flow.innerHTML = '<div style="color:#dc2626">Server not reachable — is it running on port 5002?</div>';
     traceRunning = false;
     document.getElementById('trace-run-btn').disabled = false;
     return;
   }
 
   const edits = ctx.edit_resolutions || [];
-  const colorMap = {approve:'#4ade80',deny:'#f87171',partial_pay:'#fbbf24',request_info:'#60a5fa',escalate:'#fb923c',human_review:'#c084fc'};
+  const colorMap = {approve:'#15803d',deny:'#dc2626',partial_pay:'#b45309',request_info:'#2563eb',escalate:'#c2410c',human_review:'#9333ea'};
 
   // STEP 1: Claim received with all edit codes
   await addTraceStep(flow, 1, '📥 Claim Received', `Auto-adjudication flagged ${edits.length} edit codes`, `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
-      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:8px">
-        <div style="font-size:.65rem;color:#475569;margin-bottom:4px">CLAIM</div>
-        <div style="font-family:monospace;color:#60a5fa;font-size:.78rem">${claim.icn}</div>
-        <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">${claim.cpt_code} · $${claim.billed_amount?.toFixed(2)} billed</div>
-        <div style="font-size:.72rem;color:#94a3b8;margin-top:1px">ICD-10: ${claim.icd10_principal} · DOS: ${claim.dos}</div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:8px">
+        <div style="font-size:.65rem;color:#334155;margin-bottom:4px">CLAIM</div>
+        <div style="font-family:monospace;color:#2563eb;font-size:.78rem">${claim.icn}</div>
+        <div style="font-size:.72rem;color:#334155;margin-top:2px">${claim.cpt_code} · $${claim.billed_amount?.toFixed(2)} billed</div>
+        <div style="font-size:.72rem;color:#334155;margin-top:1px">ICD-10: ${claim.icd10_principal} · DOS: ${claim.dos}</div>
       </div>
-      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:8px">
-        <div style="font-size:.65rem;color:#475569;margin-bottom:4px">MEMBER</div>
-        <div style="font-size:.78rem;color:#e2e8f0">${claim.member_name}</div>
-        <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">${claim.plan}</div>
-        <div style="font-size:.72rem;color:#94a3b8;margin-top:1px">${claim.provider_name}</div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:8px">
+        <div style="font-size:.65rem;color:#334155;margin-bottom:4px">MEMBER</div>
+        <div style="font-size:.78rem;color:#1e293b">${claim.member_name}</div>
+        <div style="font-size:.72rem;color:#334155;margin-top:2px">${claim.plan}</div>
+        <div style="font-size:.72rem;color:#334155;margin-top:1px">${claim.provider_name}</div>
       </div>
     </div>
     <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px">
       ${edits.map((e,i) => `
-        <div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:6px;padding:7px 10px;display:flex;align-items:center;gap:10px">
-          <span style="background:#450a0a;color:#f87171;border-radius:4px;padding:1px 7px;font-size:.65rem;font-weight:700;flex-shrink:0">Edit ${i+1}</span>
-          <span style="font-family:monospace;font-weight:700;color:#f87171;font-size:.78rem">${e.edit_code}</span>
-          <span style="color:#fca5a5;font-size:.72rem">${e.edit_description}</span>
-          <span style="margin-left:auto;background:#1e293b;color:#94a3b8;border-radius:6px;padding:2px 7px;font-size:.65rem;white-space:nowrap">${e.edit_category}</span>
+        <div style="background:#fee2e2;border:1px solid #fecaca;border-radius:6px;padding:7px 10px;display:flex;align-items:center;gap:10px">
+          <span style="background:#fee2e2;color:#dc2626;border-radius:4px;padding:1px 7px;font-size:.65rem;font-weight:700;flex-shrink:0">Edit ${i+1}</span>
+          <span style="font-family:monospace;font-weight:700;color:#dc2626;font-size:.78rem">${e.edit_code}</span>
+          <span style="color:#dc2626;font-size:.72rem">${e.edit_description}</span>
+          <span style="margin-left:auto;background:#cbd5e1;color:#334155;border-radius:6px;padding:2px 7px;font-size:.65rem;white-space:nowrap">${e.edit_category}</span>
         </div>`).join('')}
     </div>
   `, 600);
@@ -1477,27 +2124,27 @@ async function runMultiTrace(claim) {
 
     // SOP Lookup
     await addTraceStep(flow, stepNum++, `📚 Edit ${i+1}/${edits.length} — SOP Lookup`, `${ed.edit_code}: ${ed.edit_description.substring(0,40)}…`, `
-      <div style="font-size:.75rem;color:#60a5fa;margin-top:4px;font-family:monospace">SELECT * FROM sop_library WHERE edit_code = '${ed.edit_code}'…</div>
+      <div style="font-size:.75rem;color:#2563eb;margin-top:4px;font-family:monospace">SELECT * FROM sop_library WHERE edit_code = '${ed.edit_code}'…</div>
     `, 500, async (body) => {
       await sleep(800);
       body.innerHTML += `
         <div class="trace-sop-box" style="margin-top:10px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
             <div class="trace-sop-ref">&#10003; ${ed.sop_ref}</div>
-            <span style="background:#14532d;color:#4ade80;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:6px">ACTIVE</span>
+            <span style="background:#dcfce7;color:#15803d;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:6px">ACTIVE</span>
           </div>
-          <div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:8px;padding:12px">
-            <div style="font-size:.8rem;font-weight:700;color:#f1f5f9;margin-bottom:10px">${ed.edit_description}</div>
+          <div style="background:#f8fafc;border:1px solid #bfdbfe;border-radius:8px;padding:12px">
+            <div style="font-size:.8rem;font-weight:700;color:#0f172a;margin-bottom:10px">${ed.edit_description}</div>
             <div style="display:flex;gap:10px;font-size:.7rem;margin-bottom:10px;flex-wrap:wrap">
-              <span style="color:#475569">Edit: <span style="font-family:monospace;color:#60a5fa">${ed.edit_code}</span></span>
-              <span style="color:#475569">CARC: <span style="font-family:monospace;color:#fbbf24">${ed.carc_code}</span></span>
-              <span style="color:#475569">RARC: <span style="font-family:monospace;color:#rarc_code">${ed.rarc_code}</span></span>
+              <span style="color:#334155">Edit: <span style="font-family:monospace;color:#2563eb">${ed.edit_code}</span></span>
+              <span style="color:#334155">CARC: <span style="font-family:monospace;color:#b45309">${ed.carc_code}</span></span>
+              <span style="color:#334155">RARC: <span style="font-family:monospace;color:#rarc_code">${ed.rarc_code}</span></span>
             </div>
-            <div style="font-size:.65rem;color:#475569;font-weight:700;text-transform:uppercase;margin-bottom:6px">Procedural Steps</div>
+            <div style="font-size:.65rem;color:#334155;font-weight:700;text-transform:uppercase;margin-bottom:6px">Procedural Steps</div>
             <ol style="list-style:none;padding:0;margin:0">
-              ${sopSteps.map((s,j) => `<li style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #1e293b;font-size:.74rem;color:#94a3b8"><span style="background:#1e3a5f;color:#60a5fa;border-radius:4px;padding:1px 6px;font-size:.62rem;font-weight:700;flex-shrink:0">${j+1}</span>${s}</li>`).join('')}
+              ${sopSteps.map((s,j) => `<li style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #cbd5e1;font-size:.74rem;color:#334155"><span style="background:#bfdbfe;color:#2563eb;border-radius:4px;padding:1px 6px;font-size:.62rem;font-weight:700;flex-shrink:0">${j+1}</span>${s}</li>`).join('')}
             </ol>
-            <div style="margin-top:8px;font-size:.7rem;color:#475569">Resolution path: <span style="font-family:monospace;color:#a78bfa">${ed.resolution_path}</span></div>
+            <div style="margin-top:8px;font-size:.7rem;color:#334155">Resolution path: <span style="font-family:monospace;color:#7c3aed">${ed.resolution_path}</span></div>
           </div>
         </div>`;
     });
@@ -1506,13 +2153,13 @@ async function runMultiTrace(claim) {
     for (const dbName of dbs) {
       const dbData = getDbData(ctx, dbName);
       await addTraceStep(flow, stepNum++, `🔍 Edit ${i+1} — Database Query: ${dbName}`, `Querying ${dbName}…`, `
-        <div style="font-size:.74rem;color:#60a5fa;margin-top:4px;font-family:monospace">SELECT * FROM ${dbName.replace(/ /g,'_').toUpperCase()} WHERE …</div>
+        <div style="font-size:.74rem;color:#2563eb;margin-top:4px;font-family:monospace">SELECT * FROM ${dbName.replace(/ /g,'_').toUpperCase()} WHERE …</div>
       `, 350, async (body) => {
         await sleep(700);
         if (dbData.found) {
           body.innerHTML += `<div class="trace-db-hit"><div class="trace-db-header hit">&#10003; Record found</div>${dbData.rows.map(r=>`<div class="trace-db-row"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('')}</div>`;
         } else {
-          body.innerHTML += `<div class="trace-db-miss"><div class="trace-db-header miss">&#10007; No record found</div><div style="font-size:.72rem;color:#94a3b8;margin-top:4px">${dbData.message}</div></div>`;
+          body.innerHTML += `<div class="trace-db-miss"><div class="trace-db-header miss">&#10007; No record found</div><div style="font-size:.72rem;color:#334155;margin-top:4px">${dbData.message}</div></div>`;
         }
       });
     }
@@ -1523,38 +2170,38 @@ async function runMultiTrace(claim) {
   const multiKgHtml = edits.map((e, i) => {
     const rules = e.kg_rules || [];
     return `<div style="margin-bottom:12px">
-      <div style="font-size:.7rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Edit ${i+1} — ${e.edit_code}</div>
+      <div style="font-size:.7rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Edit ${i+1} — ${e.edit_code}</div>
       ${rules.map(r => `
         <div class="trace-kg-rule" style="margin-bottom:6px">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-            <span style="font-family:monospace;font-size:.67rem;font-weight:700;color:#7c3aed;background:#1e1035;padding:1px 6px;border-radius:4px">${r.rule_id}</span>
-            <span style="font-size:.73rem;font-weight:700;color:#c084fc">${r.check}</span>
+            <span style="font-family:monospace;font-size:.67rem;font-weight:700;color:#6d28d9;background:#ede9fe;padding:1px 6px;border-radius:4px">${r.rule_id}</span>
+            <span style="font-size:.73rem;font-weight:700;color:#9333ea">${r.check}</span>
           </div>
-          <div style="font-size:.73rem;color:#94a3b8;line-height:1.5;margin-bottom:2px">${r.text}</div>
-          <div style="font-size:.66rem;color:#475569;font-style:italic">Source: ${r.source}</div>
+          <div style="font-size:.73rem;color:#334155;line-height:1.5;margin-bottom:2px">${r.text}</div>
+          <div style="font-size:.66rem;color:#334155;font-style:italic">Source: ${r.source}</div>
         </div>`).join('')}
     </div>`;
   }).join('');
 
   await addTraceStep(flow, stepNum++, '🧠 Knowledge Graph — Combined Reasoning', `${totalKgRules} rules across ${edits.length} edits · most restrictive applies`, `
     <div style="margin-top:6px">${multiKgHtml}</div>
-    <div style="background:#1e293b;border-radius:6px;padding:10px;margin-top:8px">
-      <div style="font-size:.72rem;font-weight:700;color:#94a3b8;margin-bottom:6px">Combined Decision Rule</div>
-      ${edits.map((e,i) => `<div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:3px"><span style="color:#475569">Edit ${i+1} (${e.edit_code})</span><span style="color:${colorMap[e.outcome]||'#94a3b8'}">${e.outcome_label}</span></div>`).join('')}
-      <div style="border-top:1px solid #334155;margin-top:6px;padding-top:6px;font-size:.72rem;color:#4ade80">&#10003; Most restrictive outcome wins · ${totalKgRules} rules fired · All citations auditable</div>
+    <div style="background:#cbd5e1;border-radius:6px;padding:10px;margin-top:8px">
+      <div style="font-size:.72rem;font-weight:700;color:#334155;margin-bottom:6px">Combined Decision Rule</div>
+      ${edits.map((e,i) => `<div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:3px"><span style="color:#334155">Edit ${i+1} (${e.edit_code})</span><span style="color:${colorMap[e.outcome]||'#334155'}">${e.outcome_label}</span></div>`).join('')}
+      <div style="border-top:1px solid #94a3b8;margin-top:6px;padding-top:6px;font-size:.72rem;color:#15803d">&#10003; Most restrictive outcome wins · ${totalKgRules} rules fired · All citations auditable</div>
     </div>
   `, 700);
 
   // Final Decision
   const combined = ctx.combined_outcome;
-  const combinedColor = colorMap[combined] || '#94a3b8';
+  const combinedColor = colorMap[combined] || '#334155';
   const payment = ctx.combined_payment > 0 ? `$${ctx.combined_payment.toFixed(2)}` : '$0.00';
   await addTraceStep(flow, stepNum++, '✅ Final Decision', `${edits.length} edits resolved → single combined disposition`, `
     <div class="trace-decision-box">
-      <div style="font-size:.8rem;color:#475569;margin-bottom:8px">${edits.length} edit codes · ${edits.length} SOPs executed</div>
+      <div style="font-size:.8rem;color:#334155;margin-bottom:8px">${edits.length} edit codes · ${edits.length} SOPs executed</div>
       <div class="trace-decision-outcome" style="color:${combinedColor}">${ctx.combined_label}</div>
       <div class="trace-decision-payment">Payment: <strong style="color:${combinedColor}">${payment}</strong></div>
-      ${claim.human_review_flag ? `<div style="background:#130a2e;border:1px solid #581c87;border-radius:8px;padding:8px;margin-top:10px;font-size:.74rem;color:#c084fc">&#9888; Routed to Human Review Queue</div>` : ''}
+      ${claim.human_review_flag ? `<div style="background:#ede9fe;border:1px solid #d8b4fe;border-radius:8px;padding:8px;margin-top:10px;font-size:.74rem;color:#9333ea">&#9888; Routed to Human Review Queue</div>` : ''}
     </div>
   `, 600);
 
@@ -1669,16 +2316,29 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
+// Source-DB record counts are captured then hidden until the Extract step connects them.
+let DB_COUNTS = {};
+function _blankDbCounts() {
+  for (let i = 0; i <= 6; i++) {
+    const el = document.getElementById(`dbc-${i}-count`);
+    if (!el) continue;
+    if (DB_COUNTS[i] === undefined) DB_COUNTS[i] = el.textContent;   // capture original once
+    el.textContent = i === 6 ? '—' : 'not connected';
+    el.style.color = '#94a3b8';
+  }
+}
+function _revealDbCount(i) {
+  const el = document.getElementById(`dbc-${i}-count`);
+  if (el && DB_COUNTS[i] !== undefined) { el.textContent = DB_COUNTS[i]; el.style.color = ''; }
+}
+
 (async function init() {
+  // Opening Hub shows NO counts — nothing has been ingested yet. Numbers appear after Extract.
   try {
     const s = await fetch(`${API}/api/stats`).then(r => r.json());
-    document.getElementById('hs-pended').textContent = s.total_pended;
-    document.getElementById('hs-edits').textContent  = s.edit_types;
-    document.getElementById('hs-hr').textContent     = s.human_review_count;
-    document.getElementById('hub-stats').style.display = 'flex';
-    document.getElementById('hr-badge').textContent  = s.human_review_count;
     document.getElementById('review-count-badge').textContent = s.human_review_count;
   } catch(e) {}
+  _blankDbCounts();
 })();
 </script>
 </body>

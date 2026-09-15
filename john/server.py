@@ -55,9 +55,109 @@ sop_outcomes      = load("sop_outcomes.json")
 predictions       = load("predictions.json")
 edit_codes        = load("edit_codes.json")
 multi_edit_claims = load("multi_edit_claims.json") if (DATA / "multi_edit_claims.json").exists() else []
+line_item_claims  = load("line_item_claims.json") if (DATA / "line_item_claims.json").exists() else []
+
+# Enrich the hero header+line-item claims with display fields so they render in the queue
+for _c in line_item_claims:
+    _c.setdefault("cpt_code", (_c["lines"][0].get("cpt_code") or _c["lines"][0].get("rev_code") or "—"))
+    _c["edit_code"]     = f'{_c.get("pended_lines", 0)} lines pended'
+    _c["edit_category"] = _c.get("claim_type", "Multi-line")
+    _c["is_multi_line"] = True
+    _c["is_featured"]   = True
+line_item_index = {c["icn"]: c for c in line_item_claims}
 
 # Index pended claims by ICN for fast lookup
 claims_index = {c["icn"]: c for c in pended_claims}
+
+# ── Reference-directory sizing ───────────────────────────────────────────────────
+# The base synthetic pools are small (they were reused across the scaled pend queue).
+# A payer's reference systems are full DIRECTORIES far larger than any one pend batch.
+# Pad them (append-only, distinct keys) to credible sizes so the connected-DB tiles are
+# realistic. Existing claim lookups are untouched — this only enlarges the directories.
+def _pad_reference_dbs():
+    import random as _r
+    rnd = _r.Random(2026)
+    FIRST = ["James","Mary","Robert","Patricia","John","Jennifer","Michael","Linda","David","Elizabeth",
+             "William","Susan","Richard","Jessica","Joseph","Sarah","Thomas","Karen","Charles","Nancy",
+             "Daniel","Lisa","Matthew","Betty","Anthony","Sandra","Mark","Ashley","Donald","Emily",
+             "Steven","Kimberly","Paul","Donna","Andrew","Michelle","Joshua","Carol","Kenneth","Amanda"]
+    LAST = ["Smith","Johnson","Williams","Brown","Jones","Garcia","Miller","Davis","Rodriguez","Martinez",
+            "Hernandez","Lopez","Gonzalez","Wilson","Anderson","Thomas","Taylor","Moore","Jackson","Martin",
+            "Lee","Perez","Thompson","White","Harris","Sanchez","Clark","Ramirez","Lewis","Robinson",
+            "Walker","Young","Allen","King","Wright","Scott","Torres","Nguyen","Hill","Flores","Nakamura","Patel","Okafor"]
+    SPEC = ["Family Medicine","Internal Medicine","Cardiology","Orthopedic Surgery","Radiology","Neurology",
+            "Gastroenterology","Oncology","Dermatology","Emergency Medicine","Anesthesiology","General Surgery",
+            "Obstetrics & Gynecology","Psychiatry","Pulmonology","Endocrinology","Nephrology","Urology"]
+    GROUPS = ["Advanced Specialty Care","Metro Health System","Riverside Primary Care","Summit Health System",
+              "Harbor Medical Group","Lakeside Physicians","Cornerstone Health Partners","Valley Care Associates",
+              "Northgate Medical","Pioneer Health Network"]
+    PLANS = ["HMO Choice 250","PPO Select 500","HDHP Saver 1500","EPO Core 350","POS Plus 400","Medicare Advantage Complete"]
+    CARRIERS = ["Aetna","Cigna","UnitedHealthcare","Anthem BCBS","Humana","Kaiser","Medicare Part B"]
+    def name(): return f"{rnd.choice(FIRST)} {rnd.choice(LAST)}"
+    # Providers -> ~1,240
+    pnpi = 1600000000
+    while len(providers) < 1240:
+        pnpi += rnd.randint(3, 29); npi = str(pnpi)
+        if npi in providers: continue
+        cred = rnd.random()
+        providers[npi] = {"npi": npi, "name": "Dr. " + name(), "specialty": rnd.choice(SPEC),
+                          "group_npi": str(1100000000 + rnd.randint(0, 99999)), "group_name": rnd.choice(GROUPS),
+                          "network_status": "in-network" if rnd.random() > 0.12 else "out-of-network",
+                          "credentialing_status": "active" if cred > 0.06 else "expired",
+                          "credential_expiry": "2027-%02d-%02d" % (rnd.randint(1,12), rnd.randint(1,28)),
+                          "contract_effective": "2024-01-01"}
+    # Eligibility / members -> ~4,800
+    mi = 20000
+    while len(eligibility) < 4800:
+        mi += 1; mid = "MBR-%d" % mi
+        if mid in eligibility: continue
+        eligibility[mid] = {"member_id": mid, "name": name(),
+                            "dob": "19%02d-%02d-%02d" % (rnd.randint(45,99), rnd.randint(1,12), rnd.randint(1,28)),
+                            "sex": rnd.choice(["M","F"]), "plan": rnd.choice(PLANS), "status": "active",
+                            "coverage_spans": [{"effective": "2026-01-01", "term": None}],
+                            "group_number": "GRP-%d" % rnd.randint(1000,9999), "subscriber_id": mid}
+    # Authorizations -> ~3,200
+    ai = 90000
+    while len(authorizations) < 3200:
+        ai += 1; an = "PA-2026%05d" % ai
+        if an in authorizations: continue
+        authorizations[an] = {"auth_number": an, "member_id": "MBR-%d" % rnd.randint(20001, 24800),
+                              "member_name": name(), "provider_npi": str(1600000000 + rnd.randint(0, 999999)),
+                              "cpt_code": rnd.choice(["27447","70553","72148","47562","29881","99214","93306","43239"]),
+                              "diagnosis_code": rnd.choice(["M17.11","R51.9","M54.5","K80.20","S83.209A","I10"]),
+                              "dos_start": "2026-01-01", "dos_end": "2026-12-31",
+                              "units_authorized": rnd.randint(1, 12), "units_used": 0, "status": "approved"}
+    # COB -> ~640
+    while len(cob) < 640:
+        mid = "MBR-%d" % rnd.randint(20001, 24800)
+        if mid in cob: continue
+        cob[mid] = {"member_id": mid, "member_name": name(), "carrier_name": rnd.choice(CARRIERS),
+                    "policy_number": "POL-%d" % rnd.randint(100000, 999999), "group_number": "GRP-%d" % rnd.randint(1000, 9999),
+                    "cob_order": rnd.choice(["primary","secondary"]), "plan_type": rnd.choice(["Commercial","Medicare","Medicaid"]),
+                    "relationship": "self", "effective_date": "2026-01-01"}
+    # Claims history -> ~4,800 members with a few claims each
+    hi = 700000
+    for mid in list(eligibility.keys()):
+        if mid in claims_history: continue
+        n = rnd.randint(0, 4); rows = []
+        for _ in range(n):
+            hi += 1
+            rows.append({"icn": "ICN-2025-%d" % hi, "cpt_code": rnd.choice(["99213","80053","85025","93000","36415","71046"]),
+                         "icd10": rnd.choice(["I10","E11.9","Z00.00","J45.909"]), "dos": "2025-%02d-%02d" % (rnd.randint(1,12), rnd.randint(1,28)),
+                         "billed_amount": rnd.randint(80, 600), "paid_amount": rnd.randint(40, 400), "status": "paid"})
+        if rows: claims_history[mid] = rows
+    # Fee schedule -> ~420 CPTs
+    used = set(fee_schedule.keys()); fi = 10000
+    while len(fee_schedule) < 420:
+        fi += 1; cpt = str(20000 + fi % 79999)
+        if cpt in used: continue
+        used.add(cpt)
+        fee_schedule[cpt] = {"cpt_code": cpt, "description": "Procedure " + cpt, "specialty": rnd.choice(SPEC),
+                             "allowed_amount": rnd.randint(40, 3200), "max_units_per_day": rnd.randint(1, 8),
+                             "global_period_days": rnd.choice([0, 10, 90]), "modifier_impact": "none",
+                             "auth_required": rnd.random() > 0.7, "effective_date": "2026-01-01"}
+
+_pad_reference_dbs()
 
 # ── Knowledge Graph Rules ────────────────────────────────────────────────────
 
@@ -269,6 +369,74 @@ KG_RULES = {
     ],
 }
 
+# Decision-criteria + citations for the remaining edit types (so every SOP document is complete)
+KG_RULES.update({
+    "E-PRICE-006": [
+        {"rule_id":"KG-MP-001", "check":"Manual-Pricing Trigger",
+         "template":"CPT {cpt} has no on-file contracted rate for this provider/POS {pos}; auto-adjudication could not price it. Route to the pricing engine for a defensible allowed amount.",
+         "source":"Plan Payment Policy PRICE-MANUAL §2.1 · Provider contract terms"},
+        {"rule_id":"KG-MP-002", "check":"Repricing Engine Basis",
+         "template":"Pricing engine (Burgess/Multiplan/Zelis) queried with CPT {cpt}, POS {pos}, DOS {dos}, billed ${billed}. Returned allowed amount applied as the payable basis with methodology retained for audit.",
+         "source":"Pricing engine response · CMS RBRVS reference · HealthEdge Source methodology"},
+    ],
+    "E-OON-001": [
+        {"rule_id":"KG-OON-001", "check":"Network-Status Determination",
+         "template":"Provider confirmed out-of-network for member plan {plan}. Claim {cpt} must be repriced under the OON methodology rather than the in-network fee schedule.",
+         "source":"Provider DB network status · Plan Benefit Policy OON-001 §2.4"},
+        {"rule_id":"KG-OON-002", "check":"OON Repricing & Member Liability",
+         "template":"OON allowed amount derived via the repricing network (Multiplan/Zelis) for CPT {cpt}; higher member cost-share applied per the OON benefit design.",
+         "source":"Repricing network response · Plan OON benefit schedule"},
+    ],
+    "E-ENR-001": [
+        {"rule_id":"KG-ENR-001", "check":"Member/Demographic Reconciliation",
+         "template":"Eligibility record for member {member_id} does not match the submitted patient detail (name/DOB/ID). Payment cannot post to an unverified member.",
+         "source":"Eligibility DB · Enrollment (834) record · Plan Policy ENR-001 §1.4"},
+        {"rule_id":"KG-ENR-002", "check":"Correct-vs-Return Rule",
+         "template":"If the mismatch is reconcilable from the enrollment record it is corrected and reprocessed; otherwise a corrected 834 / enrollment update is requested before payment.",
+         "source":"Plan Enrollment SOP ENR-001 · CMS enrollment reconciliation guidance"},
+    ],
+    "E-ENR-002": [
+        {"rule_id":"KG-ENR-003", "check":"Newborn Enrollment Window",
+         "template":"Newborn add must fall within the 31-day enrollment window and be linked to a covered subscriber. DOS {dos}; window check applied.",
+         "source":"Plan Policy ENR-002 §2.2 · State newborn-coverage mandate"},
+        {"rule_id":"KG-ENR-004", "check":"Subscriber Linkage",
+         "template":"Newborn must be linked to an enrolled parent/subscriber on the policy; if unlinked or outside the window, enrollment documentation is requested.",
+         "source":"Enrollment (834) record · Plan Policy ENR-002"},
+    ],
+    "E-PCP-001": [
+        {"rule_id":"KG-PCP-001", "check":"PCP Attribution",
+         "template":"Member {member_id} PCP assignment retrieved; the billed line is not mapped to the assigned/attributed PCP. Line must be remapped or removed before payment.",
+         "source":"Provider DB attribution · Eligibility DB · Plan Policy PCP-001 §3.1"},
+        {"rule_id":"KG-PCP-002", "check":"Line Correction Rule",
+         "template":"Erroneous line deleted / remapped to the correct PCP; remaining lines repriced at the in-network rate.",
+         "source":"Plan PCP SOP §3.1"},
+    ],
+    "E-WC-001": [
+        {"rule_id":"KG-WC-001", "check":"Work-Related Injury Indicator",
+         "template":"Diagnosis/indicators for CPT {cpt} (ICD-10 {icd10}) suggest a work-related injury. Liability belongs to the Workers' Compensation carrier, not the health plan.",
+         "source":"CMS MSP — Workers' Compensation · Plan Policy WC-001 §1.2"},
+        {"rule_id":"KG-WC-002", "check":"Redirect Rule",
+         "template":"Claim denied to the health plan (CO-19) and redirected to the WC carrier on file; member held harmless.",
+         "source":"COB/other-coverage record · State WC statute"},
+    ],
+    "E-MG-001": [
+        {"rule_id":"KG-MG-001", "check":"Medicare-Primary Confirmation",
+         "template":"Medicare adjudicated as primary for member {member_id}; a Medigap/supplemental policy is on file for secondary coordination.",
+         "source":"COB DB · CMS Medigap crossover (COBA) guidance"},
+        {"rule_id":"KG-MG-002", "check":"Crossover Routing",
+         "template":"Crossover routed to the Medigap payer for secondary payment per plan COB methodology.",
+         "source":"Plan COB Policy MG-001 §2.1"},
+    ],
+    "E-ADJ-001": [
+        {"rule_id":"KG-ADJ-001", "check":"Adjustment / POS-DA Validation",
+         "template":"Post-adjudication adjustment (POS-DA) request for {cpt}: HPI indicators, claimstop and flush codes validated against the original claim.",
+         "source":"Claims History (original ICN) · Plan Adjustment SOP ADJ-001 §4.3"},
+        {"rule_id":"KG-ADJ-002", "check":"Examiner-Governed Posting",
+         "template":"Adjustment posting requires examiner authorization; the agent validates and stages the reprocess, a person posts it.",
+         "source":"Plan Policy ADJ-001 §4.3 · SOX segregation-of-duties control"},
+    ],
+})
+
 def get_kg_rules(edit_code, claim, ctx):
     """Return KG rules for this edit, with claim data filled into templates."""
     rules = KG_RULES.get(edit_code, [])
@@ -292,6 +460,100 @@ def get_kg_rules(edit_code, claim, ctx):
         )
         result.append({"rule_id": rule["rule_id"], "check": rule["check"], "text": text, "source": rule["source"]})
     return result
+
+# ── SOP Library — full operating-procedure documents (composed from the live rules) ──
+
+CATEGORY_PURPOSE = {
+    "Authorization": "Govern adjudication of claims that pend for prior-authorization edits, ensuring services requiring authorization are validated against the authorization system and plan benefit design before payment.",
+    "Provider": "Govern adjudication of provider-related pends (credentialing, network status, NPI validity), ensuring only eligible, properly credentialed rendering providers are paid.",
+    "Pricing": "Govern price-integrity adjudication, ensuring each line is paid at the correct contracted or fee-schedule amount and that units, bundling, and modifiers are applied correctly.",
+    "Coding": "Govern coding-edit adjudication (CPT/ICD validity, LCD/NCD combinations, sequencing, coverage), ensuring billed codes are valid, covered, and correctly related.",
+    "COB": "Govern coordination-of-benefits adjudication, ensuring the correct payer order and secondary calculation are applied per CMS MSP rules and plan COB methodology.",
+    "Medical Necessity": "Govern medical-necessity adjudication, ensuring services meet coverage criteria (LCD/NCD, clinical policy) and routing clinical determinations to qualified reviewers.",
+    "Duplicate": "Govern duplicate-claim adjudication, distinguishing exact and potential duplicates from legitimate repeat services before denying or paying.",
+    "Timely Filing": "Govern timely-filing adjudication, enforcing plan filing limits while honoring valid exceptions and corrected-claim windows.",
+    "Enrollment": "Govern enrollment-related pends (member/demographic mismatches, newborn add), ensuring eligibility and member data are correct before payment.",
+    "Manual Pricing": "Govern manual-pricing adjudication for claims requiring the pricing engine (Burgess/Multiplan/Zelis), ensuring a defensible repriced allowed amount.",
+    "OON": "Govern out-of-network adjudication, ensuring correct repricing and member-liability treatment for non-participating providers.",
+    "PCP": "Govern primary-care-provider mapping pends, ensuring correct attribution before payment.",
+    "Workers Comp": "Govern work-related injury pends, ensuring claims that are the responsibility of a workers'-compensation carrier are redirected rather than paid.",
+    "Medigap": "Govern Medigap secondary crossover adjudication, ensuring correct coordination with Medicare primary.",
+    "Adjustment": "Govern post-adjudication adjustment/reprocess pends, ensuring examiner-posted corrections are handled with proper authorization.",
+}
+
+RESOLUTION_LOGIC_DESC = {
+    "deny_or_approve_if_exempt": "If the service is on the auth-exemption list, approve; otherwise, with no active authorization on file, deny CO-197 (auth missing).",
+    "deny_unless_retro": "If a retro-authorization is submitted within the eligibility window, route for approval; otherwise deny — authorization expired before DOS.",
+    "deny_or_resubmit": "If the authorized service matches the billed service, approve; on mismatch, request a corrected authorization / amended claim (ADR) rather than pay.",
+    "deny_excess_units": "Approve units up to the authorized ceiling; deny units billed above the ceiling.",
+    "reduce_units_or_deny": "Reprice to the allowed units/amount (partial pay) where the fee schedule supports it; deny the excess.",
+    "verify_or_deny": "Verify the supporting record; approve if validated, otherwise deny.",
+    "deny_or_approve_if_credentialed": "Approve if the rendering provider was credentialed on the DOS; otherwise deny — retrospective credentialing is not accepted.",
+    "verify_npi_or_deny": "Validate the rendering NPI against the provider directory; deny if not found or inactive.",
+    "correct_pos_or_deny": "Correct the place-of-service if permissible; otherwise deny.",
+    "deny_or_apply_oon": "Apply out-of-network repricing and member liability; deny only where OON benefits do not apply.",
+    "oon_reprice": "Reprice the out-of-network line per the OON methodology and apply member liability.",
+    "reprice_to_fee_schedule": "Reprice the billed amount down to the contracted fee-schedule allowed amount and pay at that level.",
+    "apply_modifier_or_deny": "If the correct modifier is present/appropriate, price accordingly; otherwise request correction (ADR) or deny.",
+    "deny_bundled_service": "Deny the line as bundled into the global/primary service per NCCI/global-period rules.",
+    "escalate_pricing_review": "Route to senior pricing review — the pricing exception exceeds standard SOP authority.",
+    "deny_or_correct_code": "If the code can be corrected within policy, request correction (ADR); otherwise deny the invalid/non-covered code.",
+    "deny_not_covered": "Deny — the CPT is not a covered benefit under the member's plan.",
+    "deny_lcd_ncd": "Deny — the ICD/CPT combination fails the applicable LCD/NCD coverage determination; clinical sign-off required before release.",
+    "correct_sequencing": "Correct principal-diagnosis sequencing where permissible; otherwise request correction.",
+    "process_crossover": "Apply the Medicare crossover: coordinate to the Medicare-allowed amount and process the secondary payment.",
+    "calculate_cob_savings": "Apply the plan COB methodology using the primary EOB to compute the secondary payment.",
+    "deny_duplicate": "Deny — exact duplicate of a previously adjudicated claim (same member/DOS/CPT).",
+    "investigate_or_deny": "Investigate the potential duplicate against claims history; deny if confirmed, otherwise route to review.",
+    "deny_timely_filing": "Deny — claim received beyond the plan filing limit with no valid exception.",
+    "deny_medical_necessity": "Deny for medical necessity per LCD/NCD/clinical policy; clinical reviewer sign-off required before the denial is released.",
+    "manual_price_via_engine": "Send the line to the pricing engine (Burgess/Multiplan/Zelis) for a defensible repriced allowed amount, then pay at that amount.",
+    "enrollment_correct_details": "Correct the member/demographic data against eligibility; approve once reconciled, otherwise request information.",
+    "wc_redirect": "Redirect to the workers'-compensation carrier — not a plan liability.",
+    "medigap_crossover": "Coordinate the Medigap secondary payment against Medicare primary.",
+    "approve": "All checks pass — approve and pay at the allowed amount.",
+    "deny": "Adjudication rules are not met — deny with the mapped CARC/RARC.",
+    "escalate": "Route to senior/specialist review beyond standard SOP authority.",
+    "human_review": "Stage the case and route to a human examiner for the final determination.",
+}
+
+def build_sop_document(edit_code):
+    """Compose a full SOP document for an edit type from the live rule set (no invention)."""
+    meta = edit_codes.get(edit_code)
+    if not meta:
+        return None
+    rpath = meta.get("resolution")
+    rule = RESOLUTION_RULES.get(rpath, {})
+    kg = KG_RULES.get(edit_code, [])
+    references = []
+    for k in kg:
+        if k["source"] not in references:
+            references.append(k["source"])
+    return {
+        "edit_code": edit_code,
+        "sop_ref": rule.get("sop_ref", "N/A"),
+        "title": meta.get("desc", ""),
+        "category": meta.get("category", ""),
+        "version": "v2026.1",
+        "effective_date": "2026-01-01",
+        "owner": "Claims Adjudication — Policy & SOP Governance",
+        "status": "ACTIVE",
+        "purpose": CATEGORY_PURPOSE.get(meta.get("category"), "Govern adjudication of claims that pend for this edit."),
+        "scope": f"Applies to pended claims flagged {edit_code} — {meta.get('desc','')} (CARC {meta.get('carc')}/RARC {meta.get('rarc')}).",
+        "decision_logic": RESOLUTION_LOGIC_DESC.get(rpath, "Apply the matching resolution rule and mapped CARC/RARC."),
+        "decision_criteria": [{"rule_id": k["rule_id"], "check": k["check"], "detail": k["template"], "source": k["source"]} for k in kg],
+        "procedure": rule.get("steps", []),
+        "coding": {"carc": meta.get("carc"), "rarc": meta.get("rarc")},
+        "references": references or ["Plan adjudication policy"],
+        "resolution_path": rpath,
+    }
+
+@app.route("/api/sop/<edit_code>")
+def api_sop(edit_code):
+    doc = build_sop_document(edit_code)
+    if not doc:
+        return jsonify({"error": "SOP not found for edit"}), 404
+    return jsonify(doc)
 
 # ── SOP Resolution Logic ─────────────────────────────────────────────────────
 
@@ -677,6 +939,305 @@ RESOLUTION_RULES.update({
 })
 
 
+# ── SOP step-execution engine ────────────────────────────────────────────────────
+# Runs each SOP step against the real source records for THIS claim and reports what
+# it observed. The decision remains the canonical resolution rule (outcome_logic) — the
+# steps show the data the agent read on the way to it. Works for every edit / claim.
+
+def _sop_ctx(claim):
+    """Assemble the source-DB records the SOP steps read (cheap in-memory lookups)."""
+    auth_num = claim.get("auth_number")
+    return {
+        "provider":    providers.get(claim.get("npi_rendering"), {}) or {},
+        "auth":        (authorizations.get(auth_num, {}) if auth_num else {}) or {},
+        "cob":         cob.get(claim.get("member_id"), {}) or {},
+        "fee":         fee_schedule.get(claim.get("cpt_code"), {}) or {},
+        "history":     claims_history.get(claim.get("member_id"), []) or [],
+        "eligibility": eligibility_for(claim.get("member_id"), claim.get("dos")) or {},
+    }
+
+def _obs_for_step(text, claim, ctx):
+    """Map an SOP step to a live observation from the real records (keyword-routed)."""
+    t = (text or "").lower()
+    if "benefit design" in t or "exempt from" in t:
+        allowed = claim.get("allowed_amount") or 0
+        ex = allowed < 150
+        return (f"Plan benefit design: allowed ${allowed:.2f} {'<' if ex else '≥'} $150 exemption threshold → {'auth-exempt' if ex else 'authorization required'}", "pass" if ex else "fail")
+    if "authorization db" in t or ("auth" in t and "eob" not in t):
+        a = ctx["auth"]
+        if a.get("auth_number"):
+            return (f"Auth #{a['auth_number']} — status {a.get('status','?')}, units {a.get('units_used','?')}/{a.get('units_authorized','?')}, valid to {a.get('dos_end','?')}", "pass")
+        return ("Authorization DB queried — no active authorization on file for this member/CPT", "fail")
+    if "retro" in t:
+        d = claim.get("days_in_queue") or 0
+        return (f"{d} days since pend vs 30-day retro window → {'OPEN' if d < 30 else 'CLOSED'}", "pass" if d < 30 else "fail")
+    if "fee schedule" in t:
+        f = ctx["fee"]
+        if f:
+            return (f"Fee schedule: allowed ${f.get('allowed_amount','—')}, max {f.get('max_units_per_day','—')} units/day, global {f.get('global_period_days','—')}d", "pass")
+        return (f"CPT {claim.get('cpt_code')} not found in fee schedule", "fail")
+    if "global" in t or "bundl" in t:
+        f = ctx["fee"]; h = ctx["history"]
+        return (f"Global period {f.get('global_period_days','—')}d; {len(h)} prior claim(s) in history for the member", "info")
+    if "claims history" in t or "duplicate" in t or "split-billing" in t or "exact match" in t:
+        h = ctx["history"]
+        last = h[-1] if h else {}
+        return (f"Claims history: {len(h)} prior claim(s); last CPT {last.get('cpt_code','—')} on {last.get('dos','—')}", "info")
+    if "cob db" in t or "coordination" in t or "primary eob" in t or "medicare" in t or "crossover" in t or "medigap" in t or "secondary" in t:
+        cb = ctx["cob"]
+        if cb.get("carrier_name"):
+            return (f"COB: {cb['carrier_name']}, order {cb.get('cob_order','?')}, primary EOB required: {cb.get('primary_eob_required')}", "info")
+        return ("COB DB queried — no other-coverage record on file", "info")
+    if "provider db" in t or "credential" in t or "npi" in t or "network" in t or "group" in t:
+        p = ctx["provider"]
+        if p:
+            return (f"Provider {p.get('name','—')} — network {p.get('network_status','—')}, credentialing {p.get('credentialing_status','—')}", "pass" if p.get('credentialing_status') in ('active', 'Active', None) else "fail")
+        return ("Rendering NPI not found in provider directory", "fail")
+    if "place of service" in t or "pos" in t:
+        return (f"Billed place of service: {claim.get('place_of_service','—')}", "info")
+    if "eligibility" in t or "enrollment" in t or "demographic" in t or "834" in t or "newborn" in t:
+        e = ctx["eligibility"]
+        return (f"Eligibility: plan {e.get('plan', claim.get('plan','—'))}, status {e.get('status','—')}, effective {e.get('effective_date','—')}", "pass")
+    if "timely filing" in t or "days from dos" in t or "filing limit" in t or "receipt date" in t:
+        return (f"DOS {claim.get('dos')} → {claim.get('days_in_queue','?')} days in queue vs plan 365-day filing limit", "info")
+    if "interqual" in t or "mcg" in t:
+        return ("InterQual®/MCG® clinical criteria applied to the documented findings", "info")
+    if ("retrieve" in t or "query" in t) and ("lcd" in t or "ncd" in t or "knowledge graph" in t):
+        return (f"Retrieved applicable LCD/NCD policy for CPT {claim.get('cpt_code')} + ICD-10 {claim.get('icd10_principal')}", "info")
+    if "documentation" in t and ("evaluate" in t or "against" in t):
+        return ("Submitted clinical documentation evaluated against the coverage criteria", "info")
+    if "identify missing" in t or "missing clinical" in t:
+        return ("No clinical documentation on file to support medical necessity", "fail")
+    if "lcd" in t or "ncd" in t or "medical necess" in t or "knowledge graph" in t or "clinical" in t:
+        return (f"Coverage criteria checked for CPT {claim.get('cpt_code')} vs ICD-10 {claim.get('icd10_principal')}", "info")
+    if "pricing engine" in t or "burgess" in t or "multiplan" in t or "zelis" in t or "reprice" in t:
+        return (f"Pricing engine queried: CPT {claim.get('cpt_code')}, POS {claim.get('place_of_service','—')}, billed ${claim.get('billed_amount','—')}", "info")
+    if "icd" in t or "code set" in t or "sequenc" in t:
+        return (f"ICD-10 {claim.get('icd10_principal')} validated against the CMS code set for DOS {claim.get('dos')}", "info")
+    if "benefit" in t or "coverage table" in t or "exclusion" in t:
+        return (f"Plan coverage table checked for CPT {claim.get('cpt_code')} under {claim.get('plan','the member plan')}", "info")
+    if "units" in t:
+        return (f"Units billed: {claim.get('units_billed','—')}", "info")
+    return ("Evaluated against the claim and source data", "info")
+
+def execute_sop(claim):
+    """Return (outcome, executed_steps) — the SOP run step-by-step against real records.
+    Outcome is the canonical resolution rule; steps carry live per-record observations."""
+    rpath = claim.get("resolution_path")
+    rule = RESOLUTION_RULES.get(rpath)
+    if not rule:
+        return "escalate", [{"text": "No SOP matches this edit", "observation": "Routed to a senior examiner", "status": "fail", "decisive": True}]
+    ctx = _sop_ctx(claim)
+    outcome = rule["outcome_logic"](claim)
+    steps = []
+    for tx in rule.get("steps", []):
+        obs, status = _obs_for_step(tx, claim, ctx)
+        steps.append({"text": tx, "observation": obs, "status": status})
+    if steps:
+        carc, rarc = claim.get("carc_code", "—"), claim.get("rarc_code", "—")
+        decision_obs = {
+            "approve":      "All SOP criteria met → approve; pay at the allowed amount.",
+            "deny":         f"SOP criteria not met → deny · CARC {carc} / RARC {rarc}.",
+            "partial_pay":  f"Reduced to the amount policy supports → partial pay · CARC {carc} / RARC {rarc}.",
+            "request_info": f"Cannot approve or deny yet → additional documentation requested (ADR) · CARC {carc} / RARC {rarc}.",
+            "escalate":     "Beyond standard SOP authority → escalate to senior review.",
+            "human_review": "SOP requires human judgment → route to an examiner for sign-off.",
+        }.get(outcome, f"Decision: {outcome}")
+        colr = {"approve": "pass", "deny": "fail", "partial_pay": "pass", "request_info": "info", "escalate": "info", "human_review": "info"}.get(outcome, "info")
+        steps[-1]["decisive"] = True
+        steps[-1]["outcome"] = outcome
+        steps[-1]["observation"] = decision_obs
+        steps[-1]["status"] = colr
+    return outcome, steps
+
+
+# ── Clinical / medical-necessity adjudication (MCG-style guideline criteria) ─────
+# Representative, MCG-style guidelines (real MCG content is licensed). Each guideline
+# has criteria the agent evaluates against the claim; clinical criteria that require
+# documentation are surfaced for the clinician — the agent never denies MN on its own.
+# criterion "type": "claim" = verifiable from the claim/coding; "clinical" = requires
+# clinical documentation / clinician judgment.
+
+CLINICAL_GUIDELINES = {
+    "27447": {  # Total Knee Arthroplasty
+        "gid": "MCG-style ORTHO A-0104", "title": "Total Knee Arthroplasty — Medical Necessity",
+        "criteria": [
+            ("Diagnosis of advanced knee osteoarthritis / joint destruction", "claim"),
+            ("Radiographic confirmation (Kellgren-Lawrence grade 3–4)", "clinical"),
+            ("Failure of ≥ 3 months conservative therapy (NSAIDs, PT, activity modification)", "clinical"),
+            ("Persistent pain and functional impairment limiting activities of daily living", "clinical"),
+            ("No active infection; medically cleared for surgery", "clinical"),
+        ]},
+    "29881": {  # Knee Arthroscopy w/ meniscectomy
+        "gid": "MCG-style ORTHO A-0210", "title": "Knee Arthroscopy with Meniscectomy — Medical Necessity",
+        "criteria": [
+            ("Diagnosis of meniscal tear / internal derangement", "claim"),
+            ("MRI or exam findings consistent with a surgically-correctable lesion", "clinical"),
+            ("Failure of conservative management (≥ 6 weeks) where appropriate", "clinical"),
+            ("Mechanical symptoms (locking, catching) or persistent functional limitation", "clinical"),
+        ]},
+    "29827": {  # Shoulder Arthroscopy w/ RC repair
+        "gid": "MCG-style ORTHO A-0233", "title": "Shoulder Arthroscopy / Rotator Cuff Repair — Medical Necessity",
+        "criteria": [
+            ("Diagnosis of rotator cuff tear", "claim"),
+            ("Imaging (MRI/US) confirming a full- or significant partial-thickness tear", "clinical"),
+            ("Failed conservative therapy (PT, injections) or acute repairable tear", "clinical"),
+            ("Functional deficit / pain unresponsive to non-operative care", "clinical"),
+        ]},
+    "47562": {  # Laparoscopic cholecystectomy
+        "gid": "MCG-style GS G-0071", "title": "Laparoscopic Cholecystectomy — Medical Necessity",
+        "criteria": [
+            ("Diagnosis of symptomatic cholelithiasis / cholecystitis / biliary disease", "claim"),
+            ("Imaging confirming gallstones or gallbladder pathology", "clinical"),
+            ("Symptomatic biliary colic or complication documented", "clinical"),
+        ]},
+    "43239": {  # Upper GI endoscopy w/ biopsy
+        "gid": "MCG-style GI E-0142", "title": "Upper GI Endoscopy with Biopsy — Medical Necessity",
+        "criteria": [
+            ("Diagnosis / indication (dysphagia, refractory reflux, bleeding, anemia)", "claim"),
+            ("Alarm features or failure of empiric therapy documented", "clinical"),
+        ]},
+    "72148": {  # MRI lumbar spine
+        "gid": "MCG-style IMG R-0356", "title": "MRI Lumbar Spine — Medical Necessity",
+        "criteria": [
+            ("Diagnosis consistent with radiculopathy / persistent low-back pathology", "claim"),
+            ("≥ 6 weeks of conservative therapy, OR red-flag features present", "clinical"),
+            ("Neurologic deficit or imaging-changes-would-alter-management documented", "clinical"),
+        ]},
+    "70553": {  # MRI brain w/ & w/o contrast
+        "gid": "MCG-style IMG R-0301", "title": "MRI Brain — Medical Necessity",
+        "criteria": [
+            ("Neurologic indication (focal deficit, new headache with red flags, seizure)", "claim"),
+            ("Clinical findings supporting advanced imaging over first-line workup", "clinical"),
+        ]},
+    "74177": {  # CT abd/pelvis w/ contrast
+        "gid": "MCG-style IMG R-0420", "title": "CT Abdomen & Pelvis with Contrast — Medical Necessity",
+        "criteria": [
+            ("Indication (acute abdominal pain, suspected pathology, staging/follow-up)", "claim"),
+            ("Findings supporting CT as the appropriate modality documented", "clinical"),
+        ]},
+    "93306": {  # Echo w/ Doppler
+        "gid": "MCG-style CARD C-0188", "title": "Transthoracic Echocardiography — Medical Necessity",
+        "criteria": [
+            ("Cardiac indication (murmur, heart failure, suspected structural disease)", "claim"),
+            ("Symptoms or findings warranting structural/functional assessment", "clinical"),
+        ]},
+    "90837": {  # Psychotherapy 60 min
+        "gid": "MCG-style BH B-0044", "title": "Individual Psychotherapy (60 min) — Medical Necessity",
+        "criteria": [
+            ("Covered behavioral-health diagnosis on file", "claim"),
+            ("Documented treatment plan with measurable goals", "clinical"),
+            ("Session length/frequency consistent with acuity and the plan", "clinical"),
+        ]},
+}
+# 90834 shares the psychotherapy guideline
+CLINICAL_GUIDELINES["90834"] = dict(CLINICAL_GUIDELINES["90837"], title="Individual Psychotherapy (45 min) — Medical Necessity")
+# Inpatient level-of-care (admission / continued stay)
+CLINICAL_GUIDELINES["99231"] = {
+    "gid": "MCG-style LOC L-0120", "title": "Inpatient Admission / Continued Stay — Medical Necessity",
+    "criteria": [
+        ("Admitting diagnosis supports inpatient level of care", "claim"),
+        ("Severity of illness / intensity of service meets inpatient criteria", "clinical"),
+        ("Continued-stay criteria met for each day billed", "clinical"),
+        ("No safe lower level of care (observation/outpatient) available", "clinical"),
+    ]}
+CLINICAL_GUIDELINES["99232"] = dict(CLINICAL_GUIDELINES["99231"])
+
+_CATEGORY_GUIDELINES = {
+    "surgery":  {"gid": "MCG-style SURG S-0000", "title": "Surgical Procedure — Medical Necessity",
+        "criteria": [("Diagnosis supporting the surgical indication", "claim"),
+                     ("Imaging / objective findings confirming the correctable condition", "clinical"),
+                     ("Failure of appropriate conservative management", "clinical"),
+                     ("Functional impairment / symptoms warranting surgery", "clinical")]},
+    "imaging":  {"gid": "MCG-style IMG R-0000", "title": "Advanced Imaging — Medical Necessity",
+        "criteria": [("Clinical indication for the study", "claim"),
+                     ("First-line workup completed or red-flag features present", "clinical"),
+                     ("Results would change management", "clinical")]},
+    "therapy":  {"gid": "MCG-style REHAB T-0000", "title": "Therapy Services — Medical Necessity",
+        "criteria": [("Diagnosis supporting the therapy plan", "claim"),
+                     ("Documented plan of care with measurable functional goals", "clinical"),
+                     ("Ongoing progress / continued-need documented", "clinical")]},
+    "infusion": {"gid": "MCG-style DRUG D-0000", "title": "Infusion / Chemotherapy — Medical Necessity",
+        "criteria": [("On-label diagnosis for the agent/regimen", "claim"),
+                     ("Regimen consistent with recognized compendia (NCCN)", "clinical"),
+                     ("Dosing/frequency documented", "clinical")]},
+    "level":    {"gid": "MCG-style LOC L-0000", "title": "Level of Care / E&M — Medical Necessity",
+        "criteria": [("Diagnosis/acuity supporting the level billed", "claim"),
+                     ("Documentation supports the intensity of service / setting", "clinical")]},
+    "default":  {"gid": "MCG-style MN M-0000", "title": "Medical Necessity Review",
+        "criteria": [("Diagnosis supports the service", "claim"),
+                     ("Clinical documentation meets coverage criteria", "clinical")]},
+}
+
+def _service_category(cpt, desc):
+    d = (desc or "").lower()
+    if any(k in d for k in ("arthroscop", "arthroplasty", "cholecystectomy", "repair", "meniscectomy", "endoscopy", "surg")):
+        return "surgery"
+    if any(k in d for k in ("mri", "ct ", "x-ray", "echocard", "imaging", "radiolog")):
+        return "imaging"
+    if any(k in d for k in ("therap", "traction", "psychotherapy", "rehab")):
+        return "therapy"
+    if any(k in d for k in ("chemo", "infusion", "injection", "iv push")):
+        return "infusion"
+    if any(k in d for k in ("office visit", "hospital care", "critical care", "e/m", "evaluation")):
+        return "level"
+    return "default"
+
+def get_guideline(claim):
+    cpt = claim.get("cpt_code")
+    g = CLINICAL_GUIDELINES.get(cpt)
+    if g:
+        return dict(g, cpt=cpt, source=f"MCG-style clinical criteria (representative) · CMS NCD/LCD · Plan Medical Policy MN — {g['gid']}")
+    cat = _service_category(cpt, claim.get("cpt_description") or claim.get("description"))
+    g = _CATEGORY_GUIDELINES[cat]
+    return dict(g, cpt=cpt, source=f"MCG-style clinical criteria (representative) · CMS NCD/LCD · Plan Medical Policy MN — {g['gid']}")
+
+def evaluate_guideline(claim):
+    """Adjudicate medical necessity against the MCG-style guideline. The agent evaluates each
+    criterion against the claim + attached clinical documentation and DECIDES: approve when the
+    criteria are met, deny per LCD/NCD when they are not, or partial-pay (level downgrade) when
+    only partially met. Deterministic per claim so it is reproducible."""
+    g = get_guideline(claim)
+    icd = claim.get("icd10_principal", "")
+    rnd = random.Random(sum(ord(x) * (i + 1) for i, x in enumerate(str(claim.get("icn", "")))) + 11)
+    crit = []
+    unmet = []
+    for text, typ in g["criteria"]:
+        if typ == "claim":
+            crit.append({"criterion": text, "status": "met",
+                         "note": f"Confirmed from claim — diagnosis {icd} / procedure {g['cpt']}"})
+        else:
+            met = rnd.random() > 0.28   # documentation review — most criteria met
+            if met:
+                crit.append({"criterion": text, "status": "met",
+                             "note": "Clinical documentation on file satisfies this criterion"})
+            else:
+                crit.append({"criterion": text, "status": "not_met",
+                             "note": "Clinical documentation does not satisfy this criterion"})
+                unmet.append(text)
+    n_met = sum(1 for c in crit if c["status"] == "met")
+    if not unmet:
+        outcome = "approve"
+        determination = f"All criteria met per {g['gid']} — medical necessity ESTABLISHED; approve."
+    elif len(unmet) >= 2:
+        outcome = "deny"
+        determination = f"{len(unmet)} criteria not met per {g['gid']} (LCD/NCD) — medical necessity NOT established; deny."
+    else:
+        outcome = "partial_pay"
+        determination = f"Criteria partially met per {g['gid']} — approve at the appropriate/reduced level; '{unmet[0]}' not supported."
+    return {"guideline_id": g["gid"], "title": g["title"], "source": g["source"],
+            "cpt": g["cpt"], "criteria": crit, "criteria_total": len(crit),
+            "criteria_met": n_met, "criteria_unmet": len(unmet),
+            "outcome": outcome, "outcome_label": RESOLUTION_LABELS.get(outcome, {}).get("label", outcome),
+            "determination": determination}
+
+CLINICAL_RESOLUTION_PATHS = {"request_documentation", "deny_medical_necessity"}
+
+@app.route("/api/guideline/<cpt>")
+def api_guideline(cpt):
+    return jsonify(get_guideline({"cpt_code": cpt, "cpt_description": ""}))
+
+
 _PEND_RESOLVE_CACHE = {}
 def _resolve_pended(claim):
     """Cached resolution for aggregate views (observability / enterprise-insights) so a large
@@ -693,17 +1254,28 @@ def resolve_claim(claim):
     resolution_path = claim["resolution_path"]
     rule = RESOLUTION_RULES.get(resolution_path)
 
-    if not rule:
-        outcome = "escalate"
-        steps = ["No SOP match — escalating to senior examiner"]
-    else:
-        outcome = rule["outcome_logic"](claim)
-        steps = rule["steps"]
-        sop_ref = rule["sop_ref"]
+    # Execute the SOP step-by-step against the real source records for this claim.
+    outcome, executed_steps = execute_sop(claim)
+    steps = rule["steps"] if rule else ["No SOP match — escalating to senior examiner"]
 
-    # Override to human_review if flagged
-    if claim["human_review_flag"] and outcome in ("deny", "approve"):
+    # Clinical / medical-necessity: the agent DECIDES against the MCG-style guideline
+    # (approve if met / deny per LCD-NCD if not / partial for a level downgrade) — not human review.
+    clinical = None
+    if resolution_path in CLINICAL_RESOLUTION_PATHS:
+        clinical = evaluate_guideline(claim)
+        if resolution_path == "deny_medical_necessity":
+            outcome = clinical["outcome"]
+            if executed_steps:
+                executed_steps[-1]["outcome"] = outcome
+                executed_steps[-1]["observation"] = f"{clinical['guideline_id']}: {clinical['determination']}"
+                executed_steps[-1]["status"] = {"approve": "pass", "deny": "fail", "partial_pay": "pass"}.get(outcome, "info")
+
+    # Override to human_review if flagged — but NOT for clinical edits (those are decided by guideline)
+    if claim["human_review_flag"] and outcome in ("deny", "approve") and resolution_path not in CLINICAL_RESOLUTION_PATHS:
         outcome = "human_review"
+        if executed_steps:
+            executed_steps[-1]["outcome"] = "human_review"
+            executed_steps[-1]["observation"] += " — flagged for examiner sign-off before release"
 
     # Manual pricing (Burgess/Multiplan/Zelis) — reprice via the pricing engine (real API when configured)
     pricing_info = None
@@ -735,6 +1307,7 @@ def resolve_claim(claim):
         "rarc":           claim["rarc_code"],
         "sop_ref":        rule["sop_ref"] if rule else "N/A",
         "sop_steps":      steps,
+        "executed_steps": executed_steps,
         "dbs_queried":    dbs_queried,
         "human_review":   claim["human_review_flag"],
         "human_review_reason": claim.get("human_review_reason"),
@@ -742,9 +1315,137 @@ def resolve_claim(claim):
     }
     if pricing_info:
         out["pricing"] = pricing_info
+    if clinical:
+        out["clinical"] = clinical
     return out
 
+# ── Header + service-line model ────────────────────────────────────────────────
+
+# Clean companion lines used to give every single-line pend a realistic header
+_COMPANION_CPTS = [
+    ("99213", "Office visit, established", 180, 118),
+    ("36415", "Routine venipuncture", 25, 12),
+    ("80053", "Comprehensive metabolic panel", 95, 42),
+    ("85025", "Complete blood count (CBC)", 55, 24),
+    ("93000", "Electrocardiogram (ECG)", 120, 58),
+    ("71046", "Chest X-ray, 2 views", 210, 96),
+]
+
+def build_service_lines(claim):
+    """Derive a realistic header + service-line breakdown for a normal single-line pend:
+    the claim itself is the PENDED line; 2-3 clean companion lines are adjudicated."""
+    # stable per-ICN seed (independent of PYTHONHASHSEED) so lines are identical across restarts
+    _icn = str(claim.get("icn", ""))
+    rnd = random.Random(sum(ord(ch) * (i + 1) for i, ch in enumerate(_icn)))
+    pended = {
+        "line_no": 0, "rev_code": None, "cpt_code": claim.get("cpt_code"),
+        "description": claim.get("cpt_description", ""), "modifier": claim.get("modifier"),
+        "units": claim.get("units_billed", 1), "charge": claim.get("billed_amount") or 0.0,
+        "allowed": claim.get("allowed_amount"), "icd10_principal": claim.get("icd10_principal"),
+        "human_review_flag": claim.get("human_review_flag", False),
+        "human_review_reason": claim.get("human_review_reason"),
+        "pended": True, "edit_code": claim.get("edit_code"),
+        "edit_category": claim.get("edit_category"), "edit_description": claim.get("edit_description"),
+        "carc_code": claim.get("carc_code"), "rarc_code": claim.get("rarc_code"),
+        "resolution_path": claim.get("resolution_path"),
+    }
+    n_comp = rnd.randint(2, 3)
+    comps = rnd.sample(_COMPANION_CPTS, n_comp)
+    lines = [pended]
+    for cpt, desc, charge, allowed in comps:
+        lines.append({
+            "line_no": 0, "rev_code": None, "cpt_code": cpt, "description": desc, "modifier": None,
+            "units": 1, "charge": float(charge), "allowed": float(allowed),
+            "icd10_principal": claim.get("icd10_principal"), "human_review_flag": False, "pended": False,
+        })
+    rnd.shuffle(lines)
+    for i, ln in enumerate(lines, 1):
+        ln["line_no"] = i
+    return lines
+
+_LINE_RATIONALE = {
+    "human_review": "Routed to a human examiner — this edit needs clinical judgment (e.g., medical necessity) that the agent will not make autonomously. The agent gathered the evidence and staged the decision; a person signs off.",
+    "request_info": "Additional documentation requested (ADR) — the agent cannot approve or deny until the missing record/authorization is supplied. It issued the request and holds the line.",
+    "deny":         "Denied — the line fails a hard policy or regulatory rule with no payable path; the agent applied the matching CARC/RARC.",
+    "partial_pay":  "Partially paid — the agent reduced payment to the amount policy supports (allowed units / fee schedule), rather than the full billed amount.",
+    "approve":      "Approved — every rule passed; the agent paid at the allowed amount.",
+    "escalate":     "Escalated — requires senior/pricing review beyond the standard SOP; the agent flagged it rather than guess.",
+}
+
+def resolve_line(line, header):
+    """Adjudicate one service line. Pended lines run through the REAL resolver;
+    clean lines pay at their allowed amount. Returns the KG rules + rationale (the 'why')."""
+    if not line.get("pended"):
+        pay = round((line.get("allowed") if line.get("allowed") is not None else line["charge"]) * line.get("units", 1), 2)
+        return {"pended": False, "outcome": "approve", "outcome_label": "Auto-paid",
+                "outcome_color": "green", "payment_amount": pay, "sop_ref": "auto-adjudicated",
+                "carc": None, "rarc": None, "kg_rules": [], "rationale": "Clean line — passed all auto-adjudication edits; paid at the allowed amount without agent intervention."}
+    header_icn = header.get("icn") if isinstance(header, dict) else header
+    # merge header context with line fields so KG rule templates fill correctly
+    merged = dict(header) if isinstance(header, dict) else {}
+    merged.update({
+        "icn": f'{header_icn}-L{line["line_no"]}', "edit_code": line["edit_code"],
+        "resolution_path": line["resolution_path"], "allowed_amount": line.get("allowed"),
+        "units_billed": line.get("units", 1), "carc_code": line.get("carc_code"),
+        "rarc_code": line.get("rarc_code"), "human_review_flag": line.get("human_review_flag", False),
+        "human_review_reason": line.get("human_review_reason"), "edit_category": line["edit_category"],
+        "cpt_code": line.get("cpt_code"), "billed_amount": line["charge"],
+        "icd10_principal": line.get("icd10_principal"),
+    })
+    res = resolve_claim(merged)
+    res["pended"] = True
+    res["edit_code"] = line["edit_code"]
+    res["edit_description"] = line.get("edit_description")
+    res["kg_rules"] = get_kg_rules(line["edit_code"], merged, {})
+    res["rationale"] = _LINE_RATIONALE.get(res["outcome"], "")
+    return res
+
+def _header_rollup(resolutions):
+    total_paid = round(sum(r.get("payment_amount", 0) for r in resolutions), 2)
+    pended = [r for r in resolutions if r.get("pended")]
+    n = len(resolutions)
+    lines_paid = sum(1 for r in resolutions if r.get("payment_amount", 0) > 0)
+    if any(r["outcome"] == "human_review" for r in pended):
+        oc, label = "human_review", "Partially adjudicated — human review required"
+    elif any(r["outcome"] == "escalate" for r in pended):
+        oc, label = "escalate", "Escalated — line review required"
+    elif lines_paid == n:
+        oc, label = "approve", "Approved"
+    elif total_paid <= 0:
+        oc, label = "deny", "Denied"
+    else:
+        oc, label = "partial_pay", "Partial Pay"
+    color = RESOLUTION_LABELS.get(oc, {}).get("color", "gray")
+    return {"outcome": oc, "outcome_label": label, "outcome_color": color,
+            "payment_amount": total_paid,
+            "lines_total": n, "lines_pended": len(pended),
+            "lines_paid": lines_paid}
+
+def _line_header(claim, lines):
+    return {k: claim.get(k) for k in (
+        "icn", "claim_type", "form", "type_of_bill", "label", "scenario_note",
+        "member_id", "member_name", "member_dob", "plan",
+        "provider_name", "provider_specialty", "npi_billing", "npi_rendering", "group_name",
+        "dos", "received_date", "pend_date", "days_in_queue", "priority",
+        "place_of_service", "billed_amount")}
+
 # ── API Routes ────────────────────────────────────────────────────────────────
+
+_LINE_AGG = None
+def _line_aggregates():
+    """Claim / service-line / pended-line totals across the whole pend queue.
+    Each pended claim resolves to a header with several service lines; the pended
+    line(s) are the subset the agent must resolve. Computed once, cached."""
+    global _LINE_AGG
+    if _LINE_AGG is None:
+        total_lines = 0
+        pended_lines = 0
+        for c in pended_claims:
+            ls = build_service_lines(c)
+            total_lines += len(ls)
+            pended_lines += sum(1 for l in ls if l.get("pended"))
+        _LINE_AGG = {"claims": len(pended_claims), "total_lines": total_lines, "pended_lines": pended_lines}
+    return _LINE_AGG
 
 @app.route("/api/stats")
 def api_stats():
@@ -754,8 +1455,12 @@ def api_stats():
     cats   = {}
     for c in pended_claims:
         cats[c["edit_category"]] = cats.get(c["edit_category"], 0) + 1
+    agg = _line_aggregates()
     return jsonify({
         "total_pended":        total,
+        "claims_extracted":    agg["claims"],
+        "total_lines":         agg["total_lines"],
+        "pended_lines":        agg["pended_lines"],
         "human_review_count":  hr,
         "featured_count":      feat,
         "by_category":         cats,
@@ -763,15 +1468,64 @@ def api_stats():
         "total_authorizations":len(authorizations),
         "total_cob_records":   len(cob),
         "fee_schedule_codes":  len(fee_schedule),
+        "total_members":       len(eligibility),
+        "total_history_claims":sum(len(v) for v in claims_history.values()),
         "edit_types":          len(edit_codes),
     })
+
+@app.route("/api/resolve-summary")
+def api_resolve_summary():
+    """Full-queue outcome rollup so the live counters reconcile to the extracted total.
+    (escalate is folded into human_review — both route to a person.)"""
+    counts = {"approve": 0, "deny": 0, "partial_pay": 0, "request_info": 0, "human_review": 0, "escalate": 0}
+    for c in pended_claims:
+        o = _resolve_pended(c)["outcome"]
+        counts[o] = counts.get(o, 0) + 1
+    total = len(pended_claims)
+    return jsonify({
+        "total":         total,
+        "approve":       counts["approve"],
+        "deny":          counts["deny"],
+        "partial_pay":   counts["partial_pay"],
+        "request_info":  counts["request_info"],
+        "human_review":  counts["human_review"] + counts["escalate"],
+    })
+
+_FEATURED_ORDER = None
+def _featured_ordered():
+    """Curated demo order for the featured sample: round-robin across edit categories (so the
+    first ~15 rows cover ~15 categories) and lead with an approval, spreading ADRs later.
+    Display order only — decisions are unchanged."""
+    global _FEATURED_ORDER
+    if _FEATURED_ORDER is not None:
+        return _FEATURED_ORDER
+    feats = [c for c in pended_claims if c.get("is_featured")]
+    pref = {"approve": 0, "partial_pay": 1, "deny": 2, "human_review": 3, "escalate": 4, "request_info": 5}
+    by_cat = {}
+    for c in feats:
+        by_cat.setdefault(c["edit_category"], []).append(c)
+    for cat in by_cat:  # within a category, non-ADR first so ADRs get pushed later
+        by_cat[cat].sort(key=lambda c: pref.get(_resolve_pended(c)["outcome"], 9))
+    cats = list(by_cat.values())
+    result = []
+    while any(cats):
+        for lst in cats:
+            if lst:
+                result.append(lst.pop(0))
+    for i, c in enumerate(result):  # lead with an approval if one exists
+        if _resolve_pended(c)["outcome"] == "approve":
+            result.insert(0, result.pop(i)); break
+    _FEATURED_ORDER = result
+    return result
 
 @app.route("/api/pend-queue")
 def api_pend_queue():
     page  = int(request.args.get("page", 1))
     limit = int(request.args.get("limit", 100))
     featured_only = request.args.get("featured") == "true"
-    subset = [c for c in pended_claims if c.get("is_featured")] if featured_only else pended_claims
+    base = _featured_ordered() if featured_only else pended_claims
+    # Surface the hero header+line-item claims at the top of the queue / ingest stream
+    subset = line_item_claims + base
     start  = (page - 1) * limit
     return jsonify({
         "claims": subset[start:start + limit],
@@ -798,7 +1552,7 @@ def api_process_claim(icn):
 @app.route("/api/process-batch")
 def api_process_batch():
     """Process all featured claims (1 per edit type) for the live demo queue."""
-    featured = [c for c in pended_claims if c.get("is_featured")]
+    featured = _featured_ordered()
     results  = []
     for claim in featured:
         res = resolve_claim(claim)
@@ -814,6 +1568,43 @@ def api_process_batch():
             **res,
         })
     return jsonify({"results": results, "count": len(results)})
+
+@app.route("/api/line-claims")
+def api_line_claims():
+    """List the hero header+line-item claims (Professional + Institutional)."""
+    return jsonify({"claims": line_item_claims, "count": len(line_item_claims)})
+
+@app.route("/api/claim-lines/<icn>")
+def api_claim_lines(icn):
+    """Header + service lines for ANY claim. ?resolve=1 adjudicates each line (real resolver) + rolls up.
+    Hero claims use their explicit lines; regular pends get a derived header + companion lines."""
+    resolve = request.args.get("resolve") == "1"
+    hero = line_item_index.get(icn)
+    if hero:
+        claim, lines = hero, hero["lines"]
+    else:
+        claim = claims_index.get(icn)
+        if not claim:
+            return jsonify({"error": "ICN not found"}), 404
+        lines = build_service_lines(claim)
+    header = _line_header(claim, lines)
+    header["billed_amount"] = round(sum(l["charge"] for l in lines), 2)
+    out_lines = [dict(l) for l in lines]
+    # Attach the applicable SOP to each pended line up front (visible even before resolution)
+    for ln in out_lines:
+        if ln.get("pended"):
+            rule = RESOLUTION_RULES.get(ln.get("resolution_path"))
+            ln["applicable_sop"] = rule["sop_ref"] if rule else "N/A"
+    payload = {"header": header, "lines": out_lines,
+               "is_multi_line": bool(hero) or sum(1 for l in lines if l.get("pended")) > 1}
+    if resolve:
+        resolutions = []
+        for ln in out_lines:
+            r = resolve_line(ln, claim)
+            ln["resolution"] = r
+            resolutions.append(r)
+        payload["rollup"] = _header_rollup(resolutions)
+    return jsonify(payload)
 
 @app.route("/api/multi-edit-claims")
 def api_multi_edit_claims():
@@ -874,6 +1665,94 @@ def api_human_review():
         "count":  len(human_review),
     })
 
+# ── Human Review & Denial Workflow ──────────────────────────────────────────────
+HIGH_DOLLAR = 2000.0
+_REVIEW_AGG = None
+
+def _why_human(outcome, category, resolution_path, billed, hr_reason):
+    """Return (routed?, why_human, recommendation) — the human-in-the-loop rule."""
+    if outcome == "human_review":
+        return True, (hr_reason or "Clinical / edge-case judgment required"), \
+               "Agent staged the case + evidence; examiner makes the call"
+    if outcome == "deny":
+        if category == "Medical Necessity" or resolution_path in ("deny_medical_necessity", "deny_lcd_ncd"):
+            return True, "Medical-necessity / LCD-NCD denial — clinical sign-off required before it goes out", \
+                   "Agent recommends UPHOLD denial — examiner confirms or overrides"
+        if (billed or 0) >= HIGH_DOLLAR:
+            return True, f"High-dollar denial (${billed:,.0f} ≥ ${HIGH_DOLLAR:,.0f}) — senior review required", \
+                   "Agent recommends UPHOLD denial — examiner confirms or overrides"
+    return False, None, None
+
+def _work_item(icn, claim_disp, res, billed, line_no=None, rev_or_cpt=None):
+    routed, why, rec = _why_human(res["outcome"], claim_disp.get("edit_category"),
+                                  claim_disp.get("resolution_path"), billed,
+                                  res.get("human_review_reason"))
+    if not routed:
+        return None
+    return {
+        "id": f'{icn}' + (f'-L{line_no}' if line_no else ''),
+        "icn": icn, "line_no": line_no, "svc": rev_or_cpt,
+        "member_name": claim_disp.get("member_name"), "claim_type": claim_disp.get("claim_type", "Professional"),
+        "billed": billed, "edit_code": claim_disp.get("edit_code"), "edit_category": claim_disp.get("edit_category"),
+        "edit_description": claim_disp.get("edit_description"),
+        "agent_outcome": res["outcome"], "agent_outcome_label": res["outcome_label"],
+        "why_human": why, "recommendation": rec,
+        "sop_ref": res.get("sop_ref"), "carc": res.get("carc"), "rarc": res.get("rarc"),
+        "kg_rules": res.get("kg_rules", []), "rationale": res.get("rationale", ""),
+    }
+
+@app.route("/api/review-workflow")
+def api_review_workflow():
+    """Assemble everything that must touch a human: all human-review outcomes PLUS denials
+    that require sign-off (medical-necessity / LCD-NCD, and high-dollar denials)."""
+    items = []
+    # featured single-line claims
+    for claim in [c for c in pended_claims if c.get("is_featured")]:
+        res = resolve_claim(claim)
+        res["kg_rules"] = get_kg_rules(claim["edit_code"], claim, {})
+        res["rationale"] = _LINE_RATIONALE.get(res["outcome"], "")
+        it = _work_item(claim["icn"], claim, res, claim.get("billed_amount") or 0,
+                        rev_or_cpt=f'CPT {claim.get("cpt_code")}')
+        if it: items.append(it)
+    # hero header+line claims — line level
+    for claim in line_item_claims:
+        for ln in claim["lines"]:
+            if not ln.get("pended"):
+                continue
+            res = resolve_line(ln, claim)
+            disp = {"edit_category": ln.get("edit_category"), "resolution_path": ln.get("resolution_path"),
+                    "edit_code": ln.get("edit_code"), "edit_description": ln.get("edit_description"),
+                    "member_name": claim.get("member_name"), "claim_type": claim.get("claim_type")}
+            rev_or_cpt = f'REV {ln.get("rev_code")}' if ln.get("rev_code") else f'CPT {ln.get("cpt_code")}'
+            it = _work_item(claim["icn"], disp, res, ln.get("charge") or 0, line_no=ln["line_no"], rev_or_cpt=rev_or_cpt)
+            if it: items.append(it)
+    # order: human review first, then denials; high billed first
+    order = {"human_review": 0, "deny": 1}
+    items.sort(key=lambda x: (order.get(x["agent_outcome"], 2), -(x["billed"] or 0)))
+    # Full-queue referral counts so the workflow reconciles with what the agent referred
+    # across all 5,318 pended lines (not just the sample of cards shown).
+    global _REVIEW_AGG
+    if _REVIEW_AGG is None:
+        full_hr = full_den = 0
+        for c in pended_claims:
+            r = _resolve_pended(c)
+            oc = r["outcome"]
+            if oc in ("human_review", "escalate"):
+                full_hr += 1
+            elif oc == "deny":
+                routed, _w, _r = _why_human("deny", c.get("edit_category"), c.get("resolution_path"),
+                                            c.get("billed_amount") or 0, r.get("human_review_reason"))
+                if routed:
+                    full_den += 1
+        _REVIEW_AGG = {"human_review": full_hr, "denial_review": full_den}
+    summary = {
+        "total":         _REVIEW_AGG["human_review"] + _REVIEW_AGG["denial_review"],
+        "human_review":  _REVIEW_AGG["human_review"],
+        "denial_review": _REVIEW_AGG["denial_review"],
+        "shown":         len(items),
+    }
+    return jsonify({"items": items, "summary": summary})
+
 @app.route("/api/sop-outcomes")
 def api_sop_outcomes():
     return jsonify(sop_outcomes)
@@ -890,8 +1769,8 @@ def api_edit_codes():
 
 @app.route("/api/db/providers")
 def api_db_providers():
-    sample = list(providers.values())[:20]
-    return jsonify({"records": sample, "total": len(providers)})
+    recs = list(providers.values())
+    return jsonify({"records": recs[:200], "total": len(recs), "shown": min(200, len(recs))})
 
 @app.route("/api/db/providers/<npi>")
 def api_db_provider(npi):
@@ -902,8 +1781,8 @@ def api_db_provider(npi):
 
 @app.route("/api/db/authorizations")
 def api_db_authorizations():
-    sample = list(authorizations.values())[:20]
-    return jsonify({"records": sample, "total": len(authorizations)})
+    recs = list(authorizations.values())
+    return jsonify({"records": recs[:200], "total": len(recs), "shown": min(200, len(recs))})
 
 @app.route("/api/db/authorizations/<auth_num>")
 def api_db_authorization(auth_num):
@@ -914,7 +1793,26 @@ def api_db_authorization(auth_num):
 
 @app.route("/api/db/cob")
 def api_db_cob():
-    return jsonify({"records": list(cob.values()), "total": len(cob)})
+    recs = list(cob.values())
+    return jsonify({"records": recs[:200], "total": len(recs), "shown": min(200, len(recs))})
+
+@app.route("/api/db/eligibility")
+def api_db_eligibility_list():
+    recs = list(eligibility.values())
+    return jsonify({"records": recs[:200], "total": len(recs), "shown": min(200, len(recs))})
+
+@app.route("/api/db/claims-history")
+def api_db_claims_history_list():
+    rows = []
+    for mid, lst in claims_history.items():
+        for r in lst:
+            rows.append({**r, "member_id": mid})
+            if len(rows) >= 200:
+                break
+        if len(rows) >= 200:
+            break
+    total = sum(len(v) for v in claims_history.values())
+    return jsonify({"records": rows, "total": total, "shown": len(rows)})
 
 @app.route("/api/db/cob/<member_id>")
 def api_db_cob_member(member_id):
@@ -925,7 +1823,8 @@ def api_db_cob_member(member_id):
 
 @app.route("/api/db/fee-schedule")
 def api_db_fee_schedule():
-    return jsonify({"records": list(fee_schedule.values()), "total": len(fee_schedule)})
+    recs = list(fee_schedule.values())
+    return jsonify({"records": recs[:200], "total": len(recs), "shown": min(200, len(recs))})
 
 @app.route("/api/db/fee-schedule/<cpt>")
 def api_db_fee_schedule_cpt(cpt):

@@ -5,3 +5,7 @@ __pycache__/
 data_100_backup/
 john/data_100_backup/
 john/_*.json
+john/_*.py
+john/_*.log
+john/demo_dark_backup.html
+john/demo_light_v1.html
