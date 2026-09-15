@@ -21,7 +21,7 @@ def _demo_gate():
     auth = request.authorization
     if not auth or auth.password != DEMO_PASSWORD:
         return Response("Authentication required.", 401,
-                        {"WWW-Authenticate": 'Basic realm="Claims Pend Processing — Demo"'})
+                        {"WWW-Authenticate": 'Basic realm="Claims Pend Processing Demo"'})
 
 @app.route("/")
 def _root():
