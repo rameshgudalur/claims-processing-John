@@ -159,6 +159,127 @@ def _pad_reference_dbs():
 
 _pad_reference_dbs()
 
+# High-dollar INSTITUTIONAL claims (≥ $10,000) → routed to human review for oversight.
+# Seed a set so the category is populated and demonstrable (the base queue is professional).
+HIGH_DOLLAR_INSTITUTIONAL = 10000.0
+def _add_highdollar_institutional(n=70):
+    import random as _r
+    rnd = _r.Random(4242)
+    members = list(eligibility.values())
+    INST = [  # (rev, cpt, desc, icd, icd_desc)
+        ("0110","99223","Inpatient admission, high complexity","J96.00","Acute respiratory failure"),
+        ("0360","33533","Coronary artery bypass graft","I25.10","Atherosclerotic heart disease"),
+        ("0360","27447","Total knee arthroplasty (inpatient)","M17.11","Osteoarthritis, right knee"),
+        ("0200","99291","Critical care, first hour (ICU)","R65.21","Severe sepsis with septic shock"),
+        ("0360","22633","Lumbar spinal fusion","M43.16","Spondylolisthesis, lumbar"),
+        ("0360","32480","Lobectomy, lung","C34.90","Malignant neoplasm of lung"),
+        ("0114","99223","NICU admission, high complexity","P07.30","Preterm newborn"),
+        ("0360","47600","Cholecystectomy w/ complications","K80.12","Cholelithiasis w/ obstruction"),
+    ]
+    EDITS = ["E-MN-002","E-AUTH-001","E-PRICE-005","E-CODE-003","E-DUP-001","E-AUTH-004"]
+    ec = edit_codes
+    for i in range(n):
+        m = members[rnd.randrange(len(members))]
+        rev, cpt, desc, icd, icd_desc = rnd.choice(INST)
+        billed = float(rnd.randint(10000, 85000))
+        edit = rnd.choice(EDITS); meta = ec.get(edit, {})
+        c = {"icn": f"ICN-2026-HD-{5000+i}", "claim_type": "Institutional", "form": "UB-04 / 837I",
+             "member_id": m["member_id"], "member_name": m["name"], "member_dob": m.get("dob"),
+             "plan": m.get("plan"), "npi_billing": "1902847733", "npi_rendering": "1902847733",
+             "provider_name": "Metro General Hospital", "provider_specialty": "Acute Care Hospital",
+             "group_name": "Metro Health System", "dos": "2026-02-20", "received_date": "2026-02-26",
+             "pend_date": "2026-03-10", "days_in_queue": 10 + (i % 22), "priority": "urgent",
+             "cpt_code": cpt, "cpt_description": desc, "modifier": None, "rev_code": rev,
+             "icd10_principal": icd, "icd10_secondary": None, "icd10_desc": icd_desc,
+             "place_of_service": "21", "units_billed": 1, "billed_amount": billed,
+             "allowed_amount": round(billed * 0.62, 2), "auth_number": None,
+             "edit_code": edit, "edit_category": meta.get("category", "Authorization"),
+             "edit_description": meta.get("desc", ""), "carc_code": meta.get("carc"),
+             "rarc_code": meta.get("rarc"), "resolution_path": meta.get("resolution"),
+             "status": "pending", "resolution": None, "human_review_flag": False,
+             "human_review_reason": None, "is_featured": False}
+        pended_claims.append(c); claims_index[c["icn"]] = c
+# Re-tune the pend queue to a target OUTCOME distribution (demo target):
+# Approved 30% · Partial 20% · Denied 30% · ADR 5% · Human review (incl clinical) 15%.
+# Done honestly by shaping the EDIT mix — each claim's real SOP outcome still matches its edit.
+def _rebuild_pend_distribution(n=5300):
+    import random as _r
+    rnd = _r.Random(20260915)
+    members = [m for m in eligibility.values()]
+    PROVS = [("Dr. Alan Ross","Orthopedic Surgery","1401640052","Advanced Specialty Care"),
+             ("Dr. Nina Patel","Radiology","1558493021","Metro Imaging"),
+             ("Dr. Omar Reyes","Family Medicine","1730285566","Riverside Primary Care"),
+             ("Dr. Lucy Kim","Emergency Medicine","1902847733","Harbor ED Group"),
+             ("Dr. Carol Bennett","Cardiology","1131647520","Summit Cardiology"),
+             ("Dr. Marcus Lee","Internal Medicine","1447882910","Valley Care Associates")]
+    CPTS = [("99213","Office visit, established",118,"E11.9","Type 2 diabetes"),
+            ("99214","Office visit, moderate",175,"I10","Essential hypertension"),
+            ("70553","MRI brain w/wo contrast",410,"R51.9","Headache"),
+            ("72148","MRI lumbar spine",395,"M54.5","Low back pain"),
+            ("29881","Knee arthroscopy w/ meniscectomy",1180,"M23.209","Meniscus derangement"),
+            ("97110","Therapeutic exercise",42,"M25.561","Pain in knee"),
+            ("93306","Echocardiography w/ Doppler",340,"I50.9","Heart failure"),
+            ("80053","Comprehensive metabolic panel",42,"Z00.00","General exam"),
+            ("36415","Routine venipuncture",12,"Z00.00","General exam"),
+            ("90837","Psychotherapy, 60 min",145,"F41.1","Anxiety disorder"),
+            ("74177","CT abdomen & pelvis w/ contrast",520,"R10.9","Abdominal pain"),
+            ("20610","Aspiration/injection, major joint",95,"M25.561","Pain in knee")]
+    # buckets: (outcome, [edit_codes], force_human_review_flag)
+    # Duplicate + auth-missing + wrong-provider-auth are DETERMINISTIC → agent decides (deny).
+    # Only genuine judgment (adjustment posting) stays in human review.
+    buckets = {
+        "approve":      (["E-PRICE-001","E-COB-002","E-PRICE-006"], False),
+        "partial_pay":  (["E-PRICE-002","E-COB-003","E-AUTH-004","E-PROV-003","E-PCP-001","E-OON-001"], False),
+        "deny":         (["E-CODE-002","E-CODE-004","E-TF-001","E-TF-002","E-DUP-002","E-DUP-001","E-PRICE-004",
+                          "E-PROV-001","E-PROV-002","E-PROV-004","E-WC-001","E-CODE-003","E-AUTH-005","E-AUTH-001"], False),
+        "request_info": (["E-MN-001","E-AUTH-003","E-CODE-001","E-CODE-005","E-PRICE-003","E-COB-001","E-MG-001"], False),
+        "human_review": (["E-ADJ-001"], False),   # genuine human review only — examiner posts the adjustment
+    }
+    weights = {"approve":0.35, "partial_pay":0.25, "deny":0.30, "request_info":0.05, "human_review":0.05}
+    ec = edit_codes
+    new_claims = []
+    seq = 3000
+    def mk(edit, force_hr):
+        nonlocal seq
+        seq += 1
+        m = members[rnd.randrange(len(members))]
+        p = rnd.choice(PROVS)
+        cpt, cdesc, allowed, icd, idesc = rnd.choice(CPTS)
+        if edit == "E-AUTH-001" and allowed < 150:   # ensure auth-missing denies (not auth-exempt)
+            cpt, cdesc, allowed, icd, idesc = ("70553","MRI brain w/wo contrast",410,"R51.9","Headache")
+        meta = ec.get(edit, {})
+        billed = round(allowed * rnd.uniform(1.6, 3.0), 2)
+        return {"icn": f"ICN-2026-{seq}", "claim_type": "Professional", "member_id": m["member_id"],
+                "member_name": m["name"], "member_dob": m.get("dob"), "plan": m.get("plan"),
+                "npi_billing": "1131647525", "npi_rendering": p[2], "provider_name": p[0],
+                "provider_specialty": p[1], "group_name": p[3], "dos": "2026-03-14",
+                "received_date": "2026-03-18", "pend_date": "2026-04-01", "days_in_queue": 8 + (seq % 24),
+                "priority": "routine", "cpt_code": cpt, "cpt_description": cdesc, "modifier": None,
+                "icd10_principal": icd, "icd10_secondary": None, "icd10_desc": idesc,
+                "place_of_service": "11", "units_billed": 1, "billed_amount": billed,
+                "allowed_amount": float(allowed), "auth_number": None, "edit_code": edit,
+                "edit_category": meta.get("category",""), "edit_description": meta.get("desc",""),
+                "carc_code": meta.get("carc"), "rarc_code": meta.get("rarc"),
+                "resolution_path": meta.get("resolution"), "status": "pending", "resolution": None,
+                "human_review_flag": bool(force_hr), "human_review_reason": ("Examiner judgment required" if force_hr else None),
+                "is_featured": False}
+    # bulk per target weights
+    for outcome, w in weights.items():
+        edits, force_hr = buckets[outcome]
+        cnt = int(round(n * w))
+        for i in range(cnt):
+            new_claims.append(mk(edits[i % len(edits)], force_hr))
+    # one featured claim per EVERY edit code (so trace dropdown + catalog stay complete)
+    for edit in ec.keys():
+        fr = edit in ("E-ADJ-001","E-DUP-001","E-AUTH-001","E-AUTH-005")
+        c = mk(edit, fr); c["is_featured"] = True
+        new_claims.append(c)
+    pended_claims[:] = new_claims
+    claims_index.clear(); claims_index.update({c["icn"]: c for c in pended_claims})
+
+_rebuild_pend_distribution()
+_add_highdollar_institutional()
+
 # Single-payer demo: unify every plan/payer label to one payer (member's own plan only;
 # COB other-coverage carriers are intentionally left as different carriers).
 def _normalize_payer(name="Althea Health"):
@@ -861,7 +982,7 @@ RESOLUTION_LABELS = {
     "approve":      {"label": "Approved",        "color": "green"},
     "deny":         {"label": "Denied",           "color": "red"},
     "partial_pay":  {"label": "Partial Pay",      "color": "yellow"},
-    "request_info": {"label": "ADR Sent",         "color": "blue"},
+    "request_info": {"label": "ADR - Placed in Queue", "color": "blue"},
     "escalate":     {"label": "Escalated",        "color": "orange"},
     "human_review": {"label": "Human Review",     "color": "purple"},
 }
@@ -1292,6 +1413,18 @@ def resolve_claim(claim):
             executed_steps[-1]["outcome"] = "human_review"
             executed_steps[-1]["observation"] += " — flagged for examiner sign-off before release"
 
+    # High-dollar INSTITUTIONAL oversight → human review regardless of the SOP outcome
+    hd_reason = None
+    _billed = claim.get("billed_amount") or 0
+    if claim.get("claim_type") == "Institutional" and _billed >= HIGH_DOLLAR_INSTITUTIONAL and outcome != "human_review":
+        rec_label = RESOLUTION_LABELS.get(outcome, {}).get("label", outcome)
+        outcome = "human_review"
+        hd_reason = f"High-dollar institutional claim (${_billed:,.0f} ≥ ${HIGH_DOLLAR_INSTITUTIONAL:,.0f}) — human review required for oversight; agent recommendation: {rec_label}"
+        if executed_steps:
+            executed_steps[-1]["outcome"] = "human_review"
+            executed_steps[-1]["observation"] = hd_reason
+            executed_steps[-1]["status"] = "info"
+
     # Manual pricing (Burgess/Multiplan/Zelis) — reprice via the pricing engine (real API when configured)
     pricing_info = None
     allowed = claim["allowed_amount"]
@@ -1324,8 +1457,8 @@ def resolve_claim(claim):
         "sop_steps":      steps,
         "executed_steps": executed_steps,
         "dbs_queried":    dbs_queried,
-        "human_review":   claim["human_review_flag"],
-        "human_review_reason": claim.get("human_review_reason"),
+        "human_review":   claim["human_review_flag"] or (outcome == "human_review"),
+        "human_review_reason": hd_reason or claim.get("human_review_reason"),
         "processing_ms":  random.randint(180, 950),
     }
     if pricing_info:
@@ -1415,26 +1548,36 @@ def resolve_line(line, header):
     res["rationale"] = _LINE_RATIONALE.get(res["outcome"], "")
     return res
 
-def _header_rollup(resolutions):
+def _header_rollup(resolutions, lines=None):
     total_paid = round(sum(r.get("payment_amount", 0) for r in resolutions), 2)
     pended = [r for r in resolutions if r.get("pended")]
     n = len(resolutions)
+    fully_approved = sum(1 for r in resolutions if r["outcome"] == "approve")
     lines_paid = sum(1 for r in resolutions if r.get("payment_amount", 0) > 0)
+    lines_denied = sum(1 for r in resolutions if r["outcome"] == "deny")
     if any(r["outcome"] == "human_review" for r in pended):
         oc, label = "human_review", "Partially adjudicated — human review required"
     elif any(r["outcome"] == "escalate" for r in pended):
         oc, label = "escalate", "Escalated — line review required"
-    elif lines_paid == n:
+    elif fully_approved == n:                       # every line paid in full
         oc, label = "approve", "Approved"
-    elif total_paid <= 0:
+    elif total_paid <= 0:                           # nothing paid
         oc, label = "deny", "Denied"
-    else:
+    else:                                           # some paid, some reduced/denied
         oc, label = "partial_pay", "Partial Pay"
     color = RESOLUTION_LABELS.get(oc, {}).get("color", "gray")
-    return {"outcome": oc, "outcome_label": label, "outcome_color": color,
-            "payment_amount": total_paid,
-            "lines_total": n, "lines_pended": len(pended),
-            "lines_paid": lines_paid}
+    out = {"outcome": oc, "outcome_label": label, "outcome_color": color,
+           "payment_amount": total_paid, "lines_total": n, "lines_pended": len(pended),
+           "lines_paid": lines_paid, "lines_denied": lines_denied}
+    # payment breakdown: billed → allowed → paid → contractual write-off → member resp / denied portion
+    if lines is not None:
+        billed = round(sum((l.get("charge") or 0) for l in lines), 2)
+        allowed = round(sum((l.get("allowed") if l.get("allowed") is not None else (l.get("charge") or 0)) for l in lines), 2)
+        write_off = round(max(billed - allowed, 0), 2)
+        balance = round(max(allowed - total_paid, 0), 2)   # member responsibility / denied portion
+        out["breakdown"] = {"billed": billed, "allowed": allowed, "paid": total_paid,
+                            "write_off": write_off, "member_or_denied": balance}
+    return out
 
 def _line_header(claim, lines):
     h = {k: claim.get(k) for k in (
@@ -1522,9 +1665,18 @@ def api_resolve_summary():
     """Full-queue outcome rollup so the live counters reconcile to the extracted total.
     (escalate is folded into human_review — both route to a person.)"""
     counts = {"approve": 0, "deny": 0, "partial_pay": 0, "request_info": 0, "human_review": 0, "escalate": 0}
+    clinical = 0; high_dollar = 0; human_genuine = 0
     for c in pended_claims:
         o = _resolve_pended(c)["outcome"]
         counts[o] = counts.get(o, 0) + 1
+        if o == "deny" and (c.get("resolution_path") in ("deny_medical_necessity", "deny_lcd_ncd")
+                            or c.get("edit_category") == "Medical Necessity"):
+            clinical += 1
+        if o in ("human_review", "escalate"):
+            if c.get("claim_type") == "Institutional" and (c.get("billed_amount") or 0) >= HIGH_DOLLAR_INSTITUTIONAL:
+                high_dollar += 1
+            else:
+                human_genuine += 1
     total = len(pended_claims)
     return jsonify({
         "total":         total,
@@ -1532,7 +1684,9 @@ def api_resolve_summary():
         "deny":          counts["deny"],
         "partial_pay":   counts["partial_pay"],
         "request_info":  counts["request_info"],
-        "human_review":  counts["human_review"] + counts["escalate"],
+        "human_review":  human_genuine,   # genuine human review only (excl. high-dollar oversight)
+        "high_dollar":   high_dollar,     # institutional >= $10k — its own review queue
+        "clinical":      clinical,        # subset of Denied — adverse clinical/coverage determinations
     })
 
 _FEATURED_ORDER = None
@@ -1613,6 +1767,45 @@ def api_process_batch():
         })
     return jsonify({"results": results, "count": len(results)})
 
+_OUTCOME_KEY = {"approved": "approve", "denied": "deny", "partial": "partial_pay",
+                "adr": "request_info", "human": "human_review", "clinical": "__clinical__",
+                "highdollar": "__highdollar__"}
+def _is_high_dollar(c):
+    return c.get("claim_type") == "Institutional" and (c.get("billed_amount") or 0) >= HIGH_DOLLAR_INSTITUTIONAL
+
+@app.route("/api/outcome/<key>")
+def api_outcome(key):
+    """Drill-down: all pended claims that resolved to <key>, with full resolution detail so a
+    reviewer sees everything the agent used — no navigating away. Returns up to `limit` + total."""
+    limit = int(request.args.get("limit", 60))
+    target = _OUTCOME_KEY.get(key)
+    if not target:
+        return jsonify({"error": "unknown outcome"}), 404
+    matches, total = [], 0
+    for c in pended_claims:
+        res = _resolve_pended(c)
+        oc = res["outcome"]
+        if target == "__clinical__":
+            hit = (oc == "deny" and (c.get("resolution_path") in ("deny_medical_necessity", "deny_lcd_ncd")
+                                     or c.get("edit_category") == "Medical Necessity"))
+        elif target == "__highdollar__":
+            hit = oc in ("human_review", "escalate") and _is_high_dollar(c)
+        elif target == "human_review":
+            hit = oc in ("human_review", "escalate") and not _is_high_dollar(c)
+        else:
+            hit = oc == target
+        if not hit:
+            continue
+        total += 1
+        if len(matches) < limit:
+            matches.append({
+                "icn": c["icn"], "member_name": c["member_name"], "provider_name": c["provider_name"],
+                "cpt_code": c["cpt_code"], "billed_amount": c["billed_amount"],
+                "edit_code": c["edit_code"], "edit_category": c["edit_category"],
+                "edit_description": c["edit_description"], **res,
+            })
+    return jsonify({"key": key, "results": matches, "shown": len(matches), "total": total})
+
 @app.route("/api/line-claims")
 def api_line_claims():
     """List the hero header+line-item claims (Professional + Institutional)."""
@@ -1653,7 +1846,7 @@ def api_claim_lines(icn):
             r = resolve_line(ln, claim)
             ln["resolution"] = r
             resolutions.append(r)
-        payload["rollup"] = _header_rollup(resolutions)
+        payload["rollup"] = _header_rollup(resolutions, out_lines)
     return jsonify(payload)
 
 @app.route("/api/multi-edit-claims")
@@ -1719,9 +1912,13 @@ def api_human_review():
 HIGH_DOLLAR = 2000.0
 _REVIEW_AGG = None
 
-def _why_human(outcome, category, resolution_path, billed, hr_reason):
-    """Return (routed?, why_human, recommendation) — the human-in-the-loop rule."""
+def _why_human(outcome, category, resolution_path, billed, hr_reason, claim_type=None):
+    """Return (routed?, route, why_human, recommendation) — the human-in-the-loop rule."""
     if outcome in ("human_review", "escalate"):
+        if claim_type == "Institutional" and (billed or 0) >= HIGH_DOLLAR_INSTITUTIONAL:
+            return True, "high_dollar_review", \
+                   (hr_reason or f"High-dollar institutional claim (≥ ${HIGH_DOLLAR_INSTITUTIONAL:,.0f}) — human oversight"), \
+                   "Agent adjudicated; high-dollar institutional claim held for human oversight sign-off"
         return True, "human_escalation", (hr_reason or "Edge-case judgment the agent will not make alone"), \
                "Agent escalated the case with evidence; a human makes the call"
     if outcome == "deny":
@@ -1743,7 +1940,7 @@ def _why_human(outcome, category, resolution_path, billed, hr_reason):
 def _work_item(icn, claim_disp, res, billed, line_no=None, rev_or_cpt=None):
     routed, route, why, rec = _why_human(res["outcome"], claim_disp.get("edit_category"),
                                          claim_disp.get("resolution_path"), billed,
-                                         res.get("human_review_reason"))
+                                         res.get("human_review_reason"), claim_disp.get("claim_type"))
     if not routed:
         return None
     return {
@@ -1783,27 +1980,34 @@ def api_review_workflow():
             rev_or_cpt = f'REV {ln.get("rev_code")}' if ln.get("rev_code") else f'CPT {ln.get("cpt_code")}'
             it = _work_item(claim["icn"], disp, res, ln.get("charge") or 0, line_no=ln["line_no"], rev_or_cpt=rev_or_cpt)
             if it: items.append(it)
-    # order: denial review, human escalation, clinical review
-    order = {"denial_review": 0, "human_escalation": 1, "clinical_review": 2}
-    items.sort(key=lambda x: (order.get(x.get("route"), 3), -(x["billed"] or 0)))
-    # Full-queue referral counts so the workflow reconciles with what the agent referred
-    # across all 5,318 pended lines (not just the sample of cards shown).
+    # a few high-dollar institutional claims so the High-Dollar Review lane has sample cards
+    for claim in [c for c in pended_claims if str(c.get("icn","")).startswith("ICN-2026-HD-")][:8]:
+        res = resolve_claim(claim)
+        res["kg_rules"] = get_kg_rules(claim["edit_code"], claim, {})
+        it = _work_item(claim["icn"], claim, res, claim.get("billed_amount") or 0,
+                        rev_or_cpt=f'CPT {claim.get("cpt_code")}')
+        if it: items.append(it)
+    # order: high-dollar, denial review, human escalation, clinical review
+    order = {"high_dollar_review": 0, "denial_review": 1, "human_escalation": 2, "clinical_review": 3}
+    items.sort(key=lambda x: (order.get(x.get("route"), 4), -(x["billed"] or 0)))
+    # Full-queue referral counts so the workflow reconciles with what the agent referred.
     global _REVIEW_AGG
     if _REVIEW_AGG is None:
-        agg = {"denial_review": 0, "human_escalation": 0, "clinical_review": 0}
+        agg = {"denial_review": 0, "human_escalation": 0, "clinical_review": 0, "high_dollar_review": 0}
         for c in pended_claims:
             r = _resolve_pended(c)
             routed, route, _w, _r = _why_human(r["outcome"], c.get("edit_category"), c.get("resolution_path"),
-                                               c.get("billed_amount") or 0, r.get("human_review_reason"))
+                                               c.get("billed_amount") or 0, r.get("human_review_reason"), c.get("claim_type"))
             if routed:
                 agg[route] = agg.get(route, 0) + 1
         _REVIEW_AGG = agg
     summary = {
-        "total":            sum(_REVIEW_AGG.values()),
-        "denial_review":    _REVIEW_AGG["denial_review"],
-        "human_escalation": _REVIEW_AGG["human_escalation"],
-        "clinical_review":  _REVIEW_AGG["clinical_review"],
-        "shown":            len(items),
+        "total":              sum(_REVIEW_AGG.values()),
+        "denial_review":      _REVIEW_AGG["denial_review"],
+        "human_escalation":   _REVIEW_AGG["human_escalation"],
+        "clinical_review":    _REVIEW_AGG["clinical_review"],
+        "high_dollar_review": _REVIEW_AGG["high_dollar_review"],
+        "shown":              len(items),
     }
     return jsonify({"items": items, "summary": summary})
 
@@ -1897,7 +2101,9 @@ def _covers_dos(rec, dos):
     if not rec or not dos:
         return None
     for sp in rec.get("coverage_spans", []):
-        if sp.get("effective", "0000") <= str(dos) <= sp.get("term", "9999"):
+        eff = sp.get("effective") or "0000"
+        term = sp.get("term") or "9999"   # None/blank term = open-ended coverage
+        if eff <= str(dos) <= term:
             return True
     return False
 

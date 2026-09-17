@@ -77,6 +77,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
 @keyframes ready-pulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}50%{box-shadow:0 0 0 6px rgba(37,99,235,.12)}}
 .proc-counters{display:flex;gap:12px;margin-left:auto}
 .counter-box{background:#ffffff;border:1px solid #cbd5e1;border-radius:8px;padding:6px 14px;text-align:center;min-width:70px}
+.counter-box.clickable{cursor:pointer;transition:all .15s}
+.counter-box.clickable:hover{border-color:#2563eb;box-shadow:0 2px 8px rgba(37,99,235,.15);transform:translateY(-1px)}
 .counter-n{font-size:1.1rem;font-weight:700}
 .counter-l{font-size:.62rem;color:#334155;text-transform:uppercase;letter-spacing:.5px}
 .counter-n.green{color:#15803d}
@@ -388,12 +390,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <button class="proc-btn" style="background:#cbd5e1;color:#334155;margin-left:8px" id="reset-btn" onclick="resetAct1()">↺ Reset</button>
     <div class="proc-counters">
       <div class="counter-box"><div class="counter-n" id="cnt-extracted" style="color:#0f172a">0</div><div class="counter-l">Pended Lines</div></div>
-      <div class="counter-box"><div class="counter-n" id="cnt-total">0</div><div class="counter-l">Resolved</div></div>
-      <div class="counter-box"><div class="counter-n green" id="cnt-approved">0</div><div class="counter-l">Approved</div></div>
-      <div class="counter-box"><div class="counter-n red" id="cnt-denied">0</div><div class="counter-l">Denied</div></div>
-      <div class="counter-box"><div class="counter-n yellow" id="cnt-partial">0</div><div class="counter-l">Partial</div></div>
-      <div class="counter-box"><div class="counter-n blue" id="cnt-adr">0</div><div class="counter-l">ADR</div></div>
-      <div class="counter-box"><div class="counter-n purple" id="cnt-hr">0</div><div class="counter-l">Human Review</div></div>
+      <div class="counter-box"><div class="counter-n" id="cnt-total">0</div><div class="counter-l">Handled</div></div>
+      <div class="counter-box clickable" onclick="openOutcomePanel('approved')" title="Click to see all"><div class="counter-n green" id="cnt-approved">0</div><div class="counter-l">Approved for Payment</div></div>
+      <div class="counter-box clickable" onclick="openOutcomePanel('partial')" title="Click to see all"><div class="counter-n yellow" id="cnt-partial">0</div><div class="counter-l">Approved for Partial Payment</div></div>
+      <div class="counter-box clickable" onclick="openOutcomePanel('denied')" title="Click to see all"><div class="counter-n red" id="cnt-denied">0</div><div class="counter-l">Denied</div></div>
+      <div class="counter-box clickable" onclick="openOutcomePanel('adr')" title="Click to see all"><div class="counter-n blue" id="cnt-adr">0</div><div class="counter-l">Additional Documentation Request (ADR)</div></div>
+      <div class="counter-box clickable" onclick="openOutcomePanel('human')" title="Click to see all"><div class="counter-n purple" id="cnt-hr">0</div><div class="counter-l">Human Review</div></div>
+      <div class="counter-box clickable" onclick="openOutcomePanel('highdollar')" title="Click to see all — institutional ≥ $10k"><div class="counter-n" id="cnt-highdollar" style="color:#0f172a">0</div><div class="counter-l">High-Dollar Review</div></div>
+      <div class="counter-box clickable" onclick="openOutcomePanel('clinical')" title="Click to see all — subset of Denied"><div class="counter-n" id="cnt-clin" style="color:#0e9f86">0</div><div class="counter-l">Clinical Review</div></div>
     </div>
   </div>
 
@@ -512,11 +516,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
   </div>
 
   <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#334155">
-    The agent stages the full case — SOP, evidence, citations, and a recommendation — and routes it to the right team. <strong>Three review workflows:</strong>
+    The agent stages the full case — SOP, evidence, citations, and a recommendation — and routes it to the right team. <strong>Four review workflows:</strong>
     <span style="display:inline-block;margin-top:6px">
       <span class="badge-outcome red" style="margin-right:6px">Denial review</span> agent-issued denials — examiner reviews/QA before release (clear-cut timely-filing &amp; exact duplicates auto-issue) &nbsp;·&nbsp;
-      <span class="badge-outcome purple" style="margin:0 6px">Human escalation</span> the agent won't decide alone (auth, adjustment, duplicate judgment) &nbsp;·&nbsp;
-      <span class="badge-outcome" style="background:#ccfbf1;color:#0e9f86;margin:0 6px">Clinical review</span> adverse coverage / medical-necessity denials (LCD-NCD, MN) — a clinician confirms before release
+      <span class="badge-outcome purple" style="margin:0 6px">Human escalation</span> genuine judgment only (e.g., adjustment / POS-DA posting) &nbsp;·&nbsp;
+      <span class="badge-outcome" style="background:#ccfbf1;color:#0e9f86;margin:0 6px">Clinical review</span> adverse coverage / medical-necessity (LCD-NCD, MN) — clinician confirms &nbsp;·&nbsp;
+      <span class="badge-outcome" style="background:#e2e8f0;color:#0f172a;margin:0 6px">High-dollar review</span> institutional ≥ $10,000 — human oversight sign-off
     </span>
   </div>
 
@@ -527,6 +532,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
       <div class="counter-box"><div class="counter-n red" id="wf-den">0</div><div class="counter-l">Denial Review</div></div>
       <div class="counter-box"><div class="counter-n" id="wf-hr" style="color:#7c3aed">0</div><div class="counter-l">Human Escalation</div></div>
       <div class="counter-box"><div class="counter-n" id="wf-clin" style="color:#0e9f86">0</div><div class="counter-l">Clinical Review</div></div>
+      <div class="counter-box"><div class="counter-n" id="wf-hd" style="color:#0f172a">0</div><div class="counter-l">High-Dollar Review</div></div>
       <div class="counter-box"><div class="counter-n green" id="wf-decided">0</div><div class="counter-l">Decided</div></div>
     </div>
   </div>
@@ -623,6 +629,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
 <!-- Pend Code Catalog modal -->
 <div id="catalog-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:1000;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px">
   <div id="catalog-modal-body" style="background:#fff;border:1px solid #cbd5e1;border-radius:14px;max-width:920px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)"></div>
+</div>
+
+<!-- Outcome drill-down modal -->
+<div id="outcome-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:1000;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px">
+  <div id="outcome-modal-body" style="background:#fff;border:1px solid #cbd5e1;border-radius:14px;max-width:1040px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)"></div>
+</div>
+
+<!-- ADR letter modal -->
+<div id="letter-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:1000;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px">
+  <div id="letter-modal-body" style="background:#fff;border:1px solid #cbd5e1;border-radius:14px;max-width:720px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)"></div>
 </div>
 
 <script>
@@ -1017,6 +1033,108 @@ async function openPendCatalog(){
 }
 function _sopLink(editCode, label){ return `<span onclick="event.stopPropagation();openSopDoc('${editCode}')" style="cursor:pointer;color:#1d4ed8;text-decoration:underline;text-decoration-style:dotted" title="Open the full SOP">${label}</span>`; }
 
+// ── Outcome drill-down: click a counter → filtered list → full trace per item ────
+const OUTCOME_META = {
+  approved:{label:'Approved for Payment',color:'#15803d'}, partial:{label:'Approved for Partial Payment',color:'#b45309'},
+  denied:{label:'Denied',color:'#dc2626'}, adr:{label:'Additional Documentation Request (ADR)',color:'#2563eb'},
+  human:{label:'Human Review',color:'#7c3aed'}, clinical:{label:'Clinical Review',color:'#0e9f86'},
+  highdollar:{label:'High-Dollar Review (institutional ≥ $10k)',color:'#0f172a'}};
+let _outcomeRows = [];
+let _adrClaimCtx = null;
+async function openOutcomePanel(key){
+  const modal=document.getElementById('outcome-modal'), body=document.getElementById('outcome-modal-body');
+  const meta=OUTCOME_META[key]||{label:key,color:'#334155'};
+  body.innerHTML=`<div style="padding:26px;color:#64748b">Loading ${meta.label}…</div>`; modal.style.display='flex';
+  try{
+    const d=await fetch(`${API}/api/outcome/${key}?limit=60`).then(r=>r.json());
+    _outcomeRows=d.results||[];
+    const rows=_outcomeRows.map((r,i)=>`
+      <tr onclick="openFromOutcome(${i})" style="cursor:pointer;border-bottom:1px solid #e2e8f0" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background=''">
+        <td style="padding:6px 10px;font-family:monospace;color:#2563eb;font-size:.72rem">${r.icn}</td>
+        <td style="padding:6px 10px">${r.member_name}</td>
+        <td style="padding:6px 10px;font-family:monospace;font-size:.7rem;color:#334155">${r.edit_code}</td>
+        <td style="padding:6px 10px;font-size:.72rem;color:#334155">${r.edit_description||''}</td>
+        <td style="padding:6px 10px;color:#b45309;white-space:nowrap">$${(r.billed_amount||0).toLocaleString()}</td>
+        <td style="padding:6px 10px;font-weight:700;color:${meta.color};white-space:nowrap">${r.outcome_label}</td>
+        <td style="padding:6px 10px;color:#1d4ed8;font-size:.7rem;white-space:nowrap">view ▸</td>
+      </tr>`).join('');
+    body.innerHTML=`<div style="position:relative;padding:20px 24px">
+      <button onclick="document.getElementById('outcome-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>
+      <div style="font-size:1.1rem;font-weight:800;color:${meta.color};margin-bottom:2px">${meta.label}</div>
+      <div style="font-size:.75rem;color:#64748b;margin-bottom:12px">Showing ${d.shown} of ${(d.total||0).toLocaleString()} — click any row to see the full trace (SOP, evidence, databases, decision) the agent used. Nothing to search for.</div>
+      <div style="overflow:auto;max-height:64vh"><table style="width:100%;border-collapse:collapse">
+        <thead><tr style="text-align:left;border-bottom:2px solid ${meta.color}">
+          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">ICN</th>
+          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Member</th>
+          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Edit</th>
+          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">What pended</th>
+          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Billed</th>
+          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Decision</th><th></th>
+        </tr></thead><tbody>${rows}</tbody></table></div>
+    </div>`;
+  }catch(e){ body.innerHTML='<div style="padding:26px;color:#dc2626">Unavailable.</div>'; }
+}
+function openFromOutcome(i){
+  const r=_outcomeRows[i]; if(!r) return;
+  document.getElementById('outcome-modal').style.display='none';
+  openClaimPanel(r);
+}
+
+// ── ADR letter generation ───────────────────────────────────────────────────────
+function openAdrLetter(r){
+  const modal=document.getElementById('letter-modal'), body=document.getElementById('letter-modal-body');
+  const today=new Date().toISOString().slice(0,10);
+  const needed = ({
+    'E-MN-001':['Clinical notes / history and physical','Relevant diagnostic / lab / imaging results','Physician attestation of medical necessity'],
+    'E-AUTH-002':['Prior-authorization number or retro-authorization request','Documentation supporting the service dates'],
+    'E-AUTH-003':['Corrected authorization matching the billed service, or an amended claim'],
+    'E-CODE-001':['Corrected claim with a valid, active ICD-10 code for the date of service'],
+    'E-CODE-005':['Corrected claim with proper principal-diagnosis sequencing'],
+    'E-PRICE-003':['Corrected claim with the appropriate pricing modifier'],
+    'E-COB-001':['Primary carrier Explanation of Benefits (EOB)'],
+    'E-ENR-001':['Corrected patient/enrollment details or an updated 834'],
+    'E-MG-001':['Medicare EOMB for secondary Medigap coordination'],
+  })[r.edit_code] || ['Supporting documentation for the pended service','Corrected claim if applicable'];
+  const letter=`ALTHEA HEALTH — CLAIMS OPERATIONS
+Additional Documentation Request (ADR)
+
+Date: ${today}
+ADR Ref: ADR-${r.icn}
+Claim (ICN): ${r.icn}
+Member: ${r.member_name}
+Provider: ${r.provider_name||'—'}
+Service: CPT ${r.cpt_code||'—'} · DOS ${r.dos||'—'}
+Edit: ${r.edit_code} — ${r.edit_description||''}
+Reason codes: ${r.carc||'—'} / ${r.rarc||'—'}
+
+Dear Provider,
+
+Your claim referenced above has pended pending additional documentation. We are
+unable to complete adjudication until the following is received:
+
+${needed.map((x,i)=>`   ${i+1}. ${x}`).join('\n')}
+
+Please submit the requested documentation within 14 calendar days of this notice,
+referencing ADR-${r.icn}. If documentation is not received within the window, the
+claim may be denied for insufficient information (${r.carc||'CO-16'} / ${r.rarc||'N706'}).
+
+Governing procedure: ${r.sop_ref||'—'}
+
+Sincerely,
+Althea Health — Claims Operations (Agentic Adjudication)`;
+  body.innerHTML=`<div style="position:relative;padding:20px 24px">
+    <button onclick="document.getElementById('letter-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>
+    <div style="font-size:1.05rem;font-weight:800;color:#0f172a;margin-bottom:4px">📄 ADR Letter — ${r.icn}</div>
+    <div style="font-size:.74rem;color:#15803d;background:#dcfce7;border:1px solid #86efac;border-radius:6px;padding:6px 10px;margin-bottom:10px">✓ This letter has been <strong>placed in the outbound queue</strong> for dispatch to the provider.</div>
+    <pre id="adr-letter-text" style="white-space:pre-wrap;font-family:'Segoe UI',system-ui,sans-serif;font-size:.8rem;color:#1e293b;line-height:1.5;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:0">${letter.replace(/</g,'&lt;')}</pre>
+    <div style="margin-top:10px">
+      <button class="proc-btn" style="padding:7px 16px;font-size:.8rem" onclick="navigator.clipboard.writeText(document.getElementById('adr-letter-text').innerText); this.textContent='✓ Copied'">Copy letter</button>
+      <button class="proc-btn" style="padding:7px 16px;font-size:.8rem;background:#334155;margin-left:6px" onclick="var w=window.open('','_blank');w.document.write('<pre style=\\'font-family:Segoe UI,sans-serif;white-space:pre-wrap;padding:24px\\'>'+document.getElementById('adr-letter-text').innerText+'</pre>');w.print()">Print</button>
+    </div>
+  </div>`;
+  modal.style.display='flex';
+}
+
 function renderServiceLines(data, resolved) {
   const lines = data.lines || [];
   const isInst = lines.some(l => l.rev_code);
@@ -1063,11 +1181,20 @@ function renderServiceLines(data, resolved) {
   let rollupBanner = '';
   if (resolved && data.rollup) {
     const r = data.rollup; const col = OKC[r.outcome] || '#334155';
+    const bd = r.breakdown;
+    const bdHtml = bd ? `
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        ${[['Billed', bd.billed, '#b45309'],['Allowed', bd.allowed, '#334155'],['Paid', bd.paid, '#15803d'],
+           ['Contractual write-off (CO-45)', bd.write_off, '#64748b'],['Member resp. / denied portion', bd.member_or_denied, '#dc2626']]
+          .map(([k,v,c])=>`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:7px;padding:6px 10px;font-size:.72rem"><div style="color:#64748b;font-size:.62rem;text-transform:uppercase;letter-spacing:.4px">${k}</div><div style="color:${c};font-weight:700;margin-top:2px">$${(v||0).toLocaleString()}</div></div>`).join('')}
+      </div>
+      <div style="font-size:.66rem;color:#64748b;margin-top:5px">Billed = Allowed + write-off · Allowed = Paid + member responsibility/denied portion. The unpaid balance is fully accounted, not lost.</div>` : '';
     rollupBanner = `<div style="background:#f1f5f9;border:1px solid #cbd5e1;border-left:4px solid ${col};border-radius:8px;padding:10px 14px;margin-top:10px;font-size:.82rem">
       <strong>Header disposition:</strong> <span style="color:${col};font-weight:700">${r.outcome_label}</span>
       &nbsp;·&nbsp; Total paid <strong style="color:#15803d">$${r.payment_amount.toFixed(2)}</strong>
-      &nbsp;·&nbsp; ${r.lines_paid}/${r.lines_total} lines paid, ${r.lines_pended} pended
+      &nbsp;·&nbsp; ${r.lines_paid}/${r.lines_total} lines paid${r.lines_denied?`, ${r.lines_denied} denied`:''}, ${r.lines_pended} pended
       <div style="font-size:.72rem;color:#334155;margin-top:4px">The claim pays only what its lines support — one line's edit does not have to hold the whole claim.</div>
+      ${bdHtml}
     </div>`;
   }
   // Per-pended-line "why" — SOP, rationale, KG rules + policy/data sources
@@ -1268,10 +1395,12 @@ async function startProcessing() {
         animateCount('cnt-partial',  counts.partial_pay,  sum.partial_pay),
         animateCount('cnt-adr',      counts.request_info, sum.request_info),
         animateCount('cnt-hr',       counts.human_review, sum.human_review),
+        animateCount('cnt-clin',     0,                   sum.clinical||0),
+        animateCount('cnt-highdollar', 0,                 sum.high_dollar||0),
       ]);
       const _hb3 = document.getElementById('hr-badge'); if (_hb3) _hb3.textContent = sum.human_review.toLocaleString();
       const note = document.getElementById('queue-sample-note');
-      if (note) note.innerHTML = `Showing <strong>${shownRows}</strong> representative rows · the agent resolved all <strong>${sum.total.toLocaleString()}</strong> pended lines (Approved + Denied + Partial + ADR + Human Review = ${sum.total.toLocaleString()}); counters above reflect the full queue.`;
+      if (note) note.innerHTML = `Showing <strong>${shownRows}</strong> representative rows · the agent handled all <strong>${sum.total.toLocaleString()}</strong> pended lines (Approved + Denied + Partial + ADR + Human Review = ${sum.total.toLocaleString()}); counters above reflect the full queue.`;
     } catch(e) { console.error(e); }
   } catch(e) {
     console.error(e);
@@ -1436,8 +1565,10 @@ async function openClaimPanel(r) {
       <div style="margin-top:6px">${dbsHtml}</div>
     </div>
     ${hrBlock}
+    ${r.outcome==='request_info' ? `<div style="margin:4px 0 10px"><button class="proc-btn" style="padding:8px 16px;font-size:.82rem;background:#2563eb" onclick="openAdrLetter(_adrClaimCtx)">📄 ADR Letter — Placed in Queue</button></div>` : ''}
     <div id="cp-lines" style="color:#64748b;font-size:.8rem;padding:6px 0">Loading service lines…</div>
   `;
+  _adrClaimCtx = r;
 
   panel.classList.add('visible');
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1640,10 +1771,11 @@ async function loadReviewWorkflow() {
     document.getElementById('wf-den').textContent     = (d.summary.denial_review||0).toLocaleString();
     document.getElementById('wf-hr').textContent      = (d.summary.human_escalation||0).toLocaleString();
     document.getElementById('wf-clin').textContent    = (d.summary.clinical_review||0).toLocaleString();
+    document.getElementById('wf-hd').textContent      = (d.summary.high_dollar_review||0).toLocaleString();
     document.getElementById('wf-decided').textContent = '0';
     const shown = d.summary.shown || wfItems.length;
     document.getElementById('wf-list').innerHTML =
-      `<div style="font-size:.78rem;color:#334155;margin-bottom:12px">Three review workflows, ${(d.summary.total||0).toLocaleString()} items total across the queue — <strong style="color:#dc2626">${(d.summary.denial_review||0).toLocaleString()}</strong> denial review · <strong style="color:#7c3aed">${(d.summary.human_escalation||0).toLocaleString()}</strong> human escalation · <strong style="color:#0e9f86">${(d.summary.clinical_review||0).toLocaleString()}</strong> clinical review. Showing <strong>${shown}</strong> representative items to work below.</div>`
+      `<div style="font-size:.78rem;color:#334155;margin-bottom:12px">Four review workflows, ${(d.summary.total||0).toLocaleString()} items total across the queue — <strong style="color:#dc2626">${(d.summary.denial_review||0).toLocaleString()}</strong> denial review · <strong style="color:#7c3aed">${(d.summary.human_escalation||0).toLocaleString()}</strong> human escalation · <strong style="color:#0e9f86">${(d.summary.clinical_review||0).toLocaleString()}</strong> clinical review · <strong style="color:#0f172a">${(d.summary.high_dollar_review||0).toLocaleString()}</strong> high-dollar review. Showing <strong>${shown}</strong> representative items to work below.</div>`
       + wfItems.map((it, i) => renderWorkItem(it, i)).join('');
   } catch(e) { document.getElementById('wf-list').innerHTML = '<div style="color:#dc2626">Workflow unavailable — is the server running?</div>'; }
   if (btn) { btn.disabled = false; btn.textContent = '↻ Reassemble Work Queue'; }
@@ -1652,10 +1784,11 @@ async function loadReviewWorkflow() {
 function renderWorkItem(it, i) {
   const route = it.route || (it.agent_outcome === 'human_review' ? 'human_escalation' : 'denial_review');
   const routeMeta = {
-    human_escalation: {badge:'<span class="badge-outcome purple">Human escalation</span>',          border:'#7c3aed'},
-    clinical_review:  {badge:'<span class="badge-outcome" style="background:#ccfbf1;color:#0e9f86">Clinical review</span>', border:'#0e9f86'},
-    denial_review:    {badge:'<span class="badge-outcome red">Denial review</span>',                 border:'#dc2626'},
-  }[route];
+    human_escalation:  {badge:'<span class="badge-outcome purple">Human escalation</span>',          border:'#7c3aed'},
+    clinical_review:   {badge:'<span class="badge-outcome" style="background:#ccfbf1;color:#0e9f86">Clinical review</span>', border:'#0e9f86'},
+    denial_review:     {badge:'<span class="badge-outcome red">Denial review</span>',                 border:'#dc2626'},
+    high_dollar_review:{badge:'<span class="badge-outcome" style="background:#e2e8f0;color:#0f172a">High-dollar review</span>', border:'#0f172a'},
+  }[route] || {badge:'<span class="badge-outcome">Review</span>', border:'#64748b'};
   const ln = it.line_no ? ` · Line ${it.line_no}` : '';
   const kg = (it.kg_rules || []).map(k => `
     <div style="border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;padding:6px 10px;margin-bottom:5px">
@@ -1674,9 +1807,9 @@ function renderWorkItem(it, i) {
        <button class="proc-btn" style="background:#15803d;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Overturned — clinician found coverage/necessity met')">↺ Clinician overturns → approve</button>
        <button class="proc-btn" style="background:#2563eb;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Peer-to-peer / additional records requested')">↩ Request records</button>`;
   } else {
-    actions = `<button class="proc-btn" style="background:#dc2626;padding:7px 14px;font-size:.78rem" onclick="workflowAct(${i},'Denial upheld — examiner confirmed')">✓ Uphold denial</button>
-       <button class="proc-btn" style="background:#15803d;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Denial overturned — approved on review')">↺ Overturn → approve</button>
-       <button class="proc-btn" style="background:#2563eb;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Request additional documentation (ADR)')">↩ Request info</button>`;
+    actions = `<button class="proc-btn" style="background:#15803d;padding:7px 14px;font-size:.78rem" onclick="workflowAct(${i},'Approved on review')">✓ Approve</button>
+       <button class="proc-btn" style="background:#dc2626;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Denial upheld — examiner confirmed')">✕ Deny</button>
+       <button class="proc-btn" style="background:#b45309;padding:7px 14px;font-size:.78rem;margin-left:6px" onclick="workflowAct(${i},'Pended — returned for additional information')">⏸ Pend</button>`;
   }
   return `
     <div class="cp-box" id="wf-item-${i}" style="margin-bottom:12px;border-left:4px solid ${routeMeta.border}">
