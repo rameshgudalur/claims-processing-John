@@ -395,7 +395,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
       <div class="counter-box clickable" onclick="openOutcomePanel('partial')" title="Click to see all"><div class="counter-n yellow" id="cnt-partial">0</div><div class="counter-l">Approved for Partial Payment</div></div>
       <div class="counter-box clickable" onclick="openOutcomePanel('denied')" title="Click to see all"><div class="counter-n red" id="cnt-denied">0</div><div class="counter-l">Denied</div></div>
       <div class="counter-box clickable" onclick="openOutcomePanel('adr')" title="Click to see all"><div class="counter-n blue" id="cnt-adr">0</div><div class="counter-l">Additional Documentation Request (ADR)</div></div>
-      <div class="counter-box clickable" onclick="openOutcomePanel('human')" title="Click to see all"><div class="counter-n purple" id="cnt-hr">0</div><div class="counter-l">Human Review</div></div>
+      <div class="counter-box clickable" onclick="openOutcomePanel('human')" title="Click to see all"><div class="counter-n purple" id="cnt-hr">0</div><div class="counter-l">Examiner Review</div></div>
       <div class="counter-box clickable" onclick="openOutcomePanel('highdollar')" title="Click to see all — institutional ≥ $10k"><div class="counter-n" id="cnt-highdollar" style="color:#0f172a">0</div><div class="counter-l">High-Dollar Review</div></div>
       <div class="counter-box clickable" onclick="openOutcomePanel('clinical')" title="Click to see all — subset of Denied"><div class="counter-n" id="cnt-clin" style="color:#0e9f86">0</div><div class="counter-l">Clinical Review</div></div>
     </div>
@@ -512,14 +512,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
 <div id="workflow-view" class="view">
   <div class="nav">
     <button class="nav-back" onclick="showView('act1-view')">← Pend Queue</button>
-    <span class="nav-title">⚖ Review &amp; Denial Workflow — Human in the Loop</span>
+    <span class="nav-title">⚖ Human Review — Denial · Examiner · Clinical · High-Dollar</span>
   </div>
 
   <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#334155">
-    The agent stages the full case — SOP, evidence, citations, and a recommendation — and routes it to the right team. <strong>Four review workflows:</strong>
+    The agent stages the full case — SOP, evidence, citations, and a recommendation — and routes it to the right team. <strong>Human review = four queues:</strong>
     <span style="display:inline-block;margin-top:6px">
       <span class="badge-outcome red" style="margin-right:6px">Denial review</span> agent-issued denials — examiner reviews/QA before release (clear-cut timely-filing &amp; exact duplicates auto-issue) &nbsp;·&nbsp;
-      <span class="badge-outcome purple" style="margin:0 6px">Human escalation</span> genuine judgment only (e.g., adjustment / POS-DA posting) &nbsp;·&nbsp;
+      <span class="badge-outcome purple" style="margin:0 6px">Examiner review</span> genuine judgment only (e.g., adjustment / POS-DA posting) &nbsp;·&nbsp;
       <span class="badge-outcome" style="background:#ccfbf1;color:#0e9f86;margin:0 6px">Clinical review</span> adverse coverage / medical-necessity (LCD-NCD, MN) — clinician confirms &nbsp;·&nbsp;
       <span class="badge-outcome" style="background:#e2e8f0;color:#0f172a;margin:0 6px">High-dollar review</span> institutional ≥ $10,000 — human oversight sign-off
     </span>
@@ -528,9 +528,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
   <div class="processing-header" style="margin-bottom:16px">
     <button class="proc-btn" style="background:#0f172a" id="wf-load-btn" onclick="loadReviewWorkflow()">⚖ Assemble Work Queue</button>
     <div class="proc-counters">
-      <div class="counter-box"><div class="counter-n purple" id="wf-queued">0</div><div class="counter-l">Queued</div></div>
+      <div class="counter-box"><div class="counter-n purple" id="wf-queued">0</div><div class="counter-l">Total Human Review</div></div>
       <div class="counter-box"><div class="counter-n red" id="wf-den">0</div><div class="counter-l">Denial Review</div></div>
-      <div class="counter-box"><div class="counter-n" id="wf-hr" style="color:#7c3aed">0</div><div class="counter-l">Human Escalation</div></div>
+      <div class="counter-box"><div class="counter-n" id="wf-hr" style="color:#7c3aed">0</div><div class="counter-l">Examiner Review</div></div>
       <div class="counter-box"><div class="counter-n" id="wf-clin" style="color:#0e9f86">0</div><div class="counter-l">Clinical Review</div></div>
       <div class="counter-box"><div class="counter-n" id="wf-hd" style="color:#0f172a">0</div><div class="counter-l">High-Dollar Review</div></div>
       <div class="counter-box"><div class="counter-n green" id="wf-decided">0</div><div class="counter-l">Decided</div></div>
@@ -1037,7 +1037,7 @@ function _sopLink(editCode, label){ return `<span onclick="event.stopPropagation
 const OUTCOME_META = {
   approved:{label:'Approved for Payment',color:'#15803d'}, partial:{label:'Approved for Partial Payment',color:'#b45309'},
   denied:{label:'Denied',color:'#dc2626'}, adr:{label:'Additional Documentation Request (ADR)',color:'#2563eb'},
-  human:{label:'Human Review',color:'#7c3aed'}, clinical:{label:'Clinical Review',color:'#0e9f86'},
+  human:{label:'Examiner Review',color:'#7c3aed'}, clinical:{label:'Clinical Review',color:'#0e9f86'},
   highdollar:{label:'High-Dollar Review (institutional ≥ $10k)',color:'#0f172a'}};
 let _outcomeRows = [];
 let _adrClaimCtx = null;
@@ -1775,7 +1775,7 @@ async function loadReviewWorkflow() {
     document.getElementById('wf-decided').textContent = '0';
     const shown = d.summary.shown || wfItems.length;
     document.getElementById('wf-list').innerHTML =
-      `<div style="font-size:.78rem;color:#334155;margin-bottom:12px">Four review workflows, ${(d.summary.total||0).toLocaleString()} items total across the queue — <strong style="color:#dc2626">${(d.summary.denial_review||0).toLocaleString()}</strong> denial review · <strong style="color:#7c3aed">${(d.summary.human_escalation||0).toLocaleString()}</strong> human escalation · <strong style="color:#0e9f86">${(d.summary.clinical_review||0).toLocaleString()}</strong> clinical review · <strong style="color:#0f172a">${(d.summary.high_dollar_review||0).toLocaleString()}</strong> high-dollar review. Showing <strong>${shown}</strong> representative items to work below.</div>`
+      `<div style="font-size:.78rem;color:#334155;margin-bottom:12px"><strong>${(d.summary.total||0).toLocaleString()}</strong> claims routed to <strong>human review</strong> across four queues — <strong style="color:#dc2626">${(d.summary.denial_review||0).toLocaleString()}</strong> denial review · <strong style="color:#7c3aed">${(d.summary.human_escalation||0).toLocaleString()}</strong> examiner review · <strong style="color:#0e9f86">${(d.summary.clinical_review||0).toLocaleString()}</strong> clinical review · <strong style="color:#0f172a">${(d.summary.high_dollar_review||0).toLocaleString()}</strong> high-dollar review. Showing <strong>${shown}</strong> representative items to work below.</div>`
       + wfItems.map((it, i) => renderWorkItem(it, i)).join('');
   } catch(e) { document.getElementById('wf-list').innerHTML = '<div style="color:#dc2626">Workflow unavailable — is the server running?</div>'; }
   if (btn) { btn.disabled = false; btn.textContent = '↻ Reassemble Work Queue'; }
@@ -1784,7 +1784,7 @@ async function loadReviewWorkflow() {
 function renderWorkItem(it, i) {
   const route = it.route || (it.agent_outcome === 'human_review' ? 'human_escalation' : 'denial_review');
   const routeMeta = {
-    human_escalation:  {badge:'<span class="badge-outcome purple">Human escalation</span>',          border:'#7c3aed'},
+    human_escalation:  {badge:'<span class="badge-outcome purple">Examiner review</span>',            border:'#7c3aed'},
     clinical_review:   {badge:'<span class="badge-outcome" style="background:#ccfbf1;color:#0e9f86">Clinical review</span>', border:'#0e9f86'},
     denial_review:     {badge:'<span class="badge-outcome red">Denial review</span>',                 border:'#dc2626'},
     high_dollar_review:{badge:'<span class="badge-outcome" style="background:#e2e8f0;color:#0f172a">High-dollar review</span>', border:'#0f172a'},
