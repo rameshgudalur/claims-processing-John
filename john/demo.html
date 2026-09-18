@@ -79,6 +79,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
 .counter-box{background:#ffffff;border:1px solid #cbd5e1;border-radius:8px;padding:6px 14px;text-align:center;min-width:70px}
 .counter-box.clickable{cursor:pointer;transition:all .15s}
 .counter-box.clickable:hover{border-color:#2563eb;box-shadow:0 2px 8px rgba(37,99,235,.15);transform:translateY(-1px)}
+/* Process-flow diagram */
+.flow-box{background:#fff;border:1px solid #cbd5e1;border-top:4px solid #64748b;border-radius:10px;padding:12px 16px;text-align:center;min-width:150px;max-width:190px}
+.flow-ic{font-size:1.5rem}
+.flow-t{font-weight:800;color:#0f172a;font-size:.82rem;margin-top:3px}
+.flow-s{font-size:.66rem;color:#64748b;margin-top:3px;line-height:1.35}
+.flow-arw{color:#94a3b8;font-size:1.4rem;font-weight:700;padding:0 8px}
+.flow-chip{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:20px;padding:4px 11px;font-size:.72rem;color:#334155;font-weight:600}
+.flow-out{background:#fff;border:1px solid #cbd5e1;border-radius:10px;padding:12px 14px;text-align:center;min-width:150px}
+.flow-out .n{font-size:1.5rem;font-weight:800}
+.flow-out .l{font-size:.7rem;color:#334155;margin-top:2px;font-weight:600}
+.flow-out .p{font-size:.66rem;color:#64748b}
+.flow-hr{background:#fff;border:1px solid #cbd5e1;border-radius:10px;padding:11px 14px;text-align:center;min-width:150px;cursor:pointer;transition:all .15s}
+.flow-hr:hover{border-color:#2563eb;box-shadow:0 2px 8px rgba(37,99,235,.15)}
 .counter-n{font-size:1.1rem;font-weight:700}
 .counter-l{font-size:.62rem;color:#334155;text-transform:uppercase;letter-spacing:.5px}
 .counter-n.green{color:#15803d}
@@ -292,14 +305,24 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <div class="agent-chip">Reporting</div>
   </div>
 
-  <div class="hub-cards" style="grid-template-columns:1fr;max-width:760px;margin:0 auto 28px">
-    <div class="hub-card" onclick="showView('act1-view');loadAct1Stats()" style="padding:32px 36px">
+  <div style="display:flex;gap:22px;max-width:1360px;margin:0 auto 24px;align-items:stretch;flex-wrap:wrap;padding:0 16px">
+    <!-- Left: write-up (click to enter) -->
+    <div class="hub-card" onclick="showView('act1-view');loadAct1Stats()" style="flex:1 1 320px;min-width:290px;padding:26px 28px;display:flex;flex-direction:column;justify-content:center">
       <div class="hub-card-icon">⚡</div>
-      <h3 style="font-size:1.25rem">Claims Pend Processing</h3>
-      <p style="font-size:.9rem">~20% of claims fall out of auto-adjudication and enter the pend queue. Agentic AI resolves each pend against 6 live databases using deterministic SOP rules.</p>
-      <span class="badge green">Gen 1 Live</span>
-      <span class="badge" style="margin-left:4px">Gen 2 Signal</span>
-      <span class="badge amber" style="margin-left:4px">Enterprise Insights</span>
+      <h3 style="font-size:1.2rem">Claims Pend Processing</h3>
+      <p style="font-size:.9rem">~20% of claims fall out of auto-adjudication and enter the <strong>pend queue</strong>. The agent resolves each pended line against <strong>6 live source systems</strong> using the payer's own <strong>SOPs</strong> — approving, partially paying, requesting documentation, or routing the consequential cases to <strong>Human review</strong>.</p>
+      <div style="margin-top:10px">
+        <span class="badge green">Gen 1 Live</span>
+        <span class="badge" style="margin-left:4px">Gen 2 Signal</span>
+        <span class="badge amber" style="margin-left:4px">Enterprise Insights</span>
+      </div>
+      <div style="margin-top:14px;font-size:.8rem;font-weight:700;color:#1d4ed8">Click to open the Pend Queue →</div>
+    </div>
+    <!-- Right: travel-flow visual -->
+    <div style="flex:1.7 1 560px;min-width:460px">
+      <div style="font-size:.72rem;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;text-align:center">How a claim travels — where the agent sits</div>
+      <div id="hub-flow-holder"></div>
+      <div style="text-align:center;font-size:.72rem;color:#64748b;margin-top:6px">Intake → adjudication → pended fallout → the Agentic System resolves each line; denials that need judgment, plus clinical and high-dollar cases, go to Human review.</div>
     </div>
   </div>
 
@@ -322,6 +345,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <button class="nav-back" onclick="showView('hub-view')">← Hub</button>
     <span class="nav-title">Claims Pend Processing — Agent 1</span>
     <button class="nav-back" onclick="showView('trace-view');initTrace()" style="background:#dbeafe;border-color:#1d4ed8;color:#2563eb">▶ Single Claim Trace</button>
+    <button class="nav-back" style="margin-left:8px;background:#eff6ff;border-color:#2563eb;color:#2563eb" onclick="showView('flow-view');loadFlow()">🗺 Process Flow</button>
     <button class="nav-back" style="margin-left:8px;background:#fffbeb;border-color:#b45309;color:#b45309" onclick="openPendCatalog()">📖 Pend Code Catalog</button>
     <button class="nav-back" style="margin-left:8px" onclick="showView('review-view');loadReviewQueue()">Human Review Queue <span id="hr-badge" style="background:#d8b4fe;color:#9333ea;border-radius:8px;padding:1px 8px;font-size:.68rem;margin-left:4px">—</span></button>
     <button class="nav-back" style="margin-left:8px;background:#fef2f2;border-color:#dc2626;color:#dc2626" onclick="showView('workflow-view');loadReviewWorkflow()">⚖ Review &amp; Denial Workflow</button>
@@ -538,6 +562,34 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
   </div>
 
   <div id="wf-list"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PROCESS FLOW VIEW — end-to-end claims flow
+══════════════════════════════════════════════════════ -->
+<div id="flow-view" class="view">
+  <div class="nav">
+    <button class="nav-back" onclick="showView('hub-view')">← Hub</button>
+    <span class="nav-title">🗺 End-to-End Claims Flow — Where the Agent Sits</span>
+    <button class="nav-back" style="margin-left:auto" onclick="showView('act1-view')">Go to Pend Queue →</button>
+  </div>
+
+  <!-- Block flowchart (shared markup injected by JS from FLOW_SVG) -->
+  <div id="flow-holder" style="max-width:1180px;margin:8px auto 4px"></div>
+
+  <div style="text-align:center;font-size:.8rem;color:#334155;margin:2px auto 6px;max-width:920px">How a claim travels: intake → adjudication → pended fallout → the Agentic System resolves each line and routes to an outcome. Denials take two paths — <strong>auto-issued</strong> when clear-cut, <strong>denial review</strong> when they need a human sign-off.</div>
+  <div style="text-align:center;font-size:.72rem;color:#64748b;margin-bottom:16px">~80% of claims auto-adjudicate and pay without pending · the agent works the ~20% that pend</div>
+
+  <!-- Agent reads against -->
+  <div class="cp-box" style="max-width:1000px;margin:0 auto 8px;text-align:center">
+    <div style="font-size:.72rem;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Inside the Agentic System — each pended line is adjudicated against</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <span class="flow-chip">🏥 Provider DB</span><span class="flow-chip">📋 Authorization DB</span><span class="flow-chip">🔀 COB DB</span>
+      <span class="flow-chip">💲 Fee Schedule</span><span class="flow-chip">📊 Claims History</span><span class="flow-chip">✅ Eligibility</span>
+      <span class="flow-chip">💠 Pricing Engine</span><span class="flow-chip">📚 SOPs + Knowledge Graph</span><span class="flow-chip">🩺 MCG-style guidelines</span>
+    </div>
+  </div>
+  <div style="text-align:center;font-size:.72rem;color:#64748b;margin-top:10px">Clean-cut outcomes (approvals, clear denials, ADRs) are issued autonomously; only the consequential subset reaches a human. Click any block after processing to drill in.</div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════
@@ -849,6 +901,7 @@ function closeDbExpand() {
 // ── Live Processing ───────────────────────────────────────────────────────────
 
 let processing = false;
+let processed = false;   // becomes true only after the live-processing beat completes
 const counts = { total:0, approve:0, deny:0, partial_pay:0, request_info:0, escalate:0, human_review:0 };
 const DB_CATEGORY_MAP = {
   "Authorization":    [0,1],
@@ -1080,6 +1133,53 @@ function openFromOutcome(i){
   openClaimPanel(r);
 }
 
+// ── Process Flow diagram (static structural travel-flow, no live numbers) ─────────
+const FLOW_SVG = `
+    <svg viewBox="0 0 1180 530" style="width:100%;height:auto;font-family:inherit" role="img" aria-label="End-to-end claims flow">
+      <rect x="610" y="40" width="560" height="470" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+      <rect x="610" y="40" width="560" height="34" rx="10" fill="#274b8f"/>
+      <text x="890" y="62" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" letter-spacing=".3">Agentic System</text>
+      <g fill="none" stroke="#94a3b8" stroke-width="1.6">
+        <path d="M160,173 H185 V223 H210"/>
+        <path d="M160,273 H185 V223 H210"/>
+        <path d="M360,223 H410"/>
+        <path d="M560,223 H618"/>
+        <path d="M618,134 V381"/>
+        <path d="M618,134 H645"/><path d="M618,204 H645"/><path d="M618,274 H645"/><path d="M618,381 H645"/>
+        <path d="M835,381 H942"/>
+        <path d="M942,297 V465"/>
+        <path d="M942,297 H960"/><path d="M942,353 H960"/><path d="M942,409 H960"/><path d="M942,465 H960"/>
+      </g>
+      <rect x="20" y="150" width="140" height="46" rx="7" fill="#274b8f"/>
+      <text x="90" y="178" text-anchor="middle" fill="#fff" font-size="12.5">Paper Intake</text>
+      <rect x="20" y="250" width="140" height="46" rx="7" fill="#274b8f"/>
+      <text x="90" y="278" text-anchor="middle" fill="#fff" font-size="12.5">EDI Intake</text>
+      <rect x="210" y="196" width="150" height="54" rx="7" fill="#274b8f"/>
+      <text text-anchor="middle" fill="#fff" font-size="12.5"><tspan x="285" y="219">Claims adjudication</tspan><tspan x="285" y="236">systems</tspan></text>
+      <rect x="410" y="196" width="150" height="54" rx="7" fill="#274b8f"/>
+      <text text-anchor="middle" fill="#fff" font-size="12.5"><tspan x="485" y="219">Fall outs —</tspan><tspan x="485" y="236">pended for review</tspan></text>
+      <rect x="645" y="110" width="190" height="48" rx="7" fill="#274b8f"/>
+      <text x="740" y="139" text-anchor="middle" fill="#fff" font-size="12.5">Approved — payment</text>
+      <rect x="645" y="180" width="190" height="48" rx="7" fill="#274b8f"/>
+      <text x="740" y="209" text-anchor="middle" fill="#fff" font-size="12.5">Approved — partial pay</text>
+      <rect x="645" y="250" width="190" height="48" rx="7" fill="#274b8f"/>
+      <text x="740" y="279" text-anchor="middle" fill="#fff" font-size="12.5">ADR — docs requested</text>
+      <rect x="645" y="355" width="190" height="52" rx="7" fill="#1e335c"/>
+      <text x="740" y="386" text-anchor="middle" fill="#e0e7ff" font-size="12.5" font-weight="700">Queued for Human review</text>
+      <rect x="960" y="275" width="185" height="44" rx="7" fill="#274b8f"/>
+      <text text-anchor="middle"><tspan x="1052" y="294" fill="#fff" font-size="12">Denial review</tspan><tspan x="1052" y="308" fill="#a9bbe0" font-size="9">needs human sign-off</tspan></text>
+      <rect x="960" y="331" width="185" height="44" rx="7" fill="#274b8f"/>
+      <text x="1052" y="358" text-anchor="middle" fill="#fff" font-size="12">Examiner review</text>
+      <rect x="960" y="387" width="185" height="44" rx="7" fill="#274b8f"/>
+      <text text-anchor="middle"><tspan x="1052" y="406" fill="#fff" font-size="12">Clinical review</tspan><tspan x="1052" y="420" fill="#a9bbe0" font-size="9">medical necessity</tspan></text>
+      <rect x="960" y="443" width="185" height="44" rx="7" fill="#274b8f"/>
+      <text text-anchor="middle"><tspan x="1052" y="462" fill="#fff" font-size="12">High-dollar review</tspan><tspan x="1052" y="476" fill="#a9bbe0" font-size="9">institutional ≥ $10k</tspan></text>
+    </svg>`;
+function injectFlow(){ ['hub-flow-holder','flow-holder'].forEach(id=>{ const el=document.getElementById(id); if(el && !el.innerHTML.trim()) el.innerHTML=FLOW_SVG; }); }
+document.addEventListener('DOMContentLoaded', injectFlow);
+injectFlow();
+function loadFlow(){ injectFlow(); }
+
 // ── ADR letter generation ───────────────────────────────────────────────────────
 function openAdrLetter(r){
   const modal=document.getElementById('letter-modal'), body=document.getElementById('letter-modal-body');
@@ -1168,6 +1268,7 @@ function renderServiceLines(data, resolved) {
       <td>${l.description||''}</td>
       <td style="text-align:center">${l.units||1}</td>
       <td style="color:#b45309">${chg}</td>
+      <td style="color:#334155">${l.allowed!=null?'$'+Number(l.allowed).toFixed(2):'—'}</td>
       <td>${editCell}</td>
       ${sopCell}
       ${decCell}${payCell}
@@ -1176,8 +1277,8 @@ function renderServiceLines(data, resolved) {
   }).join('');
   const tfHead = '<th>Prov St</th><th>Received</th><th>Pay-by</th><th>Status today</th>';
   const headCols = (isInst
-    ? '<th>Line</th><th>Rev</th><th>HCPCS</th><th>Description</th><th>Units</th><th>Charge</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>'
-    : '<th>Line</th><th>CPT</th><th>Description</th><th>Units</th><th>Charge</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>') + tfHead;
+    ? '<th>Line</th><th>Rev</th><th>HCPCS</th><th>Description</th><th>Units</th><th>Charge</th><th>Allowed</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>'
+    : '<th>Line</th><th>CPT</th><th>Description</th><th>Units</th><th>Charge</th><th>Allowed</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>') + tfHead;
   let rollupBanner = '';
   if (resolved && data.rollup) {
     const r = data.rollup; const col = OKC[r.outcome] || '#334155';
@@ -1406,6 +1507,7 @@ async function startProcessing() {
     console.error(e);
   }
   processing = false;
+  processed = true;   // outcomes are now real — the Process Flow may show them
   document.getElementById('start-btn').disabled = false;
 }
 

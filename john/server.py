@@ -1096,7 +1096,17 @@ def _obs_for_step(text, claim, ctx):
     if "authorization db" in t or ("auth" in t and "eob" not in t):
         a = ctx["auth"]
         if a.get("auth_number"):
-            return (f"Auth #{a['auth_number']} — status {a.get('status','?')}, units {a.get('units_used','?')}/{a.get('units_authorized','?')}, valid to {a.get('dos_end','?')}", "pass")
+            base = f"Auth #{a['auth_number']} — status {a.get('status','?')}, units {a.get('units_used','?')}/{a.get('units_authorized','?')}, valid {a.get('dos_start','?')}→{a.get('dos_end','?')}"
+            # compare the auth against the claim and surface the specific deficiency
+            if str(a.get("status","")).lower() == "expired" or (a.get("dos_end") and claim.get("dos") and a["dos_end"] < claim["dos"]):
+                return (f"{base} — EXPIRED before DOS {claim.get('dos')}", "fail")
+            if a.get("provider_npi") and claim.get("npi_rendering") and a["provider_npi"] != claim["npi_rendering"]:
+                return (f"{base} — authorized for provider {a['provider_npi']}, claim rendered by {claim.get('npi_rendering')} (PROVIDER MISMATCH)", "fail")
+            if a.get("cpt_code") and claim.get("cpt_code") and a["cpt_code"] != claim["cpt_code"]:
+                return (f"{base} — authorized for CPT {a['cpt_code']}, claim billed CPT {claim.get('cpt_code')} (SERVICE NOT COVERED BY AUTH)", "fail")
+            if (a.get("units_remaining") is not None) and a.get("units_remaining") <= 0:
+                return (f"{base} — 0 units remaining (visits/units exhausted)", "fail")
+            return (base, "pass")
         return ("Authorization DB queried — no active authorization on file for this member/CPT", "fail")
     if "retro" in t:
         d = claim.get("days_in_queue") or 0
@@ -1479,6 +1489,133 @@ _COMPANION_CPTS = [
     ("71046", "Chest X-ray, 2 views", 210, 96),
 ]
 
+def _seed_fee_schedule_from_claims():
+    """Ensure the Fee Schedule DB actually contains EVERY CPT that appears on a claim
+    or service line, priced at the allowed amount shown on that line. Without this, the
+    padded schedule holds only filler codes and a leader can catch a billed CPT (e.g.
+    73721) that has no fee-schedule row — the allowed the agent prices to must be lookable."""
+    def _put(cpt, desc, allowed, specialty=None, units=1):
+        if not cpt:
+            return
+        cpt = str(cpt)
+        existing = fee_schedule.get(cpt)
+        rec = existing or {"cpt_code": cpt, "global_period_days": 0,
+                           "modifier_impact": "none", "auth_required": False,
+                           "effective_date": "2026-01-01"}
+        # allowed on the claim/line is the contracted rate — make it the schedule of record
+        if allowed is not None:
+            rec["allowed_amount"] = round(float(allowed), 2)
+        if desc and (not rec.get("description") or rec.get("description", "").startswith("Procedure ")):
+            rec["description"] = desc
+        rec.setdefault("specialty", specialty or rec.get("specialty") or "General")
+        rec["max_units_per_day"] = max(int(units or 1), int(rec.get("max_units_per_day") or 1))
+        fee_schedule[cpt] = rec
+
+    # 1) synthetic professional pend queue
+    for c in pended_claims:
+        _put(c.get("cpt_code"), c.get("cpt_description"), c.get("allowed_amount"),
+             c.get("provider_specialty"), c.get("units_billed", 1))
+    # 2) multi-edit walkthrough claims
+    for c in multi_edit_claims:
+        _put(c.get("cpt_code"), c.get("cpt_description"), c.get("allowed_amount"),
+             c.get("provider_specialty"), c.get("units_billed", 1))
+    # 3) hero header + service-line claims (Professional + Institutional)
+    for c in line_item_claims:
+        for ln in c.get("lines", []):
+            _put(ln.get("cpt_code"), ln.get("description"), ln.get("allowed"),
+                 c.get("provider_specialty"), ln.get("units", 1))
+    # 4) clean companion lines synthesized for single-line pends
+    for cpt, desc, _charge, allowed in _COMPANION_CPTS:
+        _put(cpt, desc, allowed)
+
+_seed_fee_schedule_from_claims()
+
+def _seed_providers_from_claims():
+    """Ensure the Provider directory contains EVERY rendering/billing NPI that appears on
+    a claim, reflecting that claim's own provider name/specialty/group. Without this, the
+    padded directory holds only filler NPIs and the agent's 'Provider DB queried — found'
+    step would miss the actual servicing provider on ~84% of the queue."""
+    def _put(npi, name, specialty, group):
+        if not npi:
+            return
+        npi = str(npi)
+        if npi in providers:
+            return
+        providers[npi] = {
+            "npi": npi, "name": name or f"Provider {npi}",
+            "specialty": specialty or "General Practice",
+            "group_npi": "G-" + npi[-4:], "group_name": group or "Independent Practice",
+            "network_status": "in_network", "credentialing_status": "active",
+            "credential_expiry": "2026-12-31", "contract_effective": "2023-01-01",
+            "contract_end": "2026-12-31", "place_of_service": "11",
+            "taxonomy_code": "207Q00000X",
+        }
+    for c in pended_claims + multi_edit_claims:
+        _put(c.get("npi_rendering"), c.get("provider_name"), c.get("provider_specialty"), c.get("group_name"))
+        _put(c.get("npi_billing"), c.get("provider_name"), c.get("provider_specialty"), c.get("group_name"))
+    for c in line_item_claims:
+        _put(c.get("npi_rendering"), c.get("provider_name"), c.get("provider_specialty"), c.get("group_name"))
+        _put(c.get("npi_billing"), c.get("provider_name"), c.get("provider_specialty"), c.get("group_name"))
+
+_seed_providers_from_claims()
+
+def _seed_auths_from_claims():
+    """For auth edits where an authorization EXISTS but is deficient (wrong provider,
+    expired, units exhausted, service not covered), create the matching authorization
+    record in the DB and point the claim at it — so the agent denies against a REAL,
+    inspectable auth rather than reporting 'no auth on file'. E-AUTH-001 (missing) is
+    intentionally left with no auth."""
+    DEFICIENT = {"E-AUTH-002", "E-AUTH-003", "E-AUTH-004", "E-AUTH-005"}
+    seq = 90000
+    def _shift_date(d, days):
+        try:
+            from datetime import datetime, timedelta
+            return (datetime.strptime(d, "%Y-%m-%d") + timedelta(days=days)).strftime("%Y-%m-%d")
+        except Exception:
+            return d
+    def _mk_auth(claim, edit):
+        nonlocal seq
+        seq += 1
+        an = f"PA-2026{seq}"
+        dos = claim.get("dos") or "2026-03-14"
+        units = int(claim.get("units_billed") or 1)
+        npi = claim.get("npi_rendering")
+        cpt = claim.get("cpt_code")
+        rec = {
+            "auth_number": an, "member_id": claim.get("member_id"),
+            "member_name": claim.get("member_name"), "provider_npi": npi,
+            "cpt_code": cpt, "diagnosis_code": claim.get("icd10_principal"),
+            "dos_start": _shift_date(dos, -20), "dos_end": _shift_date(dos, 20),
+            "units_authorized": max(units, 1), "units_used": 0,
+            "units_remaining": max(units, 1), "status": "active",
+            "approved_date": _shift_date(dos, -25),
+            "requesting_provider": npi, "clinical_notes": "Clinical documentation on file",
+        }
+        if edit == "E-AUTH-002":      # expired
+            rec["dos_end"] = _shift_date(dos, -1); rec["status"] = "expired"
+        elif edit == "E-AUTH-003":    # service not covered by this auth (different CPT)
+            other = "97110" if cpt != "97110" else "20610"
+            rec["cpt_code"] = other
+        elif edit == "E-AUTH-004":    # units/visits exhausted
+            rec["units_used"] = rec["units_authorized"]; rec["units_remaining"] = 0
+        elif edit == "E-AUTH-005":    # authorization is for a different provider
+            rec["provider_npi"] = ("1999" + (npi or "0000000")[4:]) if npi else "1999000000"
+            rec["requesting_provider"] = rec["provider_npi"]
+        authorizations[an] = rec
+        return an
+    for c in pended_claims + multi_edit_claims:
+        ec = c.get("edit_code")
+        if ec in DEFICIENT and not c.get("auth_number"):
+            c["auth_number"] = _mk_auth(c, ec)
+    for c in line_item_claims:
+        for ln in c.get("lines", []):
+            ec = ln.get("edit_code")
+            if ec in DEFICIENT and not ln.get("auth_number"):
+                merged = dict(c); merged.update(ln)
+                ln["auth_number"] = _mk_auth(merged, ec)
+
+_seed_auths_from_claims()
+
 def build_service_lines(claim):
     """Derive a realistic header + service-line breakdown for a normal single-line pend:
     the claim itself is the PENDED line; 2-3 clean companion lines are adjudicated."""
@@ -1539,6 +1676,7 @@ def resolve_line(line, header):
         "human_review_reason": line.get("human_review_reason"), "edit_category": line["edit_category"],
         "cpt_code": line.get("cpt_code"), "billed_amount": line["charge"],
         "icd10_principal": line.get("icd10_principal"),
+        "auth_number": line.get("auth_number"),
     })
     res = resolve_claim(merged)
     res["pended"] = True
