@@ -59,9 +59,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
 @keyframes pulse-border{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}50%{box-shadow:0 0 0 4px rgba(37,99,235,.1)}}
 
 /* DB Expand panel */
-.db-expand-wrap{margin-bottom:20px;display:none}
-.db-expand-wrap.open{display:block}
-.db-expand{background:#ffffff;border:1px solid #bfdbfe;border-radius:12px;padding:16px;overflow:auto;max-height:460px}
+.db-expand-wrap{display:none}
+.db-expand-wrap.open{display:flex;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:1000;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px}
+.db-expand{background:#ffffff;border:1px solid #bfdbfe;border-radius:12px;padding:18px 20px;overflow:auto;max-height:84vh;max-width:960px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.28)}
 .db-expand table{width:100%;border-collapse:collapse;font-size:.72rem}
 .db-expand th{color:#2563eb;font-weight:700;padding:6px 10px;text-align:left;border-bottom:1px solid #bfdbfe;white-space:nowrap}
 .db-expand td{padding:5px 10px;color:#334155;border-bottom:1px solid #cbd5e1;white-space:nowrap}
@@ -323,7 +323,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <div style="flex:1.7 1 560px;min-width:460px">
       <div style="font-size:.72rem;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;text-align:center">How a claim travels — where the agent sits</div>
       <div id="hub-flow-holder"></div>
-      <div style="text-align:center;font-size:.72rem;color:#64748b;margin-top:6px">Intake → adjudication → pended fallout → the Agentic System resolves each line; denials that need judgment, plus clinical and high-dollar cases, go to Human review.</div>
+      <div style="text-align:center;font-size:.72rem;color:#64748b;margin-top:6px">Intake → the adjudication engine <strong>generates the pended queue</strong> → the Agentic System reads it <strong>directly or from the enterprise data lake</strong>, resolves each line, and routes judgment / clinical / high-dollar cases to Human review.</div>
     </div>
   </div>
 
@@ -346,10 +346,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <button class="nav-back" onclick="showView('hub-view')">← Hub</button>
     <span class="nav-title">Claims Pend Processing — Agent 1</span>
     <button class="nav-back" onclick="showView('trace-view');initTrace()" style="background:#dbeafe;border-color:#1d4ed8;color:#2563eb">▶ Single Claim Trace</button>
-    <button class="nav-back" style="margin-left:8px;background:#eff6ff;border-color:#2563eb;color:#2563eb" onclick="showView('flow-view');loadFlow()">🗺 Process Flow</button>
     <button class="nav-back" style="margin-left:8px;background:#fffbeb;border-color:#b45309;color:#b45309" onclick="openPendCatalog()">📖 Pend Code Catalog</button>
-    <button class="nav-back" style="margin-left:8px" onclick="showView('review-view');loadReviewQueue()">Human Review Queue <span id="hr-badge" style="background:#d8b4fe;color:#9333ea;border-radius:8px;padding:1px 8px;font-size:.68rem;margin-left:4px">—</span></button>
-    <button class="nav-back" style="margin-left:8px;background:#fef2f2;border-color:#dc2626;color:#dc2626" onclick="showView('workflow-view');loadReviewWorkflow()">⚖ Review &amp; Denial Workflow</button>
+    <button class="nav-back" style="margin-left:8px;background:#fef2f2;border-color:#dc2626;color:#dc2626" onclick="showView('workflow-view');loadReviewWorkflow()">⚖ Review &amp; Denial Workflow <span id="hr-badge" style="background:#d8b4fe;color:#9333ea;border-radius:8px;padding:1px 8px;font-size:.68rem;margin-left:4px">—</span></button>
     <button class="nav-back" style="margin-left:8px;background:#dcfce7;border-color:#166534;color:#15803d" onclick="showView('observe-view');startObs()">📊 Observability</button>
     <button class="nav-back" style="margin-left:8px;background:#ede9fe;border-color:#6d28d9;color:#7c3aed" onclick="showView('adaptive-view');loadAdaptive()">🧠 Adaptive Intelligence</button>
   </div>
@@ -409,7 +407,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
   <div style="text-align:center;font-size:.68rem;color:#64748b;margin:8px 0 4px">Each tile names its production <strong>system of record</strong> — the agent reads all six/seven live. Demo data is synthetic; in production these connect to your live systems.</div>
 
   <!-- DB Expand panel -->
-  <div class="db-expand-wrap" id="db-expand-wrap">
+  <div class="db-expand-wrap" id="db-expand-wrap" onclick="if(event.target===this)closeDbExpand()">
     <div class="db-expand" id="db-expand-content">
       <button class="db-expand-close" onclick="closeDbExpand()">✕ close</button>
       <div id="db-expand-inner"></div>
@@ -646,6 +644,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <span id="obs-updated" style="margin-left:auto;color:#334155;font-size:.72rem">—</span>
   </div>
   <div style="max-width:1120px;margin:0 auto;padding:6px 16px 30px">
+    <div style="font-size:.72rem;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-weight:800">Four lenses — Tracing · Evaluation · Metrics · Governance</div>
+    <div id="obs-lenses" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:18px"></div>
     <div id="obs-throughput" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px">
       <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px">
@@ -655,7 +655,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
         <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:12px">By edit category</div>
         <div id="obs-categories"></div></div>
       <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px">
-        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:12px">Turnaround — days in queue</div>
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:4px">Backlog age — days waiting since received</div>
+        <div style="font-size:.62rem;color:#64748b;margin-bottom:10px">The manual wait today. Once in the agentic system, TAT drops to <strong style="color:#15803d">sub-second</strong> (see Agentic TAT in the audit trail).</div>
         <div id="obs-dq"></div></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 2fr;gap:14px">
@@ -735,9 +736,49 @@ function _ocard(n, l, color){
     <div style="font-size:.68rem;color:#334155;text-transform:uppercase;letter-spacing:.05em;margin-top:4px">${l}</div></div>`;
 }
 async function loadObservability(){
+  // Observability reflects the resolved queue — only meaningful AFTER live processing.
+  if (!processed) {
+    document.getElementById('obs-updated').textContent = 'awaiting live processing';
+    document.getElementById('obs-lenses').innerHTML =
+      `<div style="grid-column:1/-1;text-align:center;padding:40px 16px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:12px;color:#64748b;font-size:.9rem">
+        📊 Observability populates after the agent runs.<br><span style="font-size:.78rem">Go to the Pend Queue → <strong>Extract Raw Pends</strong> → <strong>Start Live Processing</strong>, then return here.</span></div>`;
+    ['obs-throughput','obs-outcomes','obs-categories','obs-dq','obs-guardrails','obs-audit'].forEach(id=>{const e=document.getElementById(id); if(e) e.innerHTML='';});
+    return;
+  }
   try {
     const d = await fetch(`${API}/api/observability`).then(r => r.json());
     document.getElementById('obs-updated').textContent = 'updated ' + d.updated + ' · auto-refresh 3s';
+    // ── Four lenses ──
+    const ev = d.evaluation||{}, me = d.metrics||{}, gv = d.governance||{};
+    const lens = (icon,title,accent,rows,note)=>`
+      <div style="background:#fff;border:1px solid #cbd5e1;border-top:4px solid ${accent};border-radius:12px;padding:14px">
+        <div style="font-size:.82rem;font-weight:800;color:#0f172a;margin-bottom:8px">${icon} ${title}</div>
+        ${rows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;gap:8px;font-size:.74rem;margin-bottom:5px"><span style="color:#475569">${l}</span><span style="font-weight:800;color:${accent}">${v}</span></div>`).join('')}
+        ${note?`<div style="font-size:.62rem;color:#64748b;margin-top:8px;line-height:1.4">${note}</div>`:''}
+      </div>`;
+    document.getElementById('obs-lenses').innerHTML =
+      lens('🔎','Tracing','#2563eb',[
+        ['Avg SOP steps / claim', me.avg_steps],
+        ['Source-system queries', (me.source_queries||0).toLocaleString()],
+        ['Per-claim audit trail', 'below ↓'],
+      ],'Every claim traces step-by-step: which DB was queried, which SOP step ran, the observation, and the decisive step.')
+    + lens('✅','Evaluation','#15803d',[
+        ['Grounded in a source', (ev.grounded_pct||0)+'%'],
+        ['Well-formed (SOP + codes)', (ev.wellformed_pct||0)+'%'],
+        ['Ungrounded decisions', (ev.ungrounded||0)],
+        ['Avg confidence', ev.avg_confidence!=null?Math.round(ev.avg_confidence*100)+'%':'—'],
+      ],'The agent executes SOP rules against source records — it does <strong>not generate</strong> decisions, so it cannot hallucinate one. Every decision maps to a rule + a real record (0 ungrounded). Confidence: '+(ev.conf_high||0).toLocaleString()+' high · '+(ev.conf_med||0).toLocaleString()+' med · '+(ev.conf_low||0).toLocaleString()+' low.')
+    + lens('⚡','Metrics','#b45309',[
+        ['Avg latency / claim', (me.avg_latency_ms||0)+' ms'],
+        ['p95 latency', (me.p95_latency_ms||0)+' ms'],
+        ['Throughput', '~'+(me.throughput_per_sec||0)+' lines/sec'],
+      ],'Latency & throughput are representative in the demo; production reflects live system round-trips.')
+    + lens('⚖','Governance','#7c3aed',[
+        ['Agent-driven (STP)', (gv.auto_pct||0)+'%'],
+        ['Human-in-the-loop', (gv.hitl_rate_pct||0)+'%'],
+        ['Audit-complete', (gv.audit_complete_pct||0)+'%'],
+        ['SOP coverage', (gv.sop_coverage_pct||0)+'%'],
+      ],'Consequential cases routed to a human; every decision is auditable; all '+(gv.edit_types||0)+' edit types map to an SOP.');
     const t = d.throughput;
     document.getElementById('obs-throughput').innerHTML =
       _ocard(t.pended.toLocaleString(),'Pended claims','#2563eb')
@@ -745,10 +786,11 @@ async function loadObservability(){
      + _ocard(t.human_review.toLocaleString(),'Human review','#7c3aed')
      + _ocard(t.auto_pct + '%','Agent-driven','#15803d')
      + _ocard(t.edit_types,'Edit categories','#b45309');
+    const _totRow = (label,val)=>`<div style="display:flex;justify-content:space-between;gap:8px;border-top:2px solid #cbd5e1;margin-top:6px;padding-top:6px;font-size:.8rem;font-weight:800;color:#0f172a"><span>${label}</span><span>${val.toLocaleString()}</span></div>`;
     const otot = d.outcomes.reduce((a,b) => a + b.count, 0);
-    document.getElementById('obs-outcomes').innerHTML = d.outcomes.map(o => _obar(o.label, o.count, otot, OCOL[o.color] || '#334155')).join('');
+    document.getElementById('obs-outcomes').innerHTML = d.outcomes.map(o => _obar(o.label, o.count, otot, OCOL[o.color] || '#334155')).join('') + _totRow('Total pended lines', otot);
     const cats = d.categories, ctot = Object.values(cats).reduce((a,b) => a + b, 0);
-    document.getElementById('obs-categories').innerHTML = Object.keys(cats).sort((a,b) => cats[b]-cats[a]).map(k => _obar(k, cats[k], ctot, '#2563eb')).join('');
+    document.getElementById('obs-categories').innerHTML = Object.keys(cats).sort((a,b) => cats[b]-cats[a]).map(k => _obar(k, cats[k], ctot, '#2563eb')).join('') + _totRow('Total', ctot);
     const dq = d.days_in_queue, dtot = Object.values(dq).reduce((a,b) => a + b, 0);
     const dcol = {'< 15 days':'#15803d','15-30 days':'#b45309','30-60 days':'#c2410c','60+ days':'#dc2626'};
     document.getElementById('obs-dq').innerHTML = Object.keys(dq).map(k => _obar(k, dq[k], dtot, dcol[k] || '#2563eb')).join('');
@@ -758,18 +800,21 @@ async function loadObservability(){
           <span style="font-size:.75rem;color:#1e293b;font-weight:600">${g.check}</span>
           <span style="font-size:.68rem;font-weight:800;color:#15803d;background:#dcfce7;padding:2px 8px;border-radius:99px;white-space:nowrap">${g.count.toLocaleString()}</span>
         </div></div>`).join('');
+    const _th = h => `<th style="padding:6px 8px;position:sticky;top:0;background:#f1f5f9;font-size:.64rem;text-transform:uppercase;letter-spacing:.03em">${h}</th>`;
     document.getElementById('obs-audit').innerHTML =
-      '<table style="width:100%;border-collapse:collapse;font-size:.72rem"><thead><tr style="color:#334155;text-align:left">'
-      + ['ICN','Member','Edit','Category','Outcome','CARC/RARC','SOP'].map(h => `<th style="padding:5px 8px;position:sticky;top:0;background:#f1f5f9">${h}</th>`).join('')
+      '<div style="font-size:.68rem;color:#64748b;margin-bottom:8px">Each row is one pended line the agent worked end-to-end — read left to right: it identifies the edit, retrieves the SOP, queries the source data, applies the rule, and closes/routes. <strong>Click any claim number to open the claim and verify every figure against the data.</strong></div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:.7rem"><thead><tr style="color:#334155;text-align:left">'
+      + ['Claim / line','① Identify edit','② Retrieve SOP','③ Query source data','④ Apply rule → decide','⑤ Close / route','Days in Q','Agentic TAT'].map(_th).join('')
       + '</tr></thead><tbody>'
       + d.audit.map(r => `<tr style="border-top:1px solid #cbd5e1">
-          <td style="padding:5px 8px;color:#2563eb;font-family:monospace">${r.icn}</td>
-          <td style="padding:5px 8px;color:#1e293b">${r.member}</td>
-          <td style="padding:5px 8px;color:#334155">${r.edit_code}</td>
-          <td style="padding:5px 8px;color:#334155">${r.category}</td>
-          <td style="padding:5px 8px;font-weight:700;color:${OKC[r.outcome_key] || '#1e293b'}">${r.outcome}</td>
-          <td style="padding:5px 8px;color:#334155;font-family:monospace">${r.carc}/${r.rarc}</td>
-          <td style="padding:5px 8px;color:#334155">${r.sop}</td></tr>`).join('')
+          <td style="padding:6px 8px;vertical-align:top"><a onclick="openClaimByIcn('${r.icn}')" style="color:#2563eb;font-family:monospace;cursor:pointer;text-decoration:underline">${r.icn}</a><div style="color:#64748b;font-size:.64rem">${r.member}</div></td>
+          <td style="padding:6px 8px;vertical-align:top;color:#334155"><span style="font-family:monospace;color:#c2410c">${r.edit_code}</span><div style="font-size:.64rem;color:#64748b">${r.edit_description||r.category}</div></td>
+          <td style="padding:6px 8px;vertical-align:top"><a onclick="openClaimByIcn('${r.icn}')" style="color:#7c3aed;cursor:pointer;font-size:.66rem">${r.sop}</a></td>
+          <td style="padding:6px 8px;vertical-align:top;color:#334155;font-size:.66rem;max-width:230px;white-space:normal">${r.data||'—'}</td>
+          <td style="padding:6px 8px;vertical-align:top"><span style="font-weight:700;color:${OKC[r.outcome_key] || '#1e293b'}">${r.outcome}</span><div><a onclick="openClaimByIcn('${r.icn}')" style="font-family:monospace;font-size:.64rem;color:#2563eb;cursor:pointer;text-decoration:underline">${r.carc}/${r.rarc}</a></div></td>
+          <td style="padding:6px 8px;vertical-align:top;font-size:.66rem;font-weight:600;color:${r.close && r.close.indexOf('→')===0 ? '#7c3aed' : '#15803d'}">${r.close||'—'}</td>
+          <td style="padding:6px 8px;vertical-align:top;color:#b45309;font-weight:600">${r.days_in_queue!=null?r.days_in_queue+'d':'—'}</td>
+          <td style="padding:6px 8px;vertical-align:top;color:#15803d;font-weight:700">${r.agentic_tat_ms!=null?(r.agentic_tat_ms/1000).toFixed(1)+'s':'—'}</td></tr>`).join('')
       + '</tbody></table>';
   } catch(e) {}
 }
@@ -907,7 +952,6 @@ async function toggleDbExpand(n) {
   }
   openDb = n;
   wrap.classList.add('open');
-  wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   const inner = document.getElementById('db-expand-inner');
   inner.innerHTML = `<div style="color:#334155;font-size:.78rem;padding:8px">Loading ${DB_META[n].name}…</div>`;
   try {
@@ -1179,29 +1223,66 @@ function openFromOutcome(i){
 
 // ── Process Flow diagram (static structural travel-flow, no live numbers) ─────────
 const FLOW_SVG = `
-    <svg viewBox="0 0 1180 530" style="width:100%;height:auto;font-family:inherit" role="img" aria-label="End-to-end claims flow">
+    <svg viewBox="0 0 1180 610" style="width:100%;height:auto;font-family:inherit" role="img" aria-label="End-to-end claims flow">
+      <!-- band labels -->
+      <text x="95" y="120" text-anchor="middle" fill="#1e335c" font-size="10" font-weight="800">① INTAKE</text>
+      <text x="300" y="377" text-anchor="middle" fill="#1e335c" font-size="10" font-weight="800">② SOURCE SYSTEMS THE AGENT QUERIES</text>
+      <text x="95" y="533" text-anchor="middle" fill="#1e335c" font-size="10" font-weight="800">③ OUTPUT INTEGRATION POINTS</text>
+
+      <!-- Agentic System container -->
       <rect x="610" y="40" width="560" height="470" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
       <rect x="610" y="40" width="560" height="34" rx="10" fill="#274b8f"/>
       <text x="890" y="62" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" letter-spacing=".3">Agentic System</text>
+
+      <!-- connectors -->
       <g fill="none" stroke="#94a3b8" stroke-width="1.6">
-        <path d="M160,173 H185 V223 H210"/>
-        <path d="M160,273 H185 V223 H210"/>
+        <path d="M170,157 H190"/><path d="M170,212 H190"/><path d="M170,267 H190"/>
+        <path d="M190,157 V267"/><path d="M190,223 H210"/>
         <path d="M360,223 H410"/>
-        <path d="M560,223 H618"/>
+        <path d="M560,223 H610"/>
+        <path d="M485,250 V300"/>
+        <path d="M540,411 H610"/>
         <path d="M618,134 V381"/>
         <path d="M618,134 H645"/><path d="M618,204 H645"/><path d="M618,274 H645"/><path d="M618,381 H645"/>
         <path d="M835,381 H942"/>
         <path d="M942,297 V465"/>
         <path d="M942,297 H960"/><path d="M942,353 H960"/><path d="M942,409 H960"/><path d="M942,465 H960"/>
+        <path d="M890,510 V540"/><path d="M118,540 H1038"/>
+        <path d="M118,540 V548"/><path d="M302,540 V548"/><path d="M486,540 V548"/><path d="M670,540 V548"/><path d="M854,540 V548"/><path d="M1038,540 V548"/>
       </g>
-      <rect x="20" y="150" width="140" height="46" rx="7" fill="#274b8f"/>
-      <text x="90" y="178" text-anchor="middle" fill="#fff" font-size="12.5">Paper Intake</text>
-      <rect x="20" y="250" width="140" height="46" rx="7" fill="#274b8f"/>
-      <text x="90" y="278" text-anchor="middle" fill="#fff" font-size="12.5">EDI Intake</text>
+      <g fill="none" stroke="#0e7490" stroke-width="1.6" stroke-dasharray="5 4"><path d="M560,322 H588 V300 H610"/></g>
+
+      <!-- Intake (3 channels) -->
+      <rect x="20" y="137" width="150" height="40" rx="7" fill="#274b8f"/>
+      <text text-anchor="middle" fill="#fff"><tspan x="95" y="154" font-size="11.5">Paper / OCR</tspan><tspan x="95" y="167" font-size="8" fill="#a9bbe0">mailroom scan</tspan></text>
+      <rect x="20" y="192" width="150" height="40" rx="7" fill="#274b8f"/>
+      <text text-anchor="middle" fill="#fff"><tspan x="95" y="209" font-size="11.5">EDI 837P / 837I</tspan><tspan x="95" y="222" font-size="8" fill="#a9bbe0">clearinghouse (X12)</tspan></text>
+      <rect x="20" y="247" width="150" height="40" rx="7" fill="#274b8f"/>
+      <text text-anchor="middle" fill="#fff"><tspan x="95" y="264" font-size="11.5">Provider portal / API</tspan><tspan x="95" y="277" font-size="8" fill="#a9bbe0">real-time</tspan></text>
+
+      <!-- Pipeline -->
       <rect x="210" y="196" width="150" height="54" rx="7" fill="#274b8f"/>
       <text text-anchor="middle" fill="#fff" font-size="12.5"><tspan x="285" y="219">Claims adjudication</tspan><tspan x="285" y="236">systems</tspan></text>
       <rect x="410" y="196" width="150" height="54" rx="7" fill="#274b8f"/>
       <text text-anchor="middle" fill="#fff" font-size="12.5"><tspan x="485" y="219">Fall outs —</tspan><tspan x="485" y="236">pended for review</tspan></text>
+      <rect x="410" y="300" width="150" height="44" rx="7" fill="#0e7490"/>
+      <text text-anchor="middle" fill="#fff"><tspan x="485" y="321" font-size="12" font-weight="700">Data Lake</tspan><tspan x="485" y="335" font-size="8.5" fill="#c7f0f0">pended claims fed here</tspan></text>
+      <text x="384" y="214" text-anchor="middle" fill="#64748b" font-size="8.5">generates pends</text>
+      <text x="588" y="216" text-anchor="middle" fill="#64748b" font-size="8.5">direct read</text>
+      <text x="600" y="290" text-anchor="middle" fill="#0e7490" font-size="8.5" font-weight="700">or via data lake</text>
+
+      <!-- Source-system chips -->
+      <g font-size="9" text-anchor="middle">
+        <rect x="180" y="384" width="92" height="24" rx="6" fill="#eef2f7" stroke="#cbd5e1"/><text x="226" y="399" fill="#1e335c">Eligibility</text>
+        <rect x="278" y="384" width="104" height="24" rx="6" fill="#eef2f7" stroke="#cbd5e1"/><text x="330" y="399" fill="#1e335c">Authorization</text>
+        <rect x="388" y="384" width="84" height="24" rx="6" fill="#eef2f7" stroke="#cbd5e1"/><text x="430" y="399" fill="#1e335c">Provider</text>
+        <rect x="478" y="384" width="58" height="24" rx="6" fill="#eef2f7" stroke="#cbd5e1"/><text x="507" y="399" fill="#1e335c">COB</text>
+        <rect x="180" y="414" width="104" height="24" rx="6" fill="#eef2f7" stroke="#cbd5e1"/><text x="232" y="429" fill="#1e335c">Fee Schedule</text>
+        <rect x="290" y="414" width="112" height="24" rx="6" fill="#eef2f7" stroke="#cbd5e1"/><text x="346" y="429" fill="#1e335c">Claims History</text>
+        <rect x="408" y="414" width="104" height="24" rx="6" fill="#eef2f7" stroke="#cbd5e1"/><text x="460" y="429" fill="#1e335c">Pricing engine</text>
+      </g>
+
+      <!-- Autonomous outcomes -->
       <rect x="645" y="110" width="190" height="48" rx="7" fill="#274b8f"/>
       <text x="740" y="139" text-anchor="middle" fill="#fff" font-size="12.5">Approved — payment</text>
       <rect x="645" y="180" width="190" height="48" rx="7" fill="#274b8f"/>
@@ -1218,6 +1299,16 @@ const FLOW_SVG = `
       <text text-anchor="middle"><tspan x="1052" y="406" fill="#fff" font-size="12">Clinical review</tspan><tspan x="1052" y="420" fill="#a9bbe0" font-size="9">medical necessity</tspan></text>
       <rect x="960" y="443" width="185" height="44" rx="7" fill="#274b8f"/>
       <text text-anchor="middle"><tspan x="1052" y="462" fill="#fff" font-size="12">High-dollar review</tspan><tspan x="1052" y="476" fill="#a9bbe0" font-size="9">institutional ≥ $10k</tspan></text>
+
+      <!-- Output integration points -->
+      <g font-size="9.5" text-anchor="middle">
+        <rect x="30" y="548" width="176" height="46" rx="7" fill="#15803d"/><text fill="#fff"><tspan x="118" y="570">Decision write-back</tspan><tspan x="118" y="583" font-size="8" fill="#c7f0d8">→ core claims system</tspan></text>
+        <rect x="214" y="548" width="176" height="46" rx="7" fill="#15803d"/><text fill="#fff"><tspan x="302" y="570">835 / ERA</tspan><tspan x="302" y="583" font-size="8" fill="#c7f0d8">remittance</tspan></text>
+        <rect x="398" y="548" width="176" height="46" rx="7" fill="#15803d"/><text x="486" y="575" fill="#fff">EFT / payment</text>
+        <rect x="582" y="548" width="176" height="46" rx="7" fill="#15803d"/><text fill="#fff"><tspan x="670" y="570">Provider portal</tspan><tspan x="670" y="583" font-size="8" fill="#c7f0d8">/ EOB</tspan></text>
+        <rect x="766" y="548" width="176" height="46" rx="7" fill="#15803d"/><text x="854" y="575" fill="#fff">ADR correspondence</text>
+        <rect x="950" y="548" width="176" height="46" rx="7" fill="#15803d"/><text fill="#fff"><tspan x="1038" y="570">Analytics /</tspan><tspan x="1038" y="583" font-size="8" fill="#c7f0d8">Enterprise Insights</tspan></text>
+      </g>
     </svg>`;
 function injectFlow(){ ['hub-flow-holder','flow-holder'].forEach(id=>{ const el=document.getElementById(id); if(el && !el.innerHTML.trim()) el.innerHTML=FLOW_SVG; }); }
 document.addEventListener('DOMContentLoaded', injectFlow);
@@ -1721,6 +1812,16 @@ function resetAct1() {
 
 // ── Claim Detail Panel ────────────────────────────────────────────────────────
 
+async function openClaimByIcn(icn){
+  // Open a claim from anywhere (e.g., the Observability trace) so the audience can verify
+  // every figure — CARC/RARC, allowed, SOP — against the actual claim data.
+  try {
+    if (_obsTimer) { clearInterval(_obsTimer); _obsTimer = null; }
+    showView('act1-view');
+    const r = await fetch(`${API}/api/process-claim/${icn}`).then(x=>x.json());
+    openClaimPanel(r);
+  } catch(e){ console.error(e); }
+}
 async function openClaimPanel(r) {
   const panel = document.getElementById('claim-panel');
   const title = document.getElementById('cp-title');
