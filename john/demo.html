@@ -53,6 +53,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
 .db-card-icon{font-size:1.4rem;margin-bottom:6px}
 .db-card-name{font-size:.68rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.5px}
 .db-card-count{font-size:.7rem;color:#334155;margin-top:3px}
+.db-card-src{font-size:.58rem;color:#64748b;margin-top:4px;line-height:1.3;border-top:1px dashed #e2e8f0;padding-top:4px}
 .db-card-hits{font-size:.8rem;font-weight:700;color:#15803d;margin-top:4px;display:none}
 .db-card.done .db-card-hits{display:block}
 @keyframes pulse-border{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}50%{box-shadow:0 0 0 4px rgba(37,99,235,.1)}}
@@ -359,45 +360,53 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
       <div class="db-card-icon">🏥</div>
       <div class="db-card-name">Provider DB</div>
       <div class="db-card-count" id="dbc-0-count">40 records</div>
+      <div class="db-card-src">Source: Provider Data Mgmt / Credentialing (NPPES)</div>
       <div class="db-card-hits" id="dbc-0-hits">0 queries</div>
     </div>
     <div class="db-card" id="dbc-1" onclick="toggleDbExpand(1)">
       <div class="db-card-icon">📋</div>
       <div class="db-card-name">Authorization DB</div>
       <div class="db-card-count" id="dbc-1-count">60 records</div>
+      <div class="db-card-src">Source: Utilization Mgmt (prior-auth) system</div>
       <div class="db-card-hits" id="dbc-1-hits">0 queries</div>
     </div>
     <div class="db-card" id="dbc-2" onclick="toggleDbExpand(2)">
       <div class="db-card-icon">🔀</div>
       <div class="db-card-name">COB DB</div>
       <div class="db-card-count" id="dbc-2-count">14 records</div>
+      <div class="db-card-src">Source: Coordination of Benefits / other-coverage</div>
       <div class="db-card-hits" id="dbc-2-hits">0 queries</div>
     </div>
     <div class="db-card" id="dbc-3" onclick="toggleDbExpand(3)">
       <div class="db-card-icon">💲</div>
       <div class="db-card-name">Fee Schedule</div>
       <div class="db-card-count" id="dbc-3-count">30 CPT codes</div>
+      <div class="db-card-src">Source: Contract Mgmt + repricing network</div>
       <div class="db-card-hits" id="dbc-3-hits">0 queries</div>
     </div>
     <div class="db-card" id="dbc-4" onclick="toggleDbExpand(4)">
       <div class="db-card-icon">📊</div>
       <div class="db-card-name">Claims History</div>
       <div class="db-card-count" id="dbc-4-count">151 claims</div>
+      <div class="db-card-src">Source: Claims data warehouse (adjudicated)</div>
       <div class="db-card-hits" id="dbc-4-hits">0 queries</div>
     </div>
     <div class="db-card" id="dbc-5" onclick="toggleDbExpand(5)">
       <div class="db-card-icon">✅</div>
       <div class="db-card-name">Eligibility DB</div>
       <div class="db-card-count" id="dbc-5-count">20 members</div>
+      <div class="db-card-src">Source: Enrollment / 834 membership feed</div>
       <div class="db-card-hits" id="dbc-5-hits">0 queries</div>
     </div>
     <div class="db-card" id="dbc-6" onclick="toggleDbExpand(6)">
       <div class="db-card-icon">💠</div>
       <div class="db-card-name">Pricing Engine</div>
       <div class="db-card-count" id="dbc-6-count">Burgess / Multiplan / Zelis</div>
+      <div class="db-card-src">Source: Repricing network (manual-priced lines)</div>
       <div class="db-card-hits" id="dbc-6-hits" style="color:#b45309">representative</div>
     </div>
   </div>
+  <div style="text-align:center;font-size:.68rem;color:#64748b;margin:8px 0 4px">Each tile names its production <strong>system of record</strong> — the agent reads all six/seven live. Demo data is synthetic; in production these connect to your live systems.</div>
 
   <!-- DB Expand panel -->
   <div class="db-expand-wrap" id="db-expand-wrap">
@@ -414,7 +423,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <button class="proc-btn" style="background:#cbd5e1;color:#334155;margin-left:8px" id="reset-btn" onclick="resetAct1()">↺ Reset</button>
     <div class="proc-counters">
       <div class="counter-box"><div class="counter-n" id="cnt-extracted" style="color:#0f172a">0</div><div class="counter-l">Pended Lines</div></div>
-      <div class="counter-box"><div class="counter-n" id="cnt-total">0</div><div class="counter-l">Handled</div></div>
+      <div class="counter-box"><div class="counter-n" id="cnt-total">0</div><div class="counter-l">Processed</div></div>
       <div class="counter-box clickable" onclick="openOutcomePanel('approved')" title="Click to see all"><div class="counter-n green" id="cnt-approved">0</div><div class="counter-l">Approved for Payment</div></div>
       <div class="counter-box clickable" onclick="openOutcomePanel('partial')" title="Click to see all"><div class="counter-n yellow" id="cnt-partial">0</div><div class="counter-l">Approved for Partial Payment</div></div>
       <div class="counter-box clickable" onclick="openOutcomePanel('denied')" title="Click to see all"><div class="counter-n red" id="cnt-denied">0</div><div class="counter-l">Denied</div></div>
@@ -423,6 +432,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
       <div class="counter-box clickable" onclick="openOutcomePanel('highdollar')" title="Click to see all — institutional ≥ $10k"><div class="counter-n" id="cnt-highdollar" style="color:#0f172a">0</div><div class="counter-l">High-Dollar Review</div></div>
       <div class="counter-box clickable" onclick="openOutcomePanel('clinical')" title="Click to see all — subset of Denied"><div class="counter-n" id="cnt-clin" style="color:#0e9f86">0</div><div class="counter-l">Clinical Review</div></div>
     </div>
+    <div id="claims-lines-summary" style="display:none;margin-top:10px;font-size:.78rem;color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px"></div>
   </div>
 
   <!-- Progress bar -->
@@ -452,9 +462,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
           <th>Billed</th>
           <th>Edit</th>
           <th>Category</th>
+          <th>Recommendation</th>
+          <th>Confidence</th>
           <th>Decision</th>
           <th>Payment</th>
           <th>SOP Ref</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody id="queue-tbody"></tbody>
@@ -864,7 +877,27 @@ const DB_ROW_FNS = [
 ];
 
 let openDb = null;
+let _dbRows = [], _dbN = null, _dbTotal = 0;
 
+function _dbTableHtml(rows){
+  const cols = DB_META[_dbN].cols, fn = DB_ROW_FNS[_dbN];
+  if (!rows.length) return `<div style="padding:10px;color:#64748b;font-size:.74rem">No matching record in this source system.</div>`;
+  return `<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+    <tbody>${rows.slice(0,200).map(r=>`<tr>${fn(r).map(v=>`<td>${v ?? '—'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+async function dbSearch(val){
+  const q = (val||'').trim().toLowerCase();
+  const out = document.getElementById('db-table-holder');
+  const cnt = document.getElementById('db-search-count');
+  if (!q){ out.innerHTML = _dbTableHtml(_dbRows); if(cnt) cnt.textContent = `Showing ${Math.min(_dbRows.length,200).toLocaleString()} of ${_dbTotal.toLocaleString()}`; return; }
+  let matches = _dbRows.filter(r => JSON.stringify(r).toLowerCase().includes(q));
+  // Fee Schedule: if the code isn't in the loaded page, do an exact CPT lookup against the DB
+  if (!matches.length && _dbN === 3 && /^[0-9a-z]{4,5}$/i.test(q)) {
+    try { const rec = await fetch(`${API}/api/db/fee-schedule/${q.toUpperCase()}`).then(r=>r.ok?r.json():null); if (rec && rec.cpt_code) matches = [rec]; } catch(e){}
+  }
+  out.innerHTML = _dbTableHtml(matches);
+  if (cnt) cnt.textContent = matches.length ? `${matches.length} match${matches.length>1?'es':''} for "${val}"` : `No match for "${val}"`;
+}
 async function toggleDbExpand(n) {
   const wrap = document.getElementById('db-expand-wrap');
   if (openDb === n) {
@@ -880,14 +913,14 @@ async function toggleDbExpand(n) {
   try {
     const data = await fetch(`${API}${DB_META[n].endpoint}`).then(r => r.json());
     const rows = data.records || (Array.isArray(data) ? data : [data]);
-    const cols = DB_META[n].cols;
-    const fn   = DB_ROW_FNS[n];
     const total = data.total || rows.length;
+    _dbRows = rows; _dbN = n; _dbTotal = total;
     const shown = Math.min(rows.length, 200);
+    const ph = n===3 ? 'Search a CPT code or description…' : 'Search this source system…';
     inner.innerHTML = `<div style="font-size:.75rem;color:#2563eb;font-weight:700;margin-bottom:2px">${DB_META[n].name} — ${total.toLocaleString()} records in the directory</div>
-      <div style="font-size:.68rem;color:#64748b;margin-bottom:8px">This is the live source system the agent queries during adjudication. Showing ${shown.toLocaleString()} of ${total.toLocaleString()} — scroll to browse.</div>
-      <table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-      <tbody>${rows.slice(0,200).map(r=>`<tr>${fn(r).map(v=>`<td>${v ?? '—'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      <div style="font-size:.68rem;color:#64748b;margin-bottom:8px">This is the live source system the agent queries during adjudication. <span id="db-search-count">Showing ${shown.toLocaleString()} of ${total.toLocaleString()}</span> — search or scroll to browse.</div>
+      <input type="text" oninput="dbSearch(this.value)" placeholder="🔍 ${ph}" style="width:100%;max-width:340px;padding:7px 11px;border:1px solid #cbd5e1;border-radius:7px;font-size:.76rem;margin-bottom:10px">
+      <div id="db-table-holder">${_dbTableHtml(rows)}</div>`;
   } catch(e) {
     inner.innerHTML = `<div style="color:#dc2626;font-size:.78rem">Could not load — is server running?</div>`;
   }
@@ -965,6 +998,14 @@ async function ingestRawPends() {
     DB_COUNTS[5] = (stats.total_members||0).toLocaleString() + ' members';
     document.getElementById('hub-stats').style.display = 'flex';
     document.getElementById('hub-ingest-note').style.display = 'block';
+    const cls = document.getElementById('claims-lines-summary');
+    if (cls) {
+      cls.style.display = 'block';
+      cls.innerHTML = `Extracted: <strong>${(stats.claims_extracted||0).toLocaleString()}</strong> claims · `
+        + `<strong>${(stats.total_lines||0).toLocaleString()}</strong> service lines · `
+        + `<strong>${(stats.pended_lines||0).toLocaleString()}</strong> pended lines `
+        + `<span style="color:#64748b">— each claim is a header + service lines; the agent works the pended lines (many claims have 2–3 pended lines).</span>`;
+    }
   } catch(e) { console.error(e); }
 
   for (let i = 0; i <= 6; i++) {
@@ -994,9 +1035,12 @@ function streamRawRow(c) {
     <td style="color:#b45309">$${c.billed_amount?.toFixed(2)}</td>
     <td style="font-family:monospace;color:#334155;font-size:.7rem">${c.edit_code}</td>
     <td><span class="badge-cat">${c.edit_category}</span></td>
+    <td style="color:#94a3b8">—</td>
+    <td style="color:#94a3b8">—</td>
     <td><span class="badge-outcome gray">pending</span></td>
     <td style="color:#334155">—</td>
     <td style="font-size:.68rem;color:#334155">—</td>
+    <td style="color:#94a3b8">—</td>
   `;
   tbody.appendChild(tr);
 }
@@ -1235,15 +1279,25 @@ Althea Health — Claims Operations (Agentic Adjudication)`;
   modal.style.display='flex';
 }
 
+function lineAction(icn, ln, act, ev){
+  if (ev) ev.stopPropagation();
+  const el = document.getElementById(`lact-${icn}-${ln}`);
+  if (!el) return;
+  el.innerHTML = act==='approve'
+    ? '<span style="color:#15803d;font-weight:700;font-size:.62rem">✓ Approved by examiner</span>'
+    : '<span style="color:#7c3aed;font-weight:700;font-size:.62rem">⏳ In examiner review</span>';
+}
 function renderServiceLines(data, resolved) {
   const lines = data.lines || [];
+  const icn = (data.header||{}).icn || '';
   const isInst = lines.some(l => l.rev_code);
   const OKC = {approve:'#15803d', deny:'#dc2626', partial_pay:'#b45309', request_info:'#2563eb', escalate:'#c2410c', human_review:'#7c3aed'};
   const rows = lines.map(l => {
     const pend = l.pended;
     const res = l.resolution;
     const chg = `$${(l.charge||0).toFixed(2)}`;
-    const svc = isInst ? `<td style="font-family:monospace">${l.rev_code||'—'}</td><td style="font-family:monospace">${l.cpt_code||'—'}</td>`
+    const hcpcs = l.cpt_code || (l.rev_code ? '<span style="color:#94a3b8;font-size:.62rem">n/a (rev-code billed)</span>' : '—');
+    const svc = isInst ? `<td style="font-family:monospace">${l.rev_code||'—'}</td><td style="font-family:monospace">${hcpcs}</td>`
                        : `<td style="font-family:monospace">${l.cpt_code||'—'}</td>`;
     const editCell = pend
       ? `<span class="badge-cat" style="background:#ffedd5;color:#c2410c">${l.edit_code}</span>${l.edit_description?`<div style="font-size:.66rem;color:#c2410c;margin-top:2px;white-space:normal;max-width:230px;line-height:1.35">${l.edit_description}</div>`:''}`
@@ -1253,7 +1307,19 @@ function renderServiceLines(data, resolved) {
     let decCell = `<td style="color:#94a3b8">—</td>`, payCell = `<td style="color:#94a3b8">—</td>`;
     if (resolved && res) {
       const col = OKC[res.outcome] || '#334155';
-      decCell = `<td style="font-weight:700;color:${col}">${res.outcome_label}</td>`;
+      const trace = [
+        res.sop_ref || l.applicable_sop || null,
+        (l.allowed!=null) ? `Fee Schedule (${l.cpt_code||l.rev_code||'—'} = $${Number(l.allowed).toFixed(2)})` : null,
+        (res.carc||res.rarc) ? `CARC/RARC ${res.carc||'—'}/${res.rarc||'—'}` : null,
+        l.auth_number ? `Auth #${l.auth_number}` : null,
+      ].filter(Boolean).join(' · ');
+      const lineBtns = pend
+        ? `<div id="lact-${icn}-${l.line_no}" style="margin-top:5px" onclick="event.stopPropagation()">`
+          + `<button onclick="lineAction('${icn}',${l.line_no},'approve',event)" style="background:#dcfce7;border:1px solid #16a34a;color:#15803d;font-weight:700;font-size:.6rem;padding:2px 7px;border-radius:5px;cursor:pointer;margin-right:3px">Approve</button>`
+          + `<button onclick="lineAction('${icn}',${l.line_no},'review',event)" style="background:#ede9fe;border:1px solid #7c3aed;color:#6d28d9;font-weight:700;font-size:.6rem;padding:2px 7px;border-radius:5px;cursor:pointer">Review</button>`
+          + `</div>`
+        : '';
+      decCell = `<td style="font-weight:700;color:${col}">${res.outcome_label}${trace?`<div style="font-size:.6rem;font-weight:400;color:#64748b;margin-top:3px;white-space:normal;max-width:230px">↳ Traceable to: ${trace}</div>`:''}${lineBtns}</td>`;
       payCell = `<td style="color:${res.payment_amount>0?'#15803d':'#334155'}">${res.payment_amount>0?'$'+res.payment_amount.toFixed(2):'—'}</td>`;
     }
     const hi = pend ? 'style="background:#fffdf5;border-left:3px solid #f59e0b"' : '';
@@ -1266,6 +1332,7 @@ function renderServiceLines(data, resolved) {
       <td style="font-weight:700">${l.line_no}</td>
       ${svc}
       <td>${l.description||''}</td>
+      <td style="font-family:monospace;font-size:.7rem;color:#334155">${l.icd10_principal||'—'}</td>
       <td style="text-align:center">${l.units||1}</td>
       <td style="color:#b45309">${chg}</td>
       <td style="color:#334155">${l.allowed!=null?'$'+Number(l.allowed).toFixed(2):'—'}</td>
@@ -1277,8 +1344,8 @@ function renderServiceLines(data, resolved) {
   }).join('');
   const tfHead = '<th>Prov St</th><th>Received</th><th>Pay-by</th><th>Status today</th>';
   const headCols = (isInst
-    ? '<th>Line</th><th>Rev</th><th>HCPCS</th><th>Description</th><th>Units</th><th>Charge</th><th>Allowed</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>'
-    : '<th>Line</th><th>CPT</th><th>Description</th><th>Units</th><th>Charge</th><th>Allowed</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>') + tfHead;
+    ? '<th>Line</th><th>Rev</th><th>HCPCS</th><th>Description</th><th>Dx</th><th>Units</th><th>Charge</th><th>Allowed</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>'
+    : '<th>Line</th><th>CPT</th><th>Description</th><th>Dx</th><th>Units</th><th>Charge</th><th>Allowed</th><th>Edit</th><th>SOP</th><th>Decision</th><th>Line pay</th>') + tfHead;
   let rollupBanner = '';
   if (resolved && data.rollup) {
     const r = data.rollup; const col = OKC[r.outcome] || '#334155';
@@ -1372,19 +1439,27 @@ async function openRawPanel(c) {
   document.getElementById('cp-title').textContent =
     `${c.icn} — ${c.claim_type||'Professional'} claim · RAW INPUT (extracted — not yet processed)`;
   const F = (l,v)=>`<div class="cp-field"><span class="cp-field-label">${l}</span><span class="cp-field-value">${v ?? '—'}</span></div>`;
+  const provFields = (o)=>
+    F('Name', o.provider_name)+F('Specialty', o.provider_specialty)+F('Group', o.group_name)
+    +F('Billing NPI', o.npi_billing)+F('Billing Tax ID', o.billing_tax_id)+F('Billing status', o.billing_par_status)
+    +F('Rendering NPI', o.npi_rendering)+F('Rendering Tax ID', o.rendering_tax_id)+F('Rendering status', o.rendering_par_status)
+    +(o.type_of_bill?F('Type of bill', o.type_of_bill):F('Place of service', o.place_of_service));
   document.getElementById('cp-body').innerHTML = `
+    <div id="cp-validation" style="margin-bottom:10px;font-size:.75rem;color:#64748b">Validating mandatory fields…</div>
     <div class="cp-grid">
       <div class="cp-box">
         <h4>Header — Member &amp; Eligibility</h4>
         ${F('Member', c.member_name)}${F('Member ID', c.member_id)}${F('DOB', c.member_dob)}${F('Plan', c.plan)}
+        <div id="cp-oi-fields">${F('Other insurance', c.other_insurance)}</div>
       </div>
       <div class="cp-box">
         <h4>Header — Provider</h4>
-        ${F('Name', c.provider_name)}${F('Specialty', c.provider_specialty)}${F('NPI (billing)', c.npi_billing)}${F('Group', c.group_name)}${c.type_of_bill?F('Type of bill', c.type_of_bill):F('Place of service', c.place_of_service)}
+        <div id="cp-prov-fields">${provFields(c)}</div>
       </div>
       <div class="cp-box">
         <h4>Header — Claim</h4>
         ${F('Claim type', c.claim_type||'Professional')}${F('Form', c.form||(c.claim_type==='Institutional'?'UB-04 / 837I':'CMS-1500 / 837P'))}${F('Total billed', c.billed_amount!=null?'$'+c.billed_amount.toFixed(2):'—')}${F('DOS', c.dos)}${F('Days in queue', c.days_in_queue)}${F('Priority', c.priority)}
+        <div id="cp-dx-fields">${F('Principal Dx', c.icd10_principal)}</div>
       </div>
     </div>
     ${c.scenario_note?`<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:9px 13px;margin-bottom:12px;font-size:.76rem;color:#1e3a5f">${c.scenario_note}</div>`:''}
@@ -1398,6 +1473,27 @@ async function openRawPanel(c) {
   try {
     const data = await fetch(`${API}/api/claim-lines/${c.icn}?resolve=0`).then(r=>r.json());
     document.getElementById('cp-lines').innerHTML = renderServiceLines(data, false);
+    const pf = document.getElementById('cp-prov-fields');
+    if (pf && data.header) pf.innerHTML = provFields({...c, ...data.header});
+    const oi = document.getElementById('cp-oi-fields');
+    if (oi && data.header) {
+      const h = data.header;
+      oi.innerHTML = F('Other insurance', h.other_insurance==='Yes'?'Yes':'No')
+        + (h.other_insurance==='Yes' ? F('COB — carrier', h.oi_detail) + F('Primary EOB required', h.oi_primary_eob_required?'Yes':'No') : F('Coordination', h.oi_detail));
+    }
+    const dx = document.getElementById('cp-dx-fields');
+    if (dx && data.header) {
+      const h = data.header;
+      dx.innerHTML = F('Principal Dx', h.icd10_principal ? `${h.icd10_principal}${h.icd10_desc?' — '+h.icd10_desc:''}` : '—')
+        + (h.icd10_secondary ? F('Secondary Dx', h.icd10_secondary) : '');
+    }
+    const vb = document.getElementById('cp-validation');
+    if (vb && data.header && data.header.validation) {
+      const v = data.header.validation;
+      vb.innerHTML = v.complete
+        ? `<span style="display:inline-block;background:#dcfce7;border:1px solid #16a34a;color:#15803d;font-weight:700;border-radius:6px;padding:5px 12px">✓ Data validation: COMPLETE — all ${v.checked} mandatory fields present</span>`
+        : `<span style="display:inline-block;background:#fef2f2;border:1px solid #dc2626;color:#b91c1c;font-weight:700;border-radius:6px;padding:5px 12px">⚠ Data validation: ${v.passed}/${v.checked} — missing: ${v.missing.join(', ')}</span>`;
+    }
   } catch(e) { document.getElementById('cp-lines').textContent = 'Service lines unavailable.'; }
 }
 
@@ -1501,7 +1597,7 @@ async function startProcessing() {
       ]);
       const _hb3 = document.getElementById('hr-badge'); if (_hb3) _hb3.textContent = sum.human_review.toLocaleString();
       const note = document.getElementById('queue-sample-note');
-      if (note) note.innerHTML = `Showing <strong>${shownRows}</strong> representative rows · the agent handled all <strong>${sum.total.toLocaleString()}</strong> pended lines (Approved + Denied + Partial + ADR + Human Review = ${sum.total.toLocaleString()}); counters above reflect the full queue.`;
+      if (note) note.innerHTML = `Showing <strong>${shownRows}</strong> representative rows · the agent processed all <strong>${sum.total.toLocaleString()}</strong> pended lines (Approved + Denied + Partial + ADR + Human Review = ${sum.total.toLocaleString()}); counters above reflect the full queue.`;
     } catch(e) { console.error(e); }
   } catch(e) {
     console.error(e);
@@ -1528,11 +1624,39 @@ function animateCount(id, from, to, ms=900) {
   });
 }
 
+function _confBadge(v){
+  if (v==null) return '<span style="color:#94a3b8">—</span>';
+  const pct = Math.round(v*100);
+  const col = v>=0.9 ? '#15803d' : (v>=0.75 ? '#b45309' : '#dc2626');
+  const bg  = v>=0.9 ? '#dcfce7' : (v>=0.75 ? '#fef3c7' : '#fee2e2');
+  return `<span style="background:${bg};color:${col};font-weight:700;border-radius:5px;padding:2px 7px;font-size:.7rem">${pct}%</span>`;
+}
+function _decisionBadge(status){
+  return status==='pending_review'
+    ? '<span class="badge-outcome purple">Pending examiner</span>'
+    : '<span class="badge-outcome gray" style="background:#e2e8f0;color:#334155">Issued</span>';
+}
+function claimAction(icn, act, ev){
+  if (ev) ev.stopPropagation();
+  const cell = document.getElementById(`act-${icn}`);
+  const dec  = document.getElementById(`dec-${icn}`);
+  if (act==='approve'){
+    if (dec) dec.innerHTML = '<span class="badge-outcome green">Approved by examiner</span>';
+    if (cell) cell.innerHTML = '<span style="color:#15803d;font-weight:700;font-size:.7rem">✓ Approved</span>';
+  } else {
+    if (dec) dec.innerHTML = '<span class="badge-outcome purple">In examiner review</span>';
+    if (cell) cell.innerHTML = '<span style="color:#7c3aed;font-weight:700;font-size:.7rem">⏳ In review</span>';
+  }
+}
 async function streamRow(r, idx) {
   const tbody = document.getElementById('queue-tbody');
   const color = r.outcome_color || 'gray';
   const payment = r.payment_amount > 0 ? `$${r.payment_amount.toFixed(2)}` : '—';
   const hrBadge = r.human_review ? `<span class="badge-hr">HR</span>` : '';
+  const actBtns = `<div style="display:flex;gap:4px" onclick="event.stopPropagation()">`
+    + `<button onclick="claimAction('${r.icn}','approve',event)" style="background:#dcfce7;border:1px solid #16a34a;color:#15803d;font-weight:700;font-size:.64rem;padding:3px 8px;border-radius:5px;cursor:pointer">Approve</button>`
+    + `<button onclick="claimAction('${r.icn}','review',event)" style="background:#ede9fe;border:1px solid #7c3aed;color:#6d28d9;font-weight:700;font-size:.64rem;padding:3px 8px;border-radius:5px;cursor:pointer">Review</button>`
+    + `</div>`;
   const rowHtml = `
     <td style="font-family:monospace;color:#2563eb;font-size:.72rem">${r.icn}</td>
     <td>${r.member_name}</td>
@@ -1541,9 +1665,12 @@ async function streamRow(r, idx) {
     <td style="color:#b45309">$${r.billed_amount?.toFixed(2)}</td>
     <td style="font-family:monospace;color:#334155;font-size:.7rem">${r.edit_code}</td>
     <td><span class="badge-cat">${r.edit_category}</span></td>
-    <td><span class="badge-outcome ${color}">${r.outcome_label}</span>${hrBadge}</td>
+    <td><span class="badge-outcome ${color}">${r.recommendation||r.outcome_label}</span>${hrBadge}</td>
+    <td>${_confBadge(r.confidence)}</td>
+    <td id="dec-${r.icn}">${_decisionBadge(r.decision_status)}</td>
     <td style="color:${color === 'green' || color === 'yellow' ? '#15803d' : '#334155'}">${payment}</td>
     <td style="font-size:.68rem;color:#334155">${r.sop_ref}</td>
+    <td id="act-${r.icn}">${actBtns}</td>
   `;
   // If this pend was already ingested as a raw row, resolve it in place; else insert.
   const existing = document.getElementById(`row-${r.icn}`);

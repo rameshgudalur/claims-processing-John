@@ -1134,7 +1134,13 @@ def _obs_for_step(text, claim, ctx):
             return (f"Provider {p.get('name','—')} — network {p.get('network_status','—')}, credentialing {p.get('credentialing_status','—')}", "pass" if p.get('credentialing_status') in ('active', 'Active', None) else "fail")
         return ("Rendering NPI not found in provider directory", "fail")
     if "place of service" in t or "pos" in t:
-        return (f"Billed place of service: {claim.get('place_of_service','—')}", "info")
+        pos = claim.get("place_of_service", "—")
+        fs = ctx["fee"]
+        if claim.get("resolution_path") == "correct_pos_or_deny" and fs.get("allowed_facility") is not None:
+            nf = fs.get("allowed_nonfacility", fs.get("allowed_amount"))
+            fac = fs.get("allowed_facility")
+            return (f"Billed POS {pos} (non-facility rate ${nf:.2f}); service site is facility (rate ${fac:.2f}) → reprice down to the facility allowed", "fail")
+        return (f"Billed place of service: {pos}", "info")
     if "eligibility" in t or "enrollment" in t or "demographic" in t or "834" in t or "newborn" in t:
         e = ctx["eligibility"]
         return (f"Eligibility: plan {e.get('plan', claim.get('plan','—'))}, status {e.get('status','—')}, effective {e.get('effective_date','—')}", "pass")
@@ -1195,6 +1201,27 @@ def execute_sop(claim):
         steps[-1]["observation"] = decision_obs
         steps[-1]["status"] = colr
     return outcome, steps
+
+
+def _confidence(outcome, steps, claim):
+    """Per-line confidence DERIVED from the agent's actual SOP execution — not an ascribed
+    constant. Starts from how deterministic the recommendation is, then adjusts for the
+    ambiguity of the observed steps and any data the agent lacked to be certain."""
+    base = {"approve": 0.97, "deny": 0.95, "partial_pay": 0.93,
+            "request_info": 0.80, "human_review": 0.73, "escalate": 0.70}.get(outcome, 0.85)
+    steps = steps or []
+    n = len(steps) or 1
+    info = sum(1 for s in steps if s.get("status") == "info")      # ambiguous / non-decisive steps
+    blocked = 0
+    for s in steps:                                                # data the agent needed but lacked
+        obs = (s.get("observation") or "").lower()
+        if outcome in ("request_info", "human_review", "escalate") and any(
+            k in obs for k in ("no clinical documentation", "missing", "not on file",
+                               "could not", "insufficient", "requires clinical", "needs doc")):
+            blocked += 1
+    conf = base - 0.06 * (info / n) - 0.03 * min(blocked, 3)
+    conf += (sum(ord(c) for c in str(claim.get("icn", ""))) % 7 - 3) / 100.0  # ±0.03 per-ICN
+    return round(max(0.55, min(0.99, conf)), 2)
 
 
 # ── Clinical / medical-necessity adjudication (MCG-style guideline criteria) ─────
@@ -1416,6 +1443,9 @@ def resolve_claim(claim):
                 executed_steps[-1]["observation"] = f"{clinical['guideline_id']}: {clinical['determination']}"
                 executed_steps[-1]["status"] = {"approve": "pass", "deny": "fail", "partial_pay": "pass"}.get(outcome, "info")
 
+    # The agent's PROPOSED disposition, captured before any human-in-the-loop routing override.
+    recommendation_outcome = outcome
+
     # Override to human_review if flagged — but NOT for clinical edits (those are decided by guideline)
     if claim["human_review_flag"] and outcome in ("deny", "approve") and resolution_path not in CLINICAL_RESOLUTION_PATHS:
         outcome = "human_review"
@@ -1448,7 +1478,12 @@ def resolve_claim(claim):
     if outcome == "approve":
         payment = round((allowed or 0) * units, 2)
     elif outcome == "partial_pay":
-        payment = round((allowed or 0) * random.uniform(0.4, 0.75), 2)
+        if resolution_path == "correct_pos_or_deny":
+            # Place-of-service mismatch → reprice to the correct (facility) site rate
+            fs = fee_schedule.get(claim.get("cpt_code"), {})
+            payment = fs.get("allowed_facility") or round((allowed or 0) * 0.68, 2)
+        else:
+            payment = round((allowed or 0) * random.uniform(0.4, 0.75), 2)
     else:
         payment = 0.0
 
@@ -1470,6 +1505,11 @@ def resolve_claim(claim):
         "human_review":   claim["human_review_flag"] or (outcome == "human_review"),
         "human_review_reason": hd_reason or claim.get("human_review_reason"),
         "processing_ms":  random.randint(180, 950),
+        # Recommendation (agent's proposed disposition) vs Decision (final state) + confidence
+        "recommendation":        RESOLUTION_LABELS.get(recommendation_outcome, {}).get("label", recommendation_outcome),
+        "recommendation_outcome": recommendation_outcome,
+        "decision_status":       "pending_review" if (outcome in ("human_review", "escalate") or claim["human_review_flag"]) else "issued",
+        "confidence":            _confidence(recommendation_outcome, executed_steps, claim),
     }
     if pricing_info:
         out["pricing"] = pricing_info
@@ -1559,6 +1599,66 @@ def _seed_providers_from_claims():
 
 _seed_providers_from_claims()
 
+def _seed_provider_tax_ids():
+    """Give every provider a deterministic Tax ID (EIN, XX-XXXXXXX) and PAR/NON-PAR
+    status so the claim header can show audit-grade provider identity for both the
+    billing and rendering provider."""
+    for npi, p in providers.items():
+        if not p.get("tax_id"):
+            n = sum(ord(c) for c in str(npi))
+            p["tax_id"] = f"{10 + n % 90:02d}-{1000000 + (n * 7919) % 9000000:07d}"
+        if not p.get("par_status"):
+            p["par_status"] = "PAR" if str(p.get("network_status", "")).lower() == "in_network" else "NON-PAR"
+
+_seed_provider_tax_ids()
+
+# Map each procedure to the specialty(ies) that would plausibly render it, so a reviewer
+# never sees (e.g.) a dermatologist billing a knee MRI. Small pools are paired with a
+# related specialty for variety.
+CPT_SPECIALTY = {
+    "70553": ["Radiology"], "72148": ["Radiology"], "74177": ["Radiology"],
+    "71046": ["Radiology"], "73721": ["Radiology"],
+    "36415": ["Internal Medicine", "Family Medicine"],
+    "99213": ["Family Medicine", "Internal Medicine"],
+    "99214": ["Internal Medicine", "Family Medicine"],
+    "97110": ["Physical Therapy", "Orthopedic Surgery"],
+    "90837": ["Psychiatry"],
+    "93306": ["Cardiology"], "93000": ["Cardiology"],
+    "29881": ["Orthopedic Surgery"], "20610": ["Orthopedic Surgery"],
+    "80053": ["Internal Medicine"], "85025": ["Internal Medicine"],
+}
+
+def _diversify_claim_providers():
+    """Spread the professional pend queue across the full provider directory so a reviewer
+    sees realistic variety (not the same 6-7 providers) AND the provider's specialty matches
+    the procedure billed. Assignment is deterministic by ICN (stable across restarts). Hero,
+    multi-edit, and institutional/high-dollar claims are untouched; outcomes are edit-driven."""
+    # index directory NPIs by specialty
+    by_spec = {}
+    for npi, p in providers.items():
+        by_spec.setdefault(p.get("specialty"), []).append(npi)
+    for lst in by_spec.values():
+        lst.sort()
+    full = sorted(providers.keys())
+    for c in pended_claims:
+        if c.get("claim_type") != "Professional":
+            continue
+        icn = str(c.get("icn", ""))
+        seed = sum(ord(ch) * (i + 1) for i, ch in enumerate(icn))
+        specs = CPT_SPECIALTY.get(str(c.get("cpt_code")), ["Internal Medicine", "Family Medicine"])
+        cand = [npi for sp in specs for npi in by_spec.get(sp, [])] or full
+        p = providers[cand[seed % len(cand)]]
+        c["npi_rendering"]      = p["npi"]
+        c["provider_name"]      = p["name"]
+        c["provider_specialty"] = p.get("specialty")
+        c["group_name"]         = p.get("group_name")
+        if c.get("edit_code") == "E-PROV-002":   # billing/rendering NPI mismatch — keep them different
+            c["npi_billing"] = cand[(seed + 7) % len(cand)]
+        else:
+            c["npi_billing"] = p["npi"]
+
+_diversify_claim_providers()
+
 def _seed_auths_from_claims():
     """For auth edits where an authorization EXISTS but is deficient (wrong provider,
     expired, units exhausted, service not covered), create the matching authorization
@@ -1616,13 +1716,57 @@ def _seed_auths_from_claims():
 
 _seed_auths_from_claims()
 
-def build_service_lines(claim):
-    """Derive a realistic header + service-line breakdown for a normal single-line pend:
-    the claim itself is the PENDED line; 2-3 clean companion lines are adjudicated."""
-    # stable per-ICN seed (independent of PYTHONHASHSEED) so lines are identical across restarts
-    _icn = str(claim.get("icn", ""))
-    rnd = random.Random(sum(ord(ch) * (i + 1) for i, ch in enumerate(_icn)))
-    pended = {
+# ── Bundle single-line pends into realistic multi-pend claims ─────────────────────
+# A real claim is a header with several service lines, and often MORE THAN ONE line
+# pends. We keep the 5,407 pended-line records intact (so line-level outcomes and
+# reconciliation are unchanged) and BUNDLE ~30% of them under shared claim headers.
+# Result: Claims < Pended lines < Total lines, and many claims show 2-3 pended lines.
+GROUP_MEMBERS = {}   # primary_icn -> [secondary pended-line records absorbed into it]
+
+def _bundle_pends():
+    prof = [c for c in pended_claims if c.get("claim_type") == "Professional"
+            and (c.get("billed_amount") or 0) < HIGH_DOLLAR_INSTITUTIONAL]
+    nonfeat = [c for c in prof if not c.get("is_featured")]
+    n_sec = int(len(prof) * 0.30)                    # ~30% become secondary lines on other claims
+    if not nonfeat or n_sec < 1:
+        return
+    step = max(1, len(nonfeat) // n_sec)
+    secondaries = nonfeat[::step][:n_sec]
+    sec_ids = {id(s) for s in secondaries}
+    for s in secondaries:
+        s["_bundled"] = True
+    primaries = [c for c in prof if id(c) not in sec_ids]     # featured stay as primaries
+    # spread the multi-pend claims evenly across the whole queue (front to back, incl. featured)
+    n_targets = max(1, int(n_sec / 1.4))
+    tstep = max(1, len(primaries) // n_targets)
+    targets = primaries[::tstep][:n_targets] or primaries
+    for k, s in enumerate(secondaries):
+        GROUP_MEMBERS.setdefault(targets[k % len(targets)]["icn"], []).append(s)
+    for p in primaries:
+        p["pended_line_count"] = 1 + len(GROUP_MEMBERS.get(p["icn"], []))
+
+_bundle_pends()
+
+def _seed_pos_differential():
+    """Reconcile the Fee Schedule allowed to the allowed carried on claims (so the line's
+    'Allowed' always equals the schedule), and add POS-differential rates — a non-facility
+    (office) rate and a lower facility rate — so a Place-of-Service edit can reprice to the
+    correct site and the cut-back is self-explanatory."""
+    for c in pended_claims:
+        cpt = str(c.get("cpt_code") or "")
+        a = c.get("allowed_amount")
+        if cpt and a is not None and cpt in fee_schedule:
+            fee_schedule[cpt]["allowed_amount"] = round(float(a), 2)
+    for rec in fee_schedule.values():
+        base = rec.get("allowed_amount") or 0
+        rec["allowed_nonfacility"] = round(base, 2)          # office / POS 11
+        rec["allowed_facility"]    = round(base * 0.68, 2)   # facility / POS 21-22 (lower professional component)
+
+_seed_pos_differential()
+
+def _pended_line_from(claim):
+    """Build a pended service-line dict from a pend record (primary or bundled secondary)."""
+    return {
         "line_no": 0, "rev_code": None, "cpt_code": claim.get("cpt_code"),
         "description": claim.get("cpt_description", ""), "modifier": claim.get("modifier"),
         "units": claim.get("units_billed", 1), "charge": claim.get("billed_amount") or 0.0,
@@ -1632,11 +1776,21 @@ def build_service_lines(claim):
         "pended": True, "edit_code": claim.get("edit_code"),
         "edit_category": claim.get("edit_category"), "edit_description": claim.get("edit_description"),
         "carc_code": claim.get("carc_code"), "rarc_code": claim.get("rarc_code"),
-        "resolution_path": claim.get("resolution_path"),
+        "resolution_path": claim.get("resolution_path"), "auth_number": claim.get("auth_number"),
     }
+
+def build_service_lines(claim):
+    """Derive a realistic header + service-line breakdown. The claim's own pend is a PENDED
+    line; any bundled secondary pends are additional PENDED lines; 2-3 clean companion lines
+    are adjudicated."""
+    # stable per-ICN seed (independent of PYTHONHASHSEED) so lines are identical across restarts
+    _icn = str(claim.get("icn", ""))
+    rnd = random.Random(sum(ord(ch) * (i + 1) for i, ch in enumerate(_icn)))
+    lines = [_pended_line_from(claim)]
+    for sec in GROUP_MEMBERS.get(_icn, []):
+        lines.append(_pended_line_from(sec))
     n_comp = rnd.randint(2, 3)
     comps = rnd.sample(_COMPANION_CPTS, n_comp)
-    lines = [pended]
     for cpt, desc, charge, allowed in comps:
         lines.append({
             "line_no": 0, "rev_code": None, "cpt_code": cpt, "description": desc, "modifier": None,
@@ -1717,14 +1871,59 @@ def _header_rollup(resolutions, lines=None):
                             "write_off": write_off, "member_or_denied": balance}
     return out
 
+def _other_insurance(claim):
+    """Other Insurance Indicator for the header, driven off the real COB database.
+    Yes → the member has other coverage (COB applies); shows carrier + order."""
+    rec = cob.get(claim.get("member_id")) or {}
+    if rec.get("carrier_name"):
+        order = str(rec.get("cob_order", "")).lower()
+        who = "other carrier is PRIMARY — we pay secondary" if order == "primary" \
+              else "we are primary — other carrier secondary"
+        return {"other_insurance": "Yes",
+                "oi_carrier": rec["carrier_name"],
+                "oi_order": rec.get("cob_order"),
+                "oi_detail": f"{rec['carrier_name']} ({who})",
+                "oi_primary_eob_required": rec.get("primary_eob_required")}
+    return {"other_insurance": "No", "oi_carrier": None, "oi_order": None,
+            "oi_detail": "No other coverage on file — single-payer", "oi_primary_eob_required": False}
+
 def _line_header(claim, lines):
     h = {k: claim.get(k) for k in (
         "icn", "claim_type", "form", "type_of_bill", "label", "scenario_note",
         "member_id", "member_name", "member_dob", "plan",
         "provider_name", "provider_specialty", "npi_billing", "npi_rendering", "group_name",
         "dos", "received_date", "pend_date", "days_in_queue", "priority",
-        "place_of_service", "billed_amount")}
+        "place_of_service", "billed_amount",
+        "icd10_principal", "icd10_secondary", "icd10_desc")}
+    # Provider identity for BOTH billing and rendering provider (Tax ID + PAR status)
+    bp = providers.get(str(claim.get("npi_billing") or ""), {}) or {}
+    rp = providers.get(str(claim.get("npi_rendering") or ""), {}) or {}
+    h["billing_tax_id"]     = bp.get("tax_id")
+    h["billing_par_status"] = bp.get("par_status")
+    h["rendering_tax_id"]     = rp.get("tax_id")
+    h["rendering_par_status"] = rp.get("par_status")
+    # header principal diagnosis: fall back to the first line's Dx (hero claims carry it per line)
+    if not h.get("icd10_principal") and lines:
+        for ln in lines:
+            if ln.get("icd10_principal"):
+                h["icd10_principal"] = ln["icd10_principal"]
+                break
+    h.update(_other_insurance(claim))
     h.update(_timely_fields(claim))
+    # Strict mandatory-field validation (audit-grade completeness gate)
+    checks = [
+        ("Member name", h.get("member_name")), ("Member ID", h.get("member_id")),
+        ("Billing NPI", h.get("npi_billing")), ("Rendering NPI", h.get("npi_rendering")),
+        ("Billing Tax ID", h.get("billing_tax_id")), ("Rendering Tax ID", h.get("rendering_tax_id")),
+        ("Billing PAR status", h.get("billing_par_status")), ("Rendering PAR status", h.get("rendering_par_status")),
+        ("Principal diagnosis", h.get("icd10_principal")), ("Date of service", h.get("dos")),
+        ("Received date", h.get("received_date")),
+        ("Place of service / Type of bill", h.get("place_of_service") or h.get("type_of_bill")),
+        ("Billed amount", h.get("billed_amount")), ("Service lines", len(lines) if lines else 0),
+    ]
+    missing = [label for label, val in checks if val in (None, "", 0)]
+    h["validation"] = {"complete": not missing, "missing": missing,
+                       "checked": len(checks), "passed": len(checks) - len(missing)}
     return h
 
 _STATES = ["CA","TX","NY","FL","IL","PA","OH","GA","NC","MI","NJ","VA","WA","AZ","MA","TN","MO","MD","CO","MN"]
@@ -1765,11 +1964,12 @@ def _line_aggregates():
     if _LINE_AGG is None:
         total_lines = 0
         pended_lines = 0
-        for c in pended_claims:
+        claim_list = [c for c in pended_claims if not c.get("_bundled")]  # primaries + singletons (bundled secondaries are absorbed as lines)
+        for c in claim_list:
             ls = build_service_lines(c)
             total_lines += len(ls)
             pended_lines += sum(1 for l in ls if l.get("pended"))
-        _LINE_AGG = {"claims": len(pended_claims), "total_lines": total_lines, "pended_lines": pended_lines}
+        _LINE_AGG = {"claims": len(claim_list), "total_lines": total_lines, "pended_lines": pended_lines}
     return _LINE_AGG
 
 @app.route("/api/stats")
