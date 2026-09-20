@@ -33,6 +33,9 @@ def _root():
 pricing_client = pricing_engine.BurgessPricingClient()
 
 DATA = Path(__file__).parent / "data"
+SOP_LIBRARY = Path(__file__).parent / "sop_library_offline"   # ready SOPs, agent does NOT watch
+SOP_INBOX   = Path(__file__).parent / "sop_inbox"             # landing zone the agent scans
+SOP_INBOX.mkdir(exist_ok=True)
 
 # ── Load all data on startup ─────────────────────────────────────────────────
 
@@ -54,6 +57,13 @@ human_review    = load("human_review.json")
 sop_outcomes      = load("sop_outcomes.json")
 predictions       = load("predictions.json")
 edit_codes        = load("edit_codes.json")
+# Two genuinely-new/emerging edits that have NO SOP on file yet. The agent flags these as
+# "Missing SOP" and holds them for SOP Governance; once a SOP is ingested it re-resolves them.
+edit_codes["E-TELE-001"] = {"category": "Telehealth", "desc": "Telehealth POS-02 / modifier-95 policy",
+                            "carc": "CO-B7", "rarc": "N657", "resolution": "needs_sop_tele"}
+edit_codes["E-SOS-001"]  = {"category": "Site of Service", "desc": "Site-of-service differential (new edit)",
+                            "carc": "CO-B7", "rarc": "N657", "resolution": "needs_sop_sos"}
+NO_SOP_EDITS = {"E-TELE-001", "E-SOS-001"}   # start with no RESOLUTION_RULES → Missing SOP
 multi_edit_claims = load("multi_edit_claims.json") if (DATA / "multi_edit_claims.json").exists() else []
 line_item_claims  = load("line_item_claims.json") if (DATA / "line_item_claims.json").exists() else []
 
@@ -269,6 +279,10 @@ def _rebuild_pend_distribution(n=5300):
         cnt = int(round(n * w))
         for i in range(cnt):
             new_claims.append(mk(edits[i % len(edits)], force_hr))
+    # a small, credible volume of pends on genuinely-new edits that have NO SOP on file yet
+    for edit in NO_SOP_EDITS:
+        for i in range(40):
+            new_claims.append(mk(edit, False))
     # one featured claim per EVERY edit code (so trace dropdown + catalog stay complete)
     for edit in ec.keys():
         fr = edit in ("E-ADJ-001","E-DUP-001","E-AUTH-001","E-AUTH-005")
@@ -985,6 +999,7 @@ RESOLUTION_LABELS = {
     "request_info": {"label": "ADR - Placed in Queue", "color": "blue"},
     "escalate":     {"label": "Escalated",        "color": "orange"},
     "human_review": {"label": "Human Review",     "color": "purple"},
+    "missing_sop":  {"label": "Missing SOP — Needs SOP", "color": "orange"},
 }
 
 DB_QUERIES = {
@@ -1178,7 +1193,12 @@ def execute_sop(claim):
     rpath = claim.get("resolution_path")
     rule = RESOLUTION_RULES.get(rpath)
     if not rule:
-        return "escalate", [{"text": "No SOP matches this edit", "observation": "Routed to a senior examiner", "status": "fail", "decisive": True}]
+        # No SOP on file for this edit → the agent will NOT guess; hold for SOP Governance.
+        return "missing_sop", [
+            {"text": "Identify the edit on the line", "observation": f"Edit {claim.get('edit_code')} — {claim.get('edit_description','')}", "status": "info"},
+            {"text": "Search the SOP library for a matching procedure", "observation": f"No SOP on file for {claim.get('edit_code')} — the agent will not adjudicate without a governing SOP", "status": "fail"},
+            {"text": "Route to SOP Governance (NEEDS SOP)", "observation": "Claim held in the Needs-SOP queue; awaiting SOP authoring/ingestion, then auto re-resolution", "status": "info", "decisive": True, "outcome": "missing_sop"},
+        ]
     ctx = _sop_ctx(claim)
     outcome = rule["outcome_logic"](claim)
     steps = []
@@ -1508,8 +1528,8 @@ def resolve_claim(claim):
         # Recommendation (agent's proposed disposition) vs Decision (final state) + confidence
         "recommendation":        RESOLUTION_LABELS.get(recommendation_outcome, {}).get("label", recommendation_outcome),
         "recommendation_outcome": recommendation_outcome,
-        "decision_status":       "pending_review" if (outcome in ("human_review", "escalate") or claim["human_review_flag"]) else "issued",
-        "confidence":            _confidence(recommendation_outcome, executed_steps, claim),
+        "decision_status":       "needs_sop" if outcome == "missing_sop" else ("pending_review" if (outcome in ("human_review", "escalate") or claim["human_review_flag"]) else "issued"),
+        "confidence":            (None if outcome == "missing_sop" else _confidence(recommendation_outcome, executed_steps, claim)),
     }
     if pricing_info:
         out["pricing"] = pricing_info
@@ -2025,6 +2045,7 @@ def api_resolve_summary():
         "human_review":  human_genuine,   # genuine human review only (excl. high-dollar oversight)
         "high_dollar":   high_dollar,     # institutional >= $10k — its own review queue
         "clinical":      clinical,        # subset of Denied — adverse clinical/coverage determinations
+        "missing_sop":   counts.get("missing_sop", 0),  # no SOP on file → routed to SOP Governance
     })
 
 _FEATURED_ORDER = None
@@ -2107,7 +2128,7 @@ def api_process_batch():
 
 _OUTCOME_KEY = {"approved": "approve", "denied": "deny", "partial": "partial_pay",
                 "adr": "request_info", "human": "human_review", "clinical": "__clinical__",
-                "highdollar": "__highdollar__"}
+                "highdollar": "__highdollar__", "missingsop": "missing_sop"}
 def _is_high_dollar(c):
     return c.get("claim_type") == "Institutional" and (c.get("billed_amount") or 0) >= HIGH_DOLLAR_INSTITUTIONAL
 
@@ -2654,11 +2675,13 @@ def api_observability():
             "source_queries": dbq_total,
             "throughput_per_sec": round(1000 / avg_ms * 8) if avg_ms else 0,  # 8 parallel workers (representative)
         }
+        _covered = len(edit_codes) - len(NO_SOP_EDITS)
         governance = {
             "hitl_rate_pct": pct(human), "auto_pct": auto_pct,
             "audit_complete_pct": pct(traced),
-            "sop_coverage_pct": 100,
+            "sop_coverage_pct": round(100 * _covered / len(edit_codes)) if edit_codes else 100,
             "edit_types": len(edit_codes),
+            "missing_sop_edits": len(NO_SOP_EDITS),
         }
         outcome_list = [{"key": k,
                          "label": RESOLUTION_LABELS.get(k, {}).get("label", k),
@@ -2944,6 +2967,102 @@ def api_enterprise_insights():
                                  "recoverable_pct": round(100 * tot / total) if total else 0,
                                  "rules": len(drivers)}}
     return jsonify(_EI_CACHE)
+
+
+# ── SOP landing-zone pipeline (Missing SOP → ingest → auto re-resolve) ────────────
+def _reset_sop_caches():
+    """Clear the resolution/aggregate caches so the next read re-resolves with any new SOP."""
+    global _PEND_RESOLVE_CACHE, _OBS_CACHE, _LINE_AGG, _REVIEW_AGG, _EI_CACHE, _FEATURED_ORDER
+    _PEND_RESOLVE_CACHE = {}
+    _OBS_CACHE = None
+    _LINE_AGG = None
+    _REVIEW_AGG = None
+    _EI_CACHE = None
+
+def _apply_sop(sop):
+    """Register a rule from an ingested SOP and point the held claims' codes at it."""
+    rp = sop["resolution"]; edit = sop["edit_code"]; oc = sop.get("decision_outcome", "approve")
+    RESOLUTION_RULES[rp] = {"outcome_logic": (lambda c, _o=oc: _o),
+                            "steps": sop.get("steps", []), "sop_ref": sop.get("sop_ref", "")}
+    for c in pended_claims:
+        if c.get("edit_code") == edit:
+            c["carc_code"] = sop.get("carc"); c["rarc_code"] = sop.get("rarc")
+    NO_SOP_EDITS.discard(edit)
+    return edit, oc
+
+@app.route("/api/sop-inbox/status")
+def api_sop_inbox_status():
+    """Show the offline SOP library, what's sitting in the landing zone, and current gaps."""
+    library, inbox = [], []
+    for p in sorted(SOP_LIBRARY.glob("*.json")):
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+            library.append({"file": p.name, "sop_ref": d.get("sop_ref"), "title": d.get("title"),
+                            "edit_code": d.get("edit_code"), "ingested": d.get("edit_code") not in NO_SOP_EDITS})
+        except Exception:
+            pass
+    for p in sorted(SOP_INBOX.glob("*.json")):
+        inbox.append(p.name)
+    missing = sum(1 for c in pended_claims if c.get("edit_code") in NO_SOP_EDITS)
+    return jsonify({"library": library, "inbox": inbox,
+                    "no_sop_edits": sorted(NO_SOP_EDITS), "missing_sop_claims": missing})
+
+@app.route("/api/sop-inbox/drop", methods=["POST", "GET"])
+def api_sop_inbox_drop():
+    """Governance drops a SOP into the landing zone (copies the real file from the library)."""
+    edit = request.args.get("edit", "")
+    src = next((p for p in SOP_LIBRARY.glob("*.json")
+                if json.loads(p.read_text(encoding="utf-8")).get("edit_code") == edit), None)
+    if not src:
+        return jsonify({"error": f"no SOP in library for {edit}"}), 404
+    dest = SOP_INBOX / src.name
+    dest.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+    doc = json.loads(dest.read_text(encoding="utf-8"))
+    return jsonify({"dropped": src.name, "path": str(dest), "doc": doc})
+
+@app.route("/api/sop-inbox/ingest", methods=["POST", "GET"])
+def api_sop_inbox_ingest():
+    """Agent scans the landing zone, ingests each SOP, generates the rule, and re-resolves the held claims."""
+    ingested = []
+    for p in sorted(SOP_INBOX.glob("*.json")):
+        try:
+            sop = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        edit, _oc = _apply_sop(sop)
+        ingested.append({"file": p.name, "sop_ref": sop.get("sop_ref"), "edit_code": edit})
+        (SOP_INBOX / (p.stem + ".ingested")).write_text("ok", encoding="utf-8")
+        p.unlink(missing_ok=True)
+    _reset_sop_caches()
+    # Re-resolve the affected claims and report the new outcomes
+    resolved = []
+    edits_done = {i["edit_code"] for i in ingested}
+    for c in pended_claims:
+        if c.get("edit_code") in edits_done:
+            r = _resolve_pended(c)
+            resolved.append({"icn": c["icn"], "edit_code": c["edit_code"],
+                             "outcome": r["outcome"], "outcome_label": r["outcome_label"]})
+    from collections import Counter as _C
+    mix = dict(_C(r["outcome_label"] for r in resolved))
+    missing = sum(1 for c in pended_claims if c.get("edit_code") in NO_SOP_EDITS)
+    return jsonify({"ingested": ingested, "re_resolved": len(resolved),
+                    "outcome_mix": mix, "missing_sop_remaining": missing})
+
+@app.route("/api/sop-inbox/reset", methods=["POST", "GET"])
+def api_sop_inbox_reset():
+    """Reset the demo: clear the landing zone, remove ingested rules, restore the Missing-SOP state."""
+    for p in list(SOP_INBOX.glob("*")):
+        p.unlink(missing_ok=True)
+    for edit in ("E-TELE-001", "E-SOS-001"):
+        NO_SOP_EDITS.add(edit)
+        rp = edit_codes.get(edit, {}).get("resolution")
+        RESOLUTION_RULES.pop(rp, None)
+        for c in pended_claims:
+            if c.get("edit_code") == edit:
+                c["carc_code"] = edit_codes[edit].get("carc"); c["rarc_code"] = edit_codes[edit].get("rarc")
+    _reset_sop_caches()
+    missing = sum(1 for c in pended_claims if c.get("edit_code") in NO_SOP_EDITS)
+    return jsonify({"reset": True, "missing_sop_claims": missing})
 
 
 if __name__ == "__main__":

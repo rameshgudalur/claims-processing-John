@@ -429,6 +429,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
       <div class="counter-box clickable" onclick="openOutcomePanel('human')" title="Click to see all"><div class="counter-n purple" id="cnt-hr">0</div><div class="counter-l">Examiner Review</div></div>
       <div class="counter-box clickable" onclick="openOutcomePanel('highdollar')" title="Click to see all — institutional ≥ $10k"><div class="counter-n" id="cnt-highdollar" style="color:#0f172a">0</div><div class="counter-l">High-Dollar Review</div></div>
       <div class="counter-box clickable" onclick="openOutcomePanel('clinical')" title="Click to see all — subset of Denied"><div class="counter-n" id="cnt-clin" style="color:#0e9f86">0</div><div class="counter-l">Clinical Review</div></div>
+      <div class="counter-box clickable" onclick="openOutcomePanel('missingsop')" title="No SOP on file — routed to SOP Governance"><div class="counter-n" id="cnt-missingsop" style="color:#c2410c">0</div><div class="counter-l">Missing SOP</div></div>
     </div>
     <div id="claims-lines-summary" style="display:none;margin-top:10px;font-size:.78rem;color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px"></div>
   </div>
@@ -778,7 +779,7 @@ async function loadObservability(){
         ['Human-in-the-loop', (gv.hitl_rate_pct||0)+'%'],
         ['Audit-complete', (gv.audit_complete_pct||0)+'%'],
         ['SOP coverage', (gv.sop_coverage_pct||0)+'%'],
-      ],'Consequential cases routed to a human; every decision is auditable; all '+(gv.edit_types||0)+' edit types map to an SOP.');
+      ],'Consequential cases routed to a human; every decision is auditable; '+((gv.missing_sop_edits||0)>0 ? (gv.missing_sop_edits+' edit(s) have no SOP yet — held for SOP Governance, not guessed') : ('all '+(gv.edit_types||0)+' edit types map to an SOP')) + '.');
     const t = d.throughput;
     document.getElementById('obs-throughput').innerHTML =
       _ocard(t.pended.toLocaleString(),'Pended claims','#2563eb')
@@ -1179,7 +1180,8 @@ const OUTCOME_META = {
   approved:{label:'Approved for Payment',color:'#15803d'}, partial:{label:'Approved for Partial Payment',color:'#b45309'},
   denied:{label:'Denied',color:'#dc2626'}, adr:{label:'Additional Documentation Request (ADR)',color:'#2563eb'},
   human:{label:'Examiner Review',color:'#7c3aed'}, clinical:{label:'Clinical Review',color:'#0e9f86'},
-  highdollar:{label:'High-Dollar Review (institutional ≥ $10k)',color:'#0f172a'}};
+  highdollar:{label:'High-Dollar Review (institutional ≥ $10k)',color:'#0f172a'},
+  missingsop:{label:'Missing SOP — held for SOP Governance',color:'#c2410c'}};
 let _outcomeRows = [];
 let _adrClaimCtx = null;
 async function openOutcomePanel(key){
@@ -1203,7 +1205,8 @@ async function openOutcomePanel(key){
       <button onclick="document.getElementById('outcome-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>
       <div style="font-size:1.1rem;font-weight:800;color:${meta.color};margin-bottom:2px">${meta.label}</div>
       <div style="font-size:.75rem;color:#64748b;margin-bottom:12px">Showing ${d.shown} of ${(d.total||0).toLocaleString()} — click any row to see the full trace (SOP, evidence, databases, decision) the agent used. Nothing to search for.</div>
-      <div style="overflow:auto;max-height:64vh"><table style="width:100%;border-collapse:collapse">
+      ${key==='missingsop' ? _sopGovHtml() : ''}
+      <div style="overflow:auto;max-height:${key==='missingsop'?'44vh':'64vh'}"><table style="width:100%;border-collapse:collapse">
         <thead><tr style="text-align:left;border-bottom:2px solid ${meta.color}">
           <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">ICN</th>
           <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Member</th>
@@ -1219,6 +1222,54 @@ function openFromOutcome(i){
   const r=_outcomeRows[i]; if(!r) return;
   document.getElementById('outcome-modal').style.display='none';
   openClaimPanel(r);
+}
+// ── SOP Governance — the live landing-zone drop → agent ingest → re-resolve ──────
+function _sopGovHtml(){
+  return `<div style="background:#fff7ed;border:1px solid #fdba74;border-radius:10px;padding:12px 14px;margin-bottom:12px">
+    <div style="font-size:.82rem;font-weight:800;color:#c2410c;margin-bottom:4px">🗂 SOP Governance — Needs-SOP landing zone</div>
+    <div style="font-size:.72rem;color:#7c2d12;margin-bottom:10px">These pends hit an edit with <strong>no SOP on file</strong>, so the agent held them (it will not guess). Governance drops the SOP into the landing zone; the agent then scans it, generates the rule, and <strong>re-resolves these claims live</strong>.</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <button onclick="sopDrop('E-TELE-001')" style="background:#fff;border:1px solid #c2410c;color:#c2410c;font-weight:700;font-size:.7rem;padding:6px 11px;border-radius:7px;cursor:pointer">⬇ Drop SOP — Telehealth</button>
+      <button onclick="sopDrop('E-SOS-001')" style="background:#fff;border:1px solid #c2410c;color:#c2410c;font-weight:700;font-size:.7rem;padding:6px 11px;border-radius:7px;cursor:pointer">⬇ Drop SOP — Site-of-Service</button>
+      <button onclick="sopIngest()" style="background:#166534;border:1px solid #166534;color:#fff;font-weight:700;font-size:.7rem;padding:6px 11px;border-radius:7px;cursor:pointer">▶ Agent: scan inbox &amp; re-resolve</button>
+      <button onclick="sopReset()" style="background:#e2e8f0;border:1px solid #94a3b8;color:#334155;font-weight:700;font-size:.7rem;padding:6px 11px;border-radius:7px;cursor:pointer">↺ Reset</button>
+    </div>
+    <div id="sopgov-status" style="font-size:.7rem;color:#334155;margin-top:8px;min-height:16px"></div>
+  </div>`;
+}
+async function sopDrop(edit){
+  const st=document.getElementById('sopgov-status');
+  try{ const d=await fetch(`${API}/api/sop-inbox/drop?edit=${edit}`,{method:'POST'}).then(r=>r.json());
+    if(st) st.innerHTML=`📄 Dropped <strong>${d.dropped}</strong> into the landing zone (${d.doc.sop_ref}). Now click <strong>Agent: scan inbox</strong>.`;
+  }catch(e){ if(st) st.textContent='Drop failed.'; }
+}
+async function sopIngest(){
+  const st=document.getElementById('sopgov-status');
+  if(st) st.textContent='Agent scanning the landing zone…';
+  try{ const d=await fetch(`${API}/api/sop-inbox/ingest`,{method:'POST'}).then(r=>r.json());
+    if(!d.ingested||!d.ingested.length){ if(st) st.textContent='No SOP in the landing zone yet — drop one first.'; return; }
+    const mix=Object.entries(d.outcome_mix||{}).map(([k,v])=>`${v} ${k}`).join(' · ');
+    if(st) st.innerHTML=`✅ Agent ingested ${d.ingested.length} SOP(s) and <strong>re-resolved ${d.re_resolved}</strong> held claims → ${mix}. Missing-SOP remaining: <strong>${d.missing_sop_remaining}</strong>.`;
+    await refreshOutcomeCounters();
+    setTimeout(()=>openOutcomePanel('missingsop'), 1400);
+  }catch(e){ if(st) st.textContent='Ingest failed.'; }
+}
+async function sopReset(){
+  const st=document.getElementById('sopgov-status');
+  try{ await fetch(`${API}/api/sop-inbox/reset`,{method:'POST'});
+    await refreshOutcomeCounters();
+    if(st) st.textContent='↺ Reset — SOPs cleared; claims back in the Needs-SOP queue.';
+    setTimeout(()=>openOutcomePanel('missingsop'), 800);
+  }catch(e){ if(st) st.textContent='Reset failed.'; }
+}
+async function refreshOutcomeCounters(){
+  if(!processed) return;
+  try{ const s=await fetch(`${API}/api/resolve-summary`).then(r=>r.json());
+    const set=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=(v||0).toLocaleString();};
+    set('cnt-approved',s.approve); set('cnt-partial',s.partial_pay); set('cnt-adr',s.request_info);
+    set('cnt-denied',s.deny); set('cnt-hr',s.human_review); set('cnt-clin',s.clinical);
+    set('cnt-highdollar',s.high_dollar); set('cnt-missingsop',s.missing_sop); set('cnt-total',s.total);
+  }catch(e){}
 }
 
 // ── Process Flow diagram (static structural travel-flow, no live numbers) ─────────
@@ -1685,6 +1736,7 @@ async function startProcessing() {
         animateCount('cnt-hr',       counts.human_review, sum.human_review),
         animateCount('cnt-clin',     0,                   sum.clinical||0),
         animateCount('cnt-highdollar', 0,                 sum.high_dollar||0),
+        animateCount('cnt-missingsop', 0,                 sum.missing_sop||0),
       ]);
       const _hb3 = document.getElementById('hr-badge'); if (_hb3) _hb3.textContent = sum.human_review.toLocaleString();
       const note = document.getElementById('queue-sample-note');

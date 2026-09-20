@@ -1,0 +1,24 @@
+{
+  "sop_ref": "SOP-TELE-001 §3.1",
+  "title": "Telehealth POS-02 / Modifier-95 Adjudication",
+  "category": "Telehealth",
+  "edit_code": "E-TELE-001",
+  "resolution": "needs_sop_tele",
+  "status": "ACTIVE",
+  "decision_outcome": "approve",
+  "carc": null,
+  "rarc": null,
+  "purpose": "Govern adjudication of telehealth-delivered services billed with POS 02/10 and modifier 95/GT, consistent with the plan's telehealth benefit.",
+  "decision_rule": "If the service is on the covered telehealth list, the telehealth benefit is active, and POS 02/10 with modifier 95/GT is present, approve at the allowed amount.",
+  "steps": [
+    "Confirm place of service 02/10 and modifier 95/GT on the line",
+    "Verify the telehealth benefit is active for the member's plan (Eligibility DB)",
+    "Confirm the CPT is on the covered telehealth services list",
+    "Approve and pay at the allowed amount"
+  ],
+  "references": [
+    "CMS Telehealth Services List (current year)",
+    "Plan Benefit Policy TELE-001 — Telehealth Coverage",
+    "CMS IOM Pub 100-04, Ch. 12 §190 (telehealth)"
+  ]
+}

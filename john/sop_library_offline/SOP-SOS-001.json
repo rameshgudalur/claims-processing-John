@@ -1,0 +1,24 @@
+{
+  "sop_ref": "SOP-SOS-001 §2.4",
+  "title": "Site-of-Service Differential Repricing",
+  "category": "Site of Service",
+  "edit_code": "E-SOS-001",
+  "resolution": "needs_sop_sos",
+  "status": "ACTIVE",
+  "decision_outcome": "partial_pay",
+  "carc": "CO-45",
+  "rarc": "N30",
+  "purpose": "Govern claims where the billed site of service differs from the appropriate site, requiring repricing to the correct-site fee-schedule rate.",
+  "decision_rule": "Determine the appropriate site of service; reprice the line to the correct-site (facility vs non-facility) fee-schedule allowance and partial-pay at that amount.",
+  "steps": [
+    "Query the Fee Schedule for the facility and non-facility rate for the CPT",
+    "Determine the appropriate site of service for the procedure",
+    "Reprice the line to the correct-site allowed amount",
+    "Partial-pay at the repriced amount (CO-45 contractual adjustment)"
+  ],
+  "references": [
+    "CMS Physician Fee Schedule — facility vs non-facility RVUs",
+    "Plan Policy SOS-001 — Site-of-Service Differential",
+    "NCCI Policy Manual — site-of-service considerations"
+  ]
+}

@@ -9,3 +9,4 @@ john/_*.py
 john/_*.log
 john/demo_dark_backup.html
 john/demo_light_v1.html
+john/sop_inbox/
