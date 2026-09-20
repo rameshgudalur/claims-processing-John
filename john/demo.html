@@ -70,14 +70,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
 .db-expand-close:hover{color:#334155}
 
 /* Processing header row */
-.processing-header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.processing-header{display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
 .proc-btn{background:#2563eb;color:#fff;border:none;padding:11px 24px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s}
 .proc-btn:hover{background:#1d4ed8}
 .proc-btn:disabled{background:#cbd5e1;color:#334155;cursor:not-allowed}
 .proc-btn.ready-pulse{animation:ready-pulse 1.2s infinite}
 @keyframes ready-pulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}50%{box-shadow:0 0 0 6px rgba(37,99,235,.12)}}
-.proc-counters{display:flex;gap:12px;margin-left:auto}
-.counter-box{background:#ffffff;border:1px solid #cbd5e1;border-radius:8px;padding:6px 14px;text-align:center;min-width:70px}
+.proc-counters{flex-basis:100%;width:100%;margin-top:12px}
+.counter-cap{font-size:.62rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin:2px 0 5px}
+.counter-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:10px}
+.counter-box{background:#ffffff;border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;text-align:center;display:flex;flex-direction:column;justify-content:center;min-height:52px}
 .counter-box.clickable{cursor:pointer;transition:all .15s}
 .counter-box.clickable:hover{border-color:#2563eb;box-shadow:0 2px 8px rgba(37,99,235,.15);transform:translateY(-1px)}
 /* Process-flow diagram */
@@ -103,7 +105,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
 .counter-n.purple{color:#9333ea}
 
 /* Queue table */
-.queue-wrap{background:#ffffff;border:1px solid #cbd5e1;border-radius:12px;overflow:hidden;margin-bottom:20px}
+.queue-wrap{background:#ffffff;border:1px solid #cbd5e1;border-radius:12px;overflow-x:auto;overflow-y:hidden;margin-bottom:20px}
 .queue-table{width:100%;border-collapse:collapse;font-size:.75rem}
 .queue-table thead th{background:#f1f5f9;color:#334155;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #cbd5e1;white-space:nowrap}
 .queue-table tbody tr{border-bottom:1px solid #cbd5e1;cursor:pointer;transition:background .15s}
@@ -344,12 +346,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
 <div id="act1-view" class="view">
   <div class="nav">
     <button class="nav-back" onclick="showView('hub-view')">← Hub</button>
-    <span class="nav-title">Claims Pend Processing — Agent 1</span>
+    <span class="nav-title">Claims Pend Processing</span>
     <button class="nav-back" onclick="showView('trace-view');initTrace()" style="background:#dbeafe;border-color:#1d4ed8;color:#2563eb">▶ Single Claim Trace</button>
     <button class="nav-back" style="margin-left:8px;background:#fffbeb;border-color:#b45309;color:#b45309" onclick="openPendCatalog()">📖 Pend Code Catalog</button>
-    <button class="nav-back" style="margin-left:8px;background:#fef2f2;border-color:#dc2626;color:#dc2626" onclick="showView('workflow-view');loadReviewWorkflow()">⚖ Review &amp; Denial Workflow <span id="hr-badge" style="background:#d8b4fe;color:#9333ea;border-radius:8px;padding:1px 8px;font-size:.68rem;margin-left:4px">—</span></button>
     <button class="nav-back" style="margin-left:8px;background:#dcfce7;border-color:#166534;color:#15803d" onclick="showView('observe-view');startObs()">📊 Observability</button>
-    <button class="nav-back" style="margin-left:8px;background:#ede9fe;border-color:#6d28d9;color:#7c3aed" onclick="showView('adaptive-view');loadAdaptive()">🧠 Adaptive Intelligence</button>
+    <span id="hr-badge" style="display:none"></span>
   </div>
 
   <!-- 6 DB Cards -->
@@ -420,18 +421,25 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <button class="proc-btn" id="start-btn" onclick="startProcessing()" disabled>▶ Start Live Processing</button>
     <button class="proc-btn" style="background:#cbd5e1;color:#334155;margin-left:8px" id="reset-btn" onclick="resetAct1()">↺ Reset</button>
     <div class="proc-counters">
-      <div class="counter-box"><div class="counter-n" id="cnt-extracted" style="color:#0f172a">0</div><div class="counter-l">Pended Lines</div></div>
-      <div class="counter-box"><div class="counter-n" id="cnt-total">0</div><div class="counter-l">Processed</div></div>
-      <div class="counter-box clickable" onclick="openOutcomePanel('approved')" title="Click to see all"><div class="counter-n green" id="cnt-approved">0</div><div class="counter-l">Approved for Payment</div></div>
-      <div class="counter-box clickable" onclick="openOutcomePanel('partial')" title="Click to see all"><div class="counter-n yellow" id="cnt-partial">0</div><div class="counter-l">Approved for Partial Payment</div></div>
-      <div class="counter-box clickable" onclick="openOutcomePanel('denied')" title="Click to see all"><div class="counter-n red" id="cnt-denied">0</div><div class="counter-l">Denied</div></div>
-      <div class="counter-box clickable" onclick="openOutcomePanel('adr')" title="Click to see all"><div class="counter-n blue" id="cnt-adr">0</div><div class="counter-l">Additional Documentation Request (ADR)</div></div>
-      <div class="counter-box clickable" onclick="openOutcomePanel('human')" title="Click to see all"><div class="counter-n purple" id="cnt-hr">0</div><div class="counter-l">Examiner Review</div></div>
-      <div class="counter-box clickable" onclick="openOutcomePanel('highdollar')" title="Click to see all — institutional ≥ $10k"><div class="counter-n" id="cnt-highdollar" style="color:#0f172a">0</div><div class="counter-l">High-Dollar Review</div></div>
-      <div class="counter-box clickable" onclick="openOutcomePanel('clinical')" title="Click to see all — subset of Denied"><div class="counter-n" id="cnt-clin" style="color:#0e9f86">0</div><div class="counter-l">Clinical Review</div></div>
-      <div class="counter-box clickable" onclick="openOutcomePanel('missingsop')" title="No SOP on file — routed to SOP Governance"><div class="counter-n" id="cnt-missingsop" style="color:#c2410c">0</div><div class="counter-l">Missing SOP</div></div>
+      <div class="counter-cap">Agent decisions</div>
+      <div class="counter-grid">
+        <div class="counter-box"><div class="counter-n" id="cnt-extracted" style="color:#0f172a">0</div><div class="counter-l">Pended Lines</div></div>
+        <div class="counter-box"><div class="counter-n" id="cnt-total">0</div><div class="counter-l">Processed</div></div>
+        <div class="counter-box clickable" onclick="openOutcomePanel('approved')" title="Click to see all"><div class="counter-n green" id="cnt-approved">0</div><div class="counter-l">Approved for Payment</div></div>
+        <div class="counter-box clickable" onclick="openOutcomePanel('partial')" title="Click to see all"><div class="counter-n yellow" id="cnt-partial">0</div><div class="counter-l">Approved for Partial Payment</div></div>
+        <div class="counter-box clickable" onclick="openOutcomePanel('adr')" title="Click to see all"><div class="counter-n blue" id="cnt-adr">0</div><div class="counter-l">Additional Documentation Request (ADR)</div></div>
+      </div>
+      <div class="counter-cap">Routed to a human / governance</div>
+      <div class="counter-grid">
+        <div class="counter-box clickable" onclick="openOutcomePanel('denied')" title="Click to see all"><div class="counter-n red" id="cnt-denied">0</div><div class="counter-l">Denied</div></div>
+        <div class="counter-box clickable" onclick="openOutcomePanel('human')" title="Click to see all"><div class="counter-n purple" id="cnt-hr">0</div><div class="counter-l">Examiner Review</div></div>
+        <div class="counter-box clickable" onclick="openOutcomePanel('clinical')" title="Click to see all — subset of Denied"><div class="counter-n" id="cnt-clin" style="color:#0e9f86">0</div><div class="counter-l">Clinical Review</div></div>
+        <div class="counter-box clickable" onclick="openOutcomePanel('highdollar')" title="Click to see all — institutional ≥ $10k"><div class="counter-n" id="cnt-highdollar" style="color:#0f172a">0</div><div class="counter-l">High-Dollar Review</div></div>
+        <div class="counter-box clickable" onclick="openOutcomePanel('missingsop')" title="No SOP on file — routed to SOP Governance"><div class="counter-n" id="cnt-missingsop" style="color:#c2410c">0</div><div class="counter-l">Missing SOP</div></div>
+      </div>
     </div>
     <div id="claims-lines-summary" style="display:none;margin-top:10px;font-size:.78rem;color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px"></div>
+    <div id="whatif-launch" style="display:none;margin-top:10px;background:#faf5ff;border:1px solid #c4b5fd;border-radius:8px;padding:8px 14px"></div>
   </div>
 
   <!-- Progress bar -->
@@ -923,7 +931,7 @@ const DB_ROW_FNS = [
 ];
 
 let openDb = null;
-let _dbRows = [], _dbN = null, _dbTotal = 0;
+let _dbRows = [], _dbN = null, _dbTotal = 0, _dbSearchTimer = null;
 
 function _dbTableHtml(rows){
   const cols = DB_META[_dbN].cols, fn = DB_ROW_FNS[_dbN];
@@ -935,14 +943,23 @@ async function dbSearch(val){
   const q = (val||'').trim().toLowerCase();
   const out = document.getElementById('db-table-holder');
   const cnt = document.getElementById('db-search-count');
-  if (!q){ out.innerHTML = _dbTableHtml(_dbRows); if(cnt) cnt.textContent = `Showing ${Math.min(_dbRows.length,200).toLocaleString()} of ${_dbTotal.toLocaleString()}`; return; }
-  let matches = _dbRows.filter(r => JSON.stringify(r).toLowerCase().includes(q));
-  // Fee Schedule: if the code isn't in the loaded page, do an exact CPT lookup against the DB
-  if (!matches.length && _dbN === 3 && /^[0-9a-z]{4,5}$/i.test(q)) {
-    try { const rec = await fetch(`${API}/api/db/fee-schedule/${q.toUpperCase()}`).then(r=>r.ok?r.json():null); if (rec && rec.cpt_code) matches = [rec]; } catch(e){}
+  // DBs 0–5 have a full server-side source; Pricing (6) stays client-side.
+  if (_dbN >= 0 && _dbN <= 5){
+    clearTimeout(_dbSearchTimer);
+    _dbSearchTimer = setTimeout(async ()=>{
+      try{
+        const d = await fetch(`${API}/api/db-search/${_dbN}?q=${encodeURIComponent(q)}`).then(r=>r.json());
+        out.innerHTML = _dbTableHtml(d.records||[]);
+        if (cnt) cnt.textContent = q
+          ? `${(d.total||0).toLocaleString()} match${d.total===1?'':'es'} for "${val}"${d.total>200?' (showing first 200)':''}`
+          : `Showing ${Math.min(d.total||0,200).toLocaleString()} of ${(d.total||0).toLocaleString()}`;
+      }catch(e){}
+    }, 180);
+    return;
   }
+  const matches = q ? _dbRows.filter(r => JSON.stringify(r).toLowerCase().includes(q)) : _dbRows;
   out.innerHTML = _dbTableHtml(matches);
-  if (cnt) cnt.textContent = matches.length ? `${matches.length} match${matches.length>1?'es':''} for "${val}"` : `No match for "${val}"`;
+  if (cnt) cnt.textContent = q ? `${matches.length} match${matches.length===1?'':'es'} for "${val}"` : `Showing ${Math.min(matches.length,200)} of ${matches.length}`;
 }
 async function toggleDbExpand(n) {
   const wrap = document.getElementById('db-expand-wrap');
@@ -1051,6 +1068,7 @@ async function ingestRawPends() {
         + `<strong>${(stats.pended_lines||0).toLocaleString()}</strong> pended lines `
         + `<span style="color:#64748b">— each claim is a header + service lines; the agent works the pended lines (many claims have 2–3 pended lines).</span>`;
     }
+    loadWhatIfLaunch();
   } catch(e) { console.error(e); }
 
   for (let i = 0; i <= 6; i++) {
@@ -1228,6 +1246,12 @@ function _sopGovHtml(){
   return `<div style="background:#fff7ed;border:1px solid #fdba74;border-radius:10px;padding:12px 14px;margin-bottom:12px">
     <div style="font-size:.82rem;font-weight:800;color:#c2410c;margin-bottom:4px">🗂 SOP Governance — Needs-SOP landing zone</div>
     <div style="font-size:.72rem;color:#7c2d12;margin-bottom:10px">These pends hit an edit with <strong>no SOP on file</strong>, so the agent held them (it will not guess). Governance drops the SOP into the landing zone; the agent then scans it, generates the rule, and <strong>re-resolves these claims live</strong>.</div>
+    <div style="font-size:.64rem;font-weight:800;color:#c2410c;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Step 1 — review the SOP</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+      <button onclick="viewSop('E-TELE-001')" style="background:#fff;border:1px solid #7c3aed;color:#6d28d9;font-weight:700;font-size:.7rem;padding:6px 11px;border-radius:7px;cursor:pointer">👁 View SOP — Telehealth</button>
+      <button onclick="viewSop('E-SOS-001')" style="background:#fff;border:1px solid #7c3aed;color:#6d28d9;font-weight:700;font-size:.7rem;padding:6px 11px;border-radius:7px;cursor:pointer">👁 View SOP — Site-of-Service</button>
+    </div>
+    <div style="font-size:.64rem;font-weight:800;color:#c2410c;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Step 2 — drop into the landing zone &amp; let the agent ingest</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
       <button onclick="sopDrop('E-TELE-001')" style="background:#fff;border:1px solid #c2410c;color:#c2410c;font-weight:700;font-size:.7rem;padding:6px 11px;border-radius:7px;cursor:pointer">⬇ Drop SOP — Telehealth</button>
       <button onclick="sopDrop('E-SOS-001')" style="background:#fff;border:1px solid #c2410c;color:#c2410c;font-weight:700;font-size:.7rem;padding:6px 11px;border-radius:7px;cursor:pointer">⬇ Drop SOP — Site-of-Service</button>
@@ -1236,6 +1260,38 @@ function _sopGovHtml(){
     </div>
     <div id="sopgov-status" style="font-size:.7rem;color:#334155;margin-top:8px;min-height:16px"></div>
   </div>`;
+}
+async function viewSop(edit){
+  const modal=document.getElementById('outcome-modal'), body=document.getElementById('outcome-modal-body');
+  body.innerHTML=`<div style="padding:24px;color:#64748b">Loading SOP…</div>`; modal.style.display='flex';
+  try{
+    const d=await fetch(`${API}/api/sop-inbox/preview/${edit}`).then(r=>r.json());
+    if(d.error){ body.innerHTML=`<div style="padding:24px;color:#dc2626">${d.error}</div>`; return; }
+    const steps=(d.steps||[]).map((s,i)=>`<li style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #e2e8f0;font-size:.76rem;color:#334155"><span style="background:#ede9fe;color:#6d28d9;border-radius:4px;padding:1px 7px;font-size:.64rem;font-weight:700;flex-shrink:0">${i+1}</span>${s}</li>`).join('');
+    const refs=(d.references||[]).map(r=>`<li style="font-size:.72rem;color:#334155;margin-bottom:2px">${r}</li>`).join('');
+    body.innerHTML=`<div style="position:relative;padding:22px 26px">
+      <button onclick="document.getElementById('outcome-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:.64rem;font-weight:700;letter-spacing:.5px;color:#6d28d9;background:#ede9fe;padding:2px 8px;border-radius:5px">📚 STANDARD OPERATING PROCEDURE</span>
+        <span style="background:#fef3c7;color:#b45309;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:6px">NOT YET INGESTED — preview</span>
+      </div>
+      <div style="font-size:1.12rem;font-weight:800;color:#0f172a;margin-top:8px">${d.sop_ref} — ${d.title}</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:.68rem;color:#64748b;margin-top:6px">
+        <span>Edit: <strong style="color:#334155">${d.edit_code}</strong></span>
+        <span>Category: <strong style="color:#334155">${d.category}</strong></span>
+        <span>Decision rule → <strong style="color:#334155">${(d.decision_outcome||'').replace('_',' ')}</strong>${d.carc?` · ${d.carc}/${d.rarc||''}`:''}</span>
+      </div>
+      <div style="margin-top:14px;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b">Purpose</div>
+      <div style="font-size:.78rem;color:#334155;line-height:1.5;margin-top:3px">${d.purpose||''}</div>
+      <div style="margin-top:12px;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b">Decision rule</div>
+      <div style="font-size:.78rem;color:#334155;line-height:1.5;margin-top:3px;background:#faf5ff;border-left:3px solid #7c3aed;border-radius:0 6px 6px 0;padding:8px 11px">${d.decision_rule||''}</div>
+      <div style="margin-top:12px;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b">Procedure</div>
+      <ol style="list-style:none;padding:0;margin:4px 0 0">${steps}</ol>
+      <div style="margin-top:12px;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b">References</div>
+      <ul style="margin:4px 0 0;padding-left:18px">${refs}</ul>
+      <div style="margin-top:14px;font-size:.72rem;color:#64748b">Once dropped into the landing zone and ingested, the agent generates this rule and re-resolves the held claims.</div>
+    </div>`;
+  }catch(e){ body.innerHTML='<div style="padding:24px;color:#dc2626">Unavailable.</div>'; }
 }
 async function sopDrop(edit){
   const st=document.getElementById('sopgov-status');
@@ -1864,6 +1920,128 @@ function resetAct1() {
 
 // ── Claim Detail Panel ────────────────────────────────────────────────────────
 
+// ── What-if: manually enter a source record → agent re-adjudicates (two steps) ────
+function _addDays(d, n){ const x=new Date(d); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10); }
+function _whatIfFields(r){
+  const dos = r.dos || '2026-03-14';
+  if(r.edit_code==='E-AUTH-001') return {system:'Authorization / UM system', title:'Enter a new authorization',
+    fields:[['auth_number','Auth #','text', 'PA-2026-'+String(Math.abs((r.icn||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0))%900000+100000)],
+            ['units','Units','number', r.units_billed||1],
+            ['dos_start','Valid from','date', dos],['dos_end','Valid to','date', _addDays(dos,30)]]};
+  if(r.edit_code==='E-AUTH-004') return {system:'Authorization / UM system', title:'Update authorized units',
+    fields:[['units','Units remaining','number', r.units_billed||1]]};
+  if(r.edit_code==='E-TF-001'||r.edit_code==='E-TF-002') return {system:'Claim receipt', title:'Correct the received date',
+    fields:[['received_date','Received date','date', _addDays(dos,30)]]};
+  return null;
+}
+function _whatIfHtml(r){
+  const f = _whatIfFields(r); if(!f) return '';
+  const inputs = f.fields.map(([k,lab,typ,def])=>`
+    <label style="display:flex;flex-direction:column;font-size:.66rem;color:#64748b;font-weight:600">${lab}
+      <input id="wf-${k}" type="${typ}" value="${def}" style="margin-top:2px;padding:5px 8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.74rem"></label>`).join('');
+  return `<div class="cp-box" style="margin-bottom:14px;border:1px solid #c4b5fd;background:#faf5ff">
+    <h4 style="color:#6d28d9">🔧 What-if — enter the source record, agent re-adjudicates</h4>
+    <div style="font-size:.74rem;color:#334155;margin-bottom:8px">This decision hinged on the <strong>${f.system}</strong>. Enter the record as the team would, save it to the source system, then have the agent re-adjudicate against the same SOP.</div>
+    <div style="font-size:.66rem;font-weight:800;color:#6d28d9;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">Step 1 — ${f.title} (${f.system})</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px">${inputs}
+      <button onclick="wfSave('${r.icn}')" style="background:#6d28d9;border:1px solid #6d28d9;color:#fff;font-weight:700;font-size:.72rem;padding:7px 13px;border-radius:7px;cursor:pointer">💾 Save to ${f.system.split(' ')[0]} system</button>
+    </div>
+    <div style="font-size:.66rem;font-weight:800;color:#6d28d9;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">Step 2 — agent re-adjudicates</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <button id="wf-resolve-btn" onclick="wfResolve('${r.icn}')" style="background:#166534;border:1px solid #166534;color:#fff;font-weight:700;font-size:.72rem;padding:7px 13px;border-radius:7px;cursor:pointer">▶ Agent: re-adjudicate</button>
+      <button onclick="wfReset('${r.icn}')" style="background:#fff;border:1px solid #94a3b8;color:#334155;font-weight:700;font-size:.72rem;padding:7px 13px;border-radius:7px;cursor:pointer">↺ Reset</button>
+    </div>
+    <div id="whatif-status" style="font-size:.74rem;color:#334155;margin-top:8px;min-height:16px"></div>
+  </div>`;
+}
+async function refreshDbCounts(){
+  try{ const s=await fetch(`${API}/api/stats`).then(r=>r.json());
+    const set=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
+    set('dbc-0-count',(s.total_providers||0).toLocaleString()+' records');
+    set('dbc-1-count',(s.total_authorizations||0).toLocaleString()+' records');
+    set('dbc-2-count',(s.total_cob_records||0).toLocaleString()+' records');
+    set('dbc-3-count',(s.fee_schedule_codes||0).toLocaleString()+' CPT codes');
+    set('dbc-4-count',(s.total_history_claims||0).toLocaleString()+' claims');
+    set('dbc-5-count',(s.total_members||0).toLocaleString()+' members');
+  }catch(e){}
+}
+let _wfPrior = null;
+async function wfSave(icn){
+  const st=document.getElementById('whatif-status');
+  const fields=['auth_number','units','dos_start','dos_end','received_date'];
+  const params=new URLSearchParams({icn});
+  fields.forEach(k=>{const el=document.getElementById('wf-'+k); if(el && el.value!=='') params.append(k, el.value);});
+  if(st) st.textContent='Saving the record into the source system…';
+  try{
+    const d=await fetch(`${API}/api/source-edit/save`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:params}).then(r=>r.json());
+    if(d.error){ if(st) st.textContent=d.error; return; }
+    _wfPrior = d.prior_outcome;
+    if(st) st.innerHTML=`📄 Saved to <strong>${d.system}</strong>: ${d.saved}.<br>Prior agent decision: <strong>${d.prior_outcome}</strong>. Now click <strong>Agent: re-adjudicate</strong>.`;
+    const btn=document.getElementById('wf-resolve-btn'); if(btn){ btn.disabled=false; btn.style.opacity='1'; }
+    refreshDbCounts();   // the new record shows up in the source-system tile count
+  }catch(e){ if(st) st.textContent='Save failed.'; }
+}
+async function wfResolve(icn){
+  const st=document.getElementById('whatif-status');
+  if(!_wfPrior){ if(st) st.innerHTML='⚠ Enter the record and click <strong>Save to … system</strong> first (Step 1), then re-adjudicate.'; return; }
+  if(st) st.textContent='Agent re-adjudicating against the updated source data…';
+  try{
+    const d=await fetch(`${API}/api/source-edit/resolve?icn=${icn}`,{method:'POST'}).then(r=>r.json());
+    if(d.error){ if(st) st.textContent=d.error; return; }
+    const flip = _wfPrior && _wfPrior!==d.after;
+    if(st) st.innerHTML=`✅ Agent re-adjudicated: <strong>${_wfPrior||'—'}</strong> → <strong style="color:${flip?'#15803d':'#334155'}">${d.after}</strong>${d.payment>0?` · pays $${d.payment.toFixed(2)}`:''} · ${d.sop_ref||''} <span style="color:#64748b">— refreshing the claim…</span>`;
+    if(processed) refreshOutcomeCounters();
+    const prior=_wfPrior; _wfPrior=null;
+    setTimeout(()=>{ openClaimByIcn(icn).catch(()=>{ if(st) st.innerHTML=`✅ Re-adjudicated: <strong>${prior}</strong> → <strong>${d.after}</strong>.`; }); }, 1400);
+  }catch(e){ if(st) st.textContent='Re-adjudicate failed — please try again.'; }
+}
+async function wfReset(icn){
+  const st=document.getElementById('whatif-status');
+  try{ await fetch(`${API}/api/source-edit/reset?icn=${icn}`,{method:'POST'});
+    if(processed) refreshOutcomeCounters();
+    refreshDbCounts();
+    if(st) st.textContent='↺ Reset — source record restored to its original state.';
+    setTimeout(()=>openClaimByIcn(icn), 800);
+  }catch(e){ if(st) st.textContent='Reset failed.'; }
+}
+async function loadWhatIfLaunch(){
+  const el=document.getElementById('whatif-launch'); if(!el) return;
+  try{
+    const d=await fetch(`${API}/api/whatif-examples`).then(r=>r.json());
+    const btns=(d.examples||[]).map(e=>`<button onclick="openClaimByIcn('${e.icn}')" style="background:#fff;border:1px solid #6d28d9;color:#6d28d9;font-weight:700;font-size:.72rem;padding:6px 11px;border-radius:7px;cursor:pointer;margin-right:6px">🔧 ${e.label} — ${e.icn}</button>`).join('');
+    el.style.display='block';
+    el.innerHTML=`<span style="font-size:.72rem;font-weight:800;color:#6d28d9;margin-right:8px">What-if examples (open upfront):</span>${btns}`;
+  }catch(e){}
+}
+function _dbKeyFromLabel(label){
+  const l=(label||'').toLowerCase();
+  if(l.includes('auth')) return 'auth';
+  if(l.includes('provider')||l.includes('npi')) return 'provider';
+  if(l.includes('elig')||l.includes('enroll')) return 'eligibility';
+  if(l.includes('cob')||l.includes('coordination')) return 'cob';
+  if(l.includes('fee')||l.includes('pricing')) return 'fee';
+  if(l.includes('history')) return 'history';
+  return null;
+}
+async function openClaimDb(icn, label){
+  const key=_dbKeyFromLabel(label);
+  const modal=document.getElementById('outcome-modal'), body=document.getElementById('outcome-modal-body');
+  if(!key){ return; }
+  body.innerHTML=`<div style="padding:24px;color:#64748b">Reading ${label} for ${icn}…</div>`; modal.style.display='flex';
+  try{
+    const d=await fetch(`${API}/api/claim-db/${icn}/${key}`).then(r=>r.json());
+    const recs=d.records||[];
+    const rowsHtml = recs.length ? recs.map(rec=>{
+      const cells=Object.entries(rec).map(([k,v])=>`<tr style="border-bottom:1px solid #e2e8f0"><td style="padding:5px 10px;color:#64748b;font-size:.7rem;white-space:nowrap">${k}</td><td style="padding:5px 10px;color:#0f172a;font-size:.72rem;font-family:monospace">${v==null?'—':(typeof v==='object'?JSON.stringify(v):v)}</td></tr>`).join('');
+      return `<table style="width:100%;border-collapse:collapse;margin-bottom:12px;border:1px solid #cbd5e1;border-radius:8px">${cells}</table>`;
+    }).join('') : `<div style="padding:14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#b91c1c;font-size:.8rem">${d.note||'No record found.'}</div>`;
+    body.innerHTML=`<div style="position:relative;padding:20px 24px">
+      <button onclick="document.getElementById('outcome-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>
+      <div style="font-size:1.05rem;font-weight:800;color:#1d4ed8;margin-bottom:2px">${d.db} — record for ${icn}</div>
+      <div style="font-size:.72rem;color:#64748b;margin-bottom:12px">The exact record the agent read (${d.key}). ${recs.length} record(s).</div>
+      ${rowsHtml}</div>`;
+  }catch(e){ body.innerHTML='<div style="padding:24px;color:#dc2626">Unavailable.</div>'; }
+}
 async function openClaimByIcn(icn){
   // Open a claim from anywhere (e.g., the Observability trace) so the audience can verify
   // every figure — CARC/RARC, allowed, SOP — against the actual claim data.
@@ -1875,6 +2053,7 @@ async function openClaimByIcn(icn){
   } catch(e){ console.error(e); }
 }
 async function openClaimPanel(r) {
+  _wfPrior = null;   // require a fresh Save before re-adjudicate for each claim opened
   const panel = document.getElementById('claim-panel');
   const title = document.getElementById('cp-title');
   const body  = document.getElementById('cp-body');
@@ -1902,7 +2081,7 @@ async function openClaimPanel(r) {
   ).join('');
 
   const dbsHtml = (r.dbs_queried || []).map(db =>
-    `<span class="db-query-pill hit">✓ ${db}</span>`
+    `<span class="db-query-pill hit" onclick="openClaimDb('${r.icn}','${db.replace(/'/g,'')}')" title="Click to see the record the agent read">✓ ${db} 🔍</span>`
   ).join('');
 
   const hrBlock = r.human_review ? `
@@ -1947,6 +2126,7 @@ async function openClaimPanel(r) {
       <div style="margin-top:6px">${dbsHtml}</div>
     </div>
     ${hrBlock}
+    ${_whatIfHtml(r)}
     ${r.outcome==='request_info' ? `<div style="margin:4px 0 10px"><button class="proc-btn" style="padding:8px 16px;font-size:.82rem;background:#2563eb" onclick="openAdrLetter(_adrClaimCtx)">📄 ADR Letter — Placed in Queue</button></div>` : ''}
     <div id="cp-lines" style="color:#64748b;font-size:.8rem;padding:6px 0">Loading service lines…</div>
   `;

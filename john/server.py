@@ -701,6 +701,25 @@ def api_sop(edit_code):
 
 # ── SOP Resolution Logic ─────────────────────────────────────────────────────
 
+# Data-driven checks used by outcome logic — so editing a source record re-flips the decision.
+def _has_valid_auth(c):
+    a = authorizations.get(c.get("auth_number")) if c.get("auth_number") else None
+    return bool(a and str(a.get("status", "")).lower() == "active"
+                and (a.get("units_remaining") or 0) > 0
+                and (not a.get("cpt_code") or a.get("cpt_code") == c.get("cpt_code")))
+
+def _auth_units_ok(c):
+    a = authorizations.get(c.get("auth_number")) if c.get("auth_number") else None
+    return bool(a and (a.get("units_remaining") or 0) >= (c.get("units_billed") or 1))
+
+def _filed_timely(c):
+    from datetime import datetime
+    try:
+        return (datetime.strptime(c.get("received_date"), "%Y-%m-%d")
+                - datetime.strptime(c.get("dos"), "%Y-%m-%d")).days <= FILING_LIMIT_DAYS
+    except Exception:
+        return True
+
 RESOLUTION_RULES = {
     # Authorization
     "deny_or_approve_if_exempt": {
@@ -710,7 +729,7 @@ RESOLUTION_RULES = {
             "If exempt: approve at fee schedule rate",
             "If not exempt and no auth: deny with CO-197 / N517",
         ],
-        "outcome_logic": lambda c: "approve" if c["allowed_amount"] < 150 else "deny",
+        "outcome_logic": lambda c: "approve" if (c["allowed_amount"] < 150 or _has_valid_auth(c)) else "deny",
         "sop_ref": "SOP-AUTH-001 §3.2",
     },
     "deny_unless_retro": {
@@ -740,7 +759,7 @@ RESOLUTION_RULES = {
             "Approve up to authorized unit ceiling",
             "Deny excess units with CO-119 / N362",
         ],
-        "outcome_logic": lambda c: "partial_pay",
+        "outcome_logic": lambda c: "approve" if _auth_units_ok(c) else "partial_pay",
         "sop_ref": "SOP-AUTH-004 §5.1",
     },
     "verify_or_deny": {
@@ -966,7 +985,7 @@ RESOLUTION_RULES = {
             "Verify no exception applies (payer error, coordination of benefits delay)",
             "Deny CO-29 / N35 if beyond filing limit",
         ],
-        "outcome_logic": lambda c: "deny",
+        "outcome_logic": lambda c: "approve" if _filed_timely(c) else "deny",
         "sop_ref": "SOP-TF-001 §2.2",
     },
     # Medical Necessity
@@ -1784,6 +1803,50 @@ def _seed_pos_differential():
 
 _seed_pos_differential()
 
+def _seed_timely_filing_late():
+    """Make timely-filing pends genuinely late (received > 365 days after DOS) so they deny —
+    the 'correct the received date' what-if then brings them within the limit and re-approves."""
+    from datetime import datetime, timedelta
+    for c in pended_claims:
+        if c.get("edit_code") in ("E-TF-001", "E-TF-002"):
+            try:
+                dos = datetime.strptime(c.get("dos"), "%Y-%m-%d")
+                c["received_date"] = (dos + timedelta(days=430)).strftime("%Y-%m-%d")
+            except Exception:
+                pass
+
+_seed_timely_filing_late()
+
+def _deconcentrate_auths(cap=2):
+    """Spread the Authorization DB so no single member shows a pile of auths (looked spammy,
+    e.g., 6 for one member). Only reassign auths NOT tied to a claim; keep up to `cap` per member."""
+    import random as _r2
+    rnd = _r2.Random(7)
+    referenced = {c.get("auth_number") for c in pended_claims if c.get("auth_number")}
+    for c in line_item_claims:
+        for ln in c.get("lines", []):
+            if ln.get("auth_number"):
+                referenced.add(ln["auth_number"])
+    # spare members to reassign onto (from eligibility), name carried along
+    spares = [(mid, v.get("name")) for mid, v in eligibility.items()]
+    rnd.shuffle(spares)
+    si = 0
+    per_member = {}
+    for an, a in authorizations.items():
+        per_member.setdefault(a.get("member_id"), []).append(an)
+    for mid, ans in per_member.items():
+        if len(ans) <= cap:
+            continue
+        excess = [an for an in ans[cap:] if an not in referenced]
+        for an in excess:
+            if si >= len(spares):
+                break
+            smid, sname = spares[si]; si += 1
+            authorizations[an]["member_id"] = smid
+            authorizations[an]["member_name"] = sname
+
+_deconcentrate_auths()
+
 def _pended_line_from(claim):
     """Build a pended service-line dict from a pend record (primary or bundled secondary)."""
     return {
@@ -2140,7 +2203,7 @@ def api_outcome(key):
     target = _OUTCOME_KEY.get(key)
     if not target:
         return jsonify({"error": "unknown outcome"}), 404
-    matches, total = [], 0
+    matched = []
     for c in pended_claims:
         res = _resolve_pended(c)
         oc = res["outcome"]
@@ -2153,16 +2216,20 @@ def api_outcome(key):
             hit = oc in ("human_review", "escalate") and not _is_high_dollar(c)
         else:
             hit = oc == target
-        if not hit:
-            continue
-        total += 1
-        if len(matches) < limit:
-            matches.append({
-                "icn": c["icn"], "member_name": c["member_name"], "provider_name": c["provider_name"],
-                "cpt_code": c["cpt_code"], "billed_amount": c["billed_amount"],
-                "edit_code": c["edit_code"], "edit_category": c["edit_category"],
-                "edit_description": c["edit_description"], **res,
-            })
+        if hit:
+            matched.append(c)
+    total = len(matched)
+    # Bring the what-if-editable examples (auth missing, units, timely filing) to the FRONT
+    matched.sort(key=lambda c: 0 if c.get("edit_code") in WHATIF_EDITS else 1)
+    matches = []
+    for c in matched[:limit]:
+        res = _resolve_pended(c)
+        matches.append({
+            "icn": c["icn"], "member_name": c["member_name"], "provider_name": c["provider_name"],
+            "cpt_code": c["cpt_code"], "billed_amount": c["billed_amount"],
+            "edit_code": c["edit_code"], "edit_category": c["edit_category"],
+            "edit_description": c["edit_description"], **res,
+        })
     return jsonify({"key": key, "results": matches, "shown": len(matches), "total": total})
 
 @app.route("/api/line-claims")
@@ -3007,6 +3074,18 @@ def api_sop_inbox_status():
     return jsonify({"library": library, "inbox": inbox,
                     "no_sop_edits": sorted(NO_SOP_EDITS), "missing_sop_claims": missing})
 
+@app.route("/api/sop-inbox/preview/<edit>")
+def api_sop_inbox_preview(edit):
+    """Return the SOP document (so it can be read before the agent ingests it)."""
+    for p in SOP_LIBRARY.glob("*.json"):
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if d.get("edit_code") == edit:
+            return jsonify(d)
+    return jsonify({"error": f"no SOP in library for {edit}"}), 404
+
 @app.route("/api/sop-inbox/drop", methods=["POST", "GET"])
 def api_sop_inbox_drop():
     """Governance drops a SOP into the landing zone (copies the real file from the library)."""
@@ -3063,6 +3142,185 @@ def api_sop_inbox_reset():
     _reset_sop_caches()
     missing = sum(1 for c in pended_claims if c.get("edit_code") in NO_SOP_EDITS)
     return jsonify({"reset": True, "missing_sop_claims": missing})
+
+
+# ── What-if: manually enter a source record → agent re-adjudicates (two steps) ─────
+WHATIF_EDITS = {
+    "E-AUTH-001": {"system": "Authorization / UM system"},
+    "E-AUTH-004": {"system": "Authorization / UM system"},
+    "E-TF-001":   {"system": "Claim receipt"},
+    "E-TF-002":   {"system": "Claim receipt"},
+}
+
+def _source_save(c, ec, vals):
+    """Write the manually-entered record into the source system (real mutation)."""
+    def _seq():
+        return f"PA-2026-{abs(hash(c['icn'])) % 900000 + 100000}"
+    if ec == "E-AUTH-001":
+        an = (vals.get("auth_number") or "").strip() or _seq()
+        units = int(float(vals.get("units") or c.get("units_billed") or 1))
+        authorizations[an] = {
+            "auth_number": an, "member_id": c.get("member_id"), "member_name": c.get("member_name"),
+            "provider_npi": c.get("npi_rendering"), "cpt_code": c.get("cpt_code"),
+            "diagnosis_code": c.get("icd10_principal"),
+            "dos_start": vals.get("dos_start") or c.get("dos"), "dos_end": vals.get("dos_end") or c.get("dos"),
+            "units_authorized": units, "units_used": 0, "units_remaining": units, "status": "active",
+            "requesting_provider": c.get("npi_rendering"), "clinical_notes": "Entered by the auth team (UM system)"}
+        c["auth_number"] = an
+        return {"summary": f"Authorization {an} saved — active · {units} unit(s) · CPT {c.get('cpt_code')} · valid {authorizations[an]['dos_start']}→{authorizations[an]['dos_end']}",
+                "record": authorizations[an]}
+    if ec == "E-AUTH-004":
+        a = authorizations.get(c.get("auth_number"))
+        if not a:
+            an = _seq()
+            a = authorizations[an] = {"auth_number": an, "member_id": c.get("member_id"),
+                "provider_npi": c.get("npi_rendering"), "cpt_code": c.get("cpt_code"),
+                "dos_start": c.get("dos"), "dos_end": c.get("dos"), "units_authorized": 0,
+                "units_used": 0, "units_remaining": 0, "status": "active"}
+            c["auth_number"] = an
+        units = int(float(vals.get("units") or c.get("units_billed") or 1))
+        a["units_remaining"] = units
+        a["units_authorized"] = max(a.get("units_authorized", 0), units)
+        a["units_used"] = max(a["units_authorized"] - units, 0)
+        return {"summary": f"Authorization {c.get('auth_number')} updated — units remaining set to {units}",
+                "record": a}
+    if ec in ("E-TF-001", "E-TF-002"):
+        rd = (vals.get("received_date") or "").strip()
+        if not rd:
+            return None
+        c["received_date"] = rd
+        return {"summary": f"Received date updated to {rd} (DOS {c.get('dos')})",
+                "record": {"received_date": rd, "dos": c.get("dos")}}
+    return None
+
+def _source_reset(c, ec):
+    if ec == "E-AUTH-001":
+        an = c.get("auth_number")
+        # delete the what-if-created auth so it doesn't linger in the Auth DB
+        if an and str(an).startswith(("PA-2026-", "PA-WHATIF", "PA-TEST")):
+            authorizations.pop(an, None)
+        c["auth_number"] = None
+    elif ec == "E-AUTH-004":
+        a = authorizations.get(c.get("auth_number"))
+        if a:
+            a["units_remaining"] = 0; a["units_used"] = a.get("units_authorized", 0)
+    elif ec in ("E-TF-001", "E-TF-002"):
+        from datetime import datetime, timedelta
+        try:
+            c["received_date"] = (datetime.strptime(c["dos"], "%Y-%m-%d") + timedelta(days=430)).strftime("%Y-%m-%d")
+        except Exception:
+            pass
+
+_DB_SOURCES = {
+    0: lambda: list(providers.values()),
+    1: lambda: list(authorizations.values()),
+    2: lambda: list(cob.values()),
+    3: lambda: list(fee_schedule.values()),
+    4: lambda: [dict(r, member_id=m) for m, rows in claims_history.items() for r in rows],
+    5: lambda: list(eligibility.values()),
+}
+
+@app.route("/api/db-search/<int:n>")
+def api_db_search(n):
+    """Full server-side search over an entire source system (not just the first page),
+    so any record — auth #, member, NPI, CPT — is findable in the DB tile."""
+    src = _DB_SOURCES.get(n)
+    if not src:
+        return jsonify({"records": [], "total": 0})
+    q = request.args.get("q", "").strip().lower()
+    rows = src()
+    if q:
+        rows = [r for r in rows if q in json.dumps(r, default=str).lower()]
+    return jsonify({"records": rows[:200], "total": len(rows), "query": q})
+
+@app.route("/api/whatif-examples")
+def api_whatif_examples():
+    """Ready-to-open example claims for the what-if beat, so they can be shown upfront
+    (before processing the whole batch)."""
+    want = [("E-AUTH-001", "Auth missing"), ("E-AUTH-004", "Units exhausted"), ("E-TF-001", "Timely filing")]
+    out = []
+    for ec, label in want:
+        c = next((x for x in pended_claims if x.get("edit_code") == ec and not x.get("is_featured")), None)
+        if c:
+            out.append({"edit_code": ec, "label": label, "icn": c["icn"],
+                        "member": c.get("member_name"), "cpt": c.get("cpt_code")})
+    return jsonify({"examples": out})
+
+@app.route("/api/claim-db/<icn>/<dbkey>")
+def api_claim_db(icn, dbkey):
+    """Return the exact source record(s) the agent queried for THIS claim, so a reviewer can
+    click a 'Database Queries' pill and verify the data (incl. an auth just entered via what-if)."""
+    c = claims_index.get(icn)
+    if not c:
+        return jsonify({"error": "ICN not found"}), 404
+    mem, npi, cpt, dos = c.get("member_id"), str(c.get("npi_rendering") or ""), c.get("cpt_code"), c.get("dos")
+    if dbkey == "auth":
+        an = c.get("auth_number"); rec = authorizations.get(an) if an else None
+        return jsonify({"db": "Authorization DB", "key": f"auth {an}" if an else "member/CPT",
+                        "records": [rec] if rec else [],
+                        "note": None if rec else "No active authorization on file for this member/CPT."})
+    if dbkey == "provider":
+        rec = providers.get(npi)
+        return jsonify({"db": "Provider DB", "key": f"NPI {npi}", "records": [rec] if rec else [],
+                        "note": None if rec else "Rendering NPI not found in the provider directory."})
+    if dbkey == "eligibility":
+        rec = (eligibility_for(mem, dos) or eligibility.get(mem))
+        return jsonify({"db": "Eligibility DB", "key": f"member {mem}", "records": [rec] if rec else [],
+                        "note": None if rec else "No eligibility record for this member/DOS."})
+    if dbkey == "cob":
+        rec = cob.get(mem)
+        return jsonify({"db": "COB DB", "key": f"member {mem}", "records": [rec] if rec else [],
+                        "note": None if rec else "No other-coverage (COB) record on file for this member."})
+    if dbkey == "fee":
+        rec = fee_schedule.get(cpt)
+        return jsonify({"db": "Fee Schedule", "key": f"CPT {cpt}", "records": [rec] if rec else [],
+                        "note": None if rec else f"CPT {cpt} not found in the fee schedule."})
+    if dbkey == "history":
+        recs = claims_history.get(mem, []) or []
+        return jsonify({"db": "Claims History", "key": f"member {mem}", "records": recs,
+                        "note": None if recs else "No prior claims history for this member."})
+    return jsonify({"error": "unknown db"}), 404
+
+@app.route("/api/source-edit/save", methods=["POST", "GET"])
+def api_source_edit_save():
+    """Step 1 — the user manually enters the record into the source system."""
+    icn = request.values.get("icn", "")
+    c = claims_index.get(icn)
+    if not c:
+        return jsonify({"error": "ICN not found"}), 404
+    ec = c.get("edit_code")
+    if ec not in WHATIF_EDITS:
+        return jsonify({"error": f"no what-if available for {ec}"}), 400
+    prior = _resolve_pended(c)["outcome_label"]
+    saved = _source_save(c, ec, request.values)
+    if not saved:
+        return jsonify({"error": "missing values"}), 400
+    _reset_sop_caches()
+    return jsonify({"icn": icn, "edit_code": ec, "system": WHATIF_EDITS[ec]["system"],
+                    "prior_outcome": prior, "saved": saved["summary"], "record": saved["record"]})
+
+@app.route("/api/source-edit/resolve", methods=["POST", "GET"])
+def api_source_edit_resolve():
+    """Step 2 — the agent re-adjudicates the claim against the now-updated source data."""
+    icn = request.values.get("icn", "")
+    c = claims_index.get(icn)
+    if not c:
+        return jsonify({"error": "ICN not found"}), 404
+    _reset_sop_caches()
+    r = _resolve_pended(c)
+    return jsonify({"icn": icn, "after": r["outcome_label"], "outcome": r["outcome"],
+                    "payment": r["payment_amount"], "sop_ref": r.get("sop_ref")})
+
+@app.route("/api/source-edit/reset", methods=["POST", "GET"])
+def api_source_edit_reset():
+    icn = request.values.get("icn", "")
+    c = claims_index.get(icn)
+    if not c:
+        return jsonify({"error": "ICN not found"}), 404
+    _source_reset(c, c.get("edit_code"))
+    _reset_sop_caches()
+    r = _resolve_pended(c)
+    return jsonify({"icn": icn, "after": r["outcome_label"]})
 
 
 if __name__ == "__main__":
