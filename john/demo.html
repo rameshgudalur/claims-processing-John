@@ -350,6 +350,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <button class="nav-back" onclick="showView('trace-view');initTrace()" style="background:#dbeafe;border-color:#1d4ed8;color:#2563eb">▶ Single Claim Trace</button>
     <button class="nav-back" style="margin-left:8px;background:#fffbeb;border-color:#b45309;color:#b45309" onclick="openPendCatalog()">📖 Pend Code Catalog</button>
     <button class="nav-back" style="margin-left:8px;background:#dcfce7;border-color:#166534;color:#15803d" onclick="showView('observe-view');startObs()">📊 Observability</button>
+    <button class="nav-back" style="margin-left:8px;background:#eef2ff;border-color:#4f46e5;color:#4338ca" onclick="showView('ml-prevent-view');loadMlPrevention()">🧠 Pend Prevention (ML)</button>
+    <button class="nav-back" style="margin-left:8px;background:#ecfeff;border-color:#0e7490;color:#0e7490" onclick="showView('ml-confidence-view');loadMlConfidence()">🎯 Decision Confidence (ML)</button>
     <span id="hr-badge" style="display:none"></span>
   </div>
 
@@ -696,6 +698,58 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════════
+     ML #2 — PEND PREVENTION
+══════════════════════════════════════════════════════ -->
+<div id="ml-prevent-view" class="view">
+  <div class="nav">
+    <button class="nav-back" onclick="showView('act1-view')">← Pend Queue</button>
+    <span class="nav-title">🧠 Pend Prevention — predict &amp; prevent fall-outs (ML)</span>
+  </div>
+  <div style="max-width:1080px;margin:0 auto;padding:6px 16px 30px">
+    <div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#4338ca">
+      🧠 <strong>From resolving pends to preventing them.</strong> A trained model learns, from the multi-dimensional claim data, <strong>which claims will pend and why</strong> — so drivers can be fixed at the source and eligible edits returned to straight-through auto-adjudication. Rules still make the decision; this is the upstream signal. <span style="color:#6366f1">Base data synthetic; model genuinely trained (scikit-learn).</span>
+    </div>
+    <div style="margin-bottom:12px"><button onclick="openTrainingData(false)" style="background:#eef2ff;border:1px solid #4f46e5;color:#4338ca;font-weight:700;font-size:.74rem;padding:7px 13px;border-radius:7px;cursor:pointer">🗂 View the 9,000-claim training dataset</button></div>
+    <div id="mlp-tiles" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:10px">Top predicted pend drivers</div>
+        <div id="mlp-drivers"></div></div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:10px">Straight-through candidates (fix at source)</div>
+        <div id="mlp-stp"></div>
+        <div style="font-size:.68rem;color:#64748b;margin-top:10px">These deterministic drivers pend at high rates and resolve the same way — candidates to fix at the source (provider education / config) or return to auto-adjudication. We surface the evidence; the payer tunes their engine.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     ML #1 — CALIBRATED DECISION CONFIDENCE
+══════════════════════════════════════════════════════ -->
+<div id="ml-confidence-view" class="view">
+  <div class="nav">
+    <button class="nav-back" onclick="showView('act1-view')">← Pend Queue</button>
+    <span class="nav-title">🎯 Decision Confidence — calibrated ML (alongside the rules)</span>
+  </div>
+  <div style="max-width:1080px;margin:0 auto;padding:6px 16px 30px">
+    <div style="background:#ecfeff;border:1px solid #a5f3fc;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#0e7490">
+      🎯 <strong>A calibrated probability the decision is correct.</strong> Trained on adjudicated history (upheld vs. overturned), this ML confidence sits <strong>alongside</strong> the rule-based one and drives confidence-tiered autonomy — auto-issue the high-confidence, route the rest. The rule still makes the citable decision; ML never replaces it. <span style="color:#0891b2">Base data synthetic; model genuinely trained + isotonic-calibrated.</span>
+    </div>
+    <div style="margin-bottom:12px"><button onclick="openTrainingData(true)" style="background:#ecfeff;border:1px solid #0e7490;color:#0e7490;font-weight:700;font-size:.74rem;padding:7px 13px;border-radius:7px;cursor:pointer">🗂 View the labeled training dataset</button></div>
+    <div id="mlc-tiles" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:10px">Confidence across the queue</div>
+        <div id="mlc-dist"></div></div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#334155;margin-bottom:4px">Calibration — predicted vs. actual</div>
+        <div style="font-size:.66rem;color:#64748b;margin-bottom:10px">A calibrated model means "90%" really is ~90% correct. Closer to the diagonal = better.</div>
+        <div id="mlc-calib"></div></div>
+    </div>
+  </div>
+</div>
+
 <!-- SOP document modal (autonomous + click-to-open) -->
 <div id="sop-modal" onclick="if(event.target===this)closeSopModal()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:1000;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px">
   <div id="sop-modal-body" style="background:#fff;border:1px solid #cbd5e1;border-radius:14px;max-width:760px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)"></div>
@@ -826,6 +880,80 @@ async function loadObservability(){
           <td style="padding:6px 8px;vertical-align:top;color:#15803d;font-weight:700">${r.agentic_tat_ms!=null?(r.agentic_tat_ms/1000).toFixed(1)+'s':'—'}</td></tr>`).join('')
       + '</tbody></table>';
   } catch(e) {}
+}
+
+// ── Training-data viewer (transparency: show the actual dataset) ────────────────
+async function openTrainingData(pendedOnly){
+  const modal=document.getElementById('outcome-modal'), body=document.getElementById('outcome-modal-body');
+  body.innerHTML='<div style="padding:24px;color:#64748b">Loading training dataset…</div>'; modal.style.display='flex';
+  try{
+    const d=await fetch(`${API}/api/ml/training-data?limit=300${pendedOnly?'&pended_only=1':''}`).then(r=>r.json());
+    const m=d.meta||{};
+    const cols=d.columns||[];
+    const label = pendedOnly ? 'Confidence model' : 'Prevention model';
+    const splitLine = pendedOnly
+      ? `Trained on <strong>${(m.confidence_train||0).toLocaleString()}</strong>, tested on a held-out <strong>${(m.confidence_test||0).toLocaleString()}</strong> (${m.split}).`
+      : `Trained on <strong>${(m.prevention_train||0).toLocaleString()}</strong>, tested on a held-out <strong>${(m.prevention_test||0).toLocaleString()}</strong> (${m.split}).`;
+    const head=cols.map(c=>`<th style="padding:5px 8px;position:sticky;top:0;background:#f1f5f9;font-size:.62rem;text-transform:uppercase;color:#64748b;white-space:nowrap">${c.replace(/_/g,' ')}</th>`).join('');
+    const rows=(d.rows||[]).map(r=>`<tr style="border-top:1px solid #e2e8f0">${cols.map(c=>{
+        let v=r[c]; if(typeof v==='boolean') v=v?'1':'0';
+        const hl=(c==='pended'||c==='upheld');
+        return `<td style="padding:4px 8px;font-size:.68rem;${hl?'font-weight:800;color:'+(v?'#15803d':'#dc2626'):'color:#334155'}">${v==null?'—':v}</td>`;
+      }).join('')}</tr>`).join('');
+    body.innerHTML=`<div style="position:relative;padding:20px 24px">
+      <button onclick="document.getElementById('outcome-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>
+      <div style="font-size:1.05rem;font-weight:800;color:#0f172a;margin-bottom:2px">Training dataset — ${label}</div>
+      <div style="font-size:.74rem;color:#334155;margin-bottom:4px">${splitLine} <strong>${(m.total||0).toLocaleString()}</strong> total claims. Pend rate ${m.pend_rate}% · upheld rate ${m.upheld_rate}%.</div>
+      <div style="font-size:.68rem;color:#64748b;margin-bottom:10px">The last two columns are the <strong>labels</strong> the model learns (pended, upheld); the rest are features. Metrics are measured on the <strong>held-out test split</strong> the model never saw. Base data is synthetic; in production the same pipeline trains on the payer's adjudicated + appeals history.</div>
+      <div style="overflow:auto;max-height:60vh;border:1px solid #cbd5e1;border-radius:8px"><table style="width:100%;border-collapse:collapse"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>
+      <div style="font-size:.66rem;color:#64748b;margin-top:8px">Showing ${(d.rows||[]).length} of ${(d.total||0).toLocaleString()} rows.</div>
+    </div>`;
+  }catch(e){ body.innerHTML='<div style="padding:24px;color:#dc2626">Training data unavailable — the model may still be training; try again in a moment.</div>'; }
+}
+
+// ── ML #2 Prevention + #1 Calibrated Confidence ─────────────────────────────────
+function _mlbar(label, sub, val, max, color){
+  const w = Math.max(4, Math.round(100*val/(max||1)));
+  return `<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;gap:8px;font-size:.72rem;color:#334155"><span style="font-weight:600">${label}</span><span style="color:#64748b;white-space:nowrap">${sub}</span></div>
+    <div style="background:#e2e8f0;border-radius:5px;height:8px;margin-top:3px"><div style="background:${color};height:8px;border-radius:5px;width:${w}%"></div></div></div>`;
+}
+async function loadMlPrevention(){
+  const tiles=document.getElementById('mlp-tiles');
+  tiles.innerHTML='<div style="color:#64748b;font-size:.82rem;padding:8px">Training the pend-risk model…</div>';
+  try{
+    const d=await fetch(`${API}/api/ml/prevention`).then(r=>r.json());
+    tiles.innerHTML =
+      _ocard(d.stp_lift_pct+'%','Projected straight-through lift (conservative)','#4338ca')
+     +_ocard((d.stp_lift_claims||0).toLocaleString(),'Claims (of current pends)','#4338ca')
+     +_ocard(d.driver_share_pct+'%','Pends from deterministic drivers','#b45309')
+     +_ocard(d.auc.toFixed(2),'Model AUC (pend-risk)','#15803d');
+    const maxr=Math.max(...d.drivers.map(x=>x.pend_rate),1);
+    document.getElementById('mlp-drivers').innerHTML=d.drivers.map(x=>_mlbar(x.driver, x.pend_rate+'% pend · '+x.volume.toLocaleString()+' · '+x.lift+'×', x.pend_rate, maxr, '#4f46e5')).join('');
+    document.getElementById('mlp-stp').innerHTML=(d.stp_candidates||[]).map(x=>_mlbar(x.driver, x.pend_rate+'% pend · '+x.volume.toLocaleString(), x.pend_rate, maxr, '#0e7490')).join('') || '<div style="font-size:.72rem;color:#64748b">—</div>';
+  }catch(e){ tiles.innerHTML='<div style="color:#dc2626;font-size:.82rem;padding:8px">Model still training — try again in a moment.</div>'; }
+}
+async function loadMlConfidence(){
+  const tiles=document.getElementById('mlc-tiles');
+  tiles.innerHTML='<div style="color:#64748b;font-size:.82rem;padding:8px">Training + calibrating the confidence model…</div>';
+  try{
+    const d=await fetch(`${API}/api/ml/confidence`).then(r=>r.json());
+    const dist=d.distribution||{};
+    tiles.innerHTML=
+      _ocard(Math.round((dist.avg||0)*100)+'%','Avg calibrated confidence','#0e7490')
+     +_ocard(d.brier.toFixed(3),'Brier (lower = better)','#15803d')
+     +_ocard(d.auc.toFixed(2),'Model AUC','#334155')
+     +_ocard((d.trained_on||0).toLocaleString(),'Training decisions','#334155');
+    const tot=(dist.high||0)+(dist.med||0)+(dist.low||0)||1;
+    document.getElementById('mlc-dist').innerHTML=
+      _obar('High (≥ 90%) → auto-issue',dist.high||0,tot,'#15803d')
+     +_obar('Medium (75–89%)',dist.med||0,tot,'#b45309')
+     +_obar('Low (< 75%) → route to human',dist.low||0,tot,'#dc2626')
+     +`<div style="font-size:.66rem;color:#64748b;margin-top:6px">Sampled ${dist.sampled||0} claims from the queue.</div>`;
+    document.getElementById('mlc-calib').innerHTML=
+      '<table style="width:100%;border-collapse:collapse;font-size:.72rem"><thead><tr style="color:#64748b;text-align:left"><th style="padding:4px 8px">Predicted</th><th style="padding:4px 8px">Actual</th><th style="padding:4px 8px">Reliability</th></tr></thead><tbody>'
+      + (d.calibration||[]).map(c=>{const gap=Math.abs(c.predicted-c.actual);const col=gap<0.03?'#15803d':gap<0.06?'#b45309':'#dc2626';const lab=gap<0.03?'✓ tight':gap<0.06?'ok':'off';return `<tr style="border-top:1px solid #cbd5e1"><td style="padding:4px 8px">${Math.round(c.predicted*100)}%</td><td style="padding:4px 8px">${Math.round(c.actual*100)}%</td><td style="padding:4px 8px;color:${col};font-weight:700">${lab}</td></tr>`}).join('')
+      + '</tbody></table>';
+  }catch(e){ tiles.innerHTML='<div style="color:#dc2626;font-size:.82rem;padding:8px">Model still training — try again in a moment.</div>'; }
 }
 
 // ── Hub stats ─────────────────────────────────────────────────────────────────

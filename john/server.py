@@ -3233,6 +3233,35 @@ def api_db_search(n):
         rows = [r for r in rows if q in json.dumps(r, default=str).lower()]
     return jsonify({"records": rows[:200], "total": len(rows), "query": q})
 
+@app.route("/api/ml/prevention")
+def api_ml_prevention():
+    """#2 — trained pend-risk model: drivers, straight-through candidates, preventable share."""
+    import ml_models
+    return jsonify(ml_models.prevention_summary(len(pended_claims)))
+
+@app.route("/api/ml/confidence")
+def api_ml_confidence():
+    """#1 — calibrated decision-confidence model: calibration curve + confidence distribution."""
+    import ml_models
+    d = ml_models.confidence_summary()
+    sample = pended_claims[::11][:500]
+    probs = ml_models.score_confidence_batch(sample)
+    hi = sum(1 for p in probs if p >= 0.90); md = sum(1 for p in probs if 0.75 <= p < 0.90); lo = sum(1 for p in probs if p < 0.75)
+    d["distribution"] = {"high": hi, "med": md, "low": lo, "sampled": len(probs),
+                         "avg": round(sum(probs) / len(probs), 3) if probs else 0}
+    return jsonify(d)
+
+@app.route("/api/ml/training-data")
+def api_ml_training_data():
+    """The actual training dataset (inspectable) + split/balance metadata."""
+    import ml_models
+    limit = int(request.args.get("limit", 150))
+    offset = int(request.args.get("offset", 0))
+    pended_only = request.args.get("pended_only") == "1"
+    out = ml_models.training_sample(limit, offset, pended_only)
+    out["meta"] = ml_models.training_meta()
+    return jsonify(out)
+
 @app.route("/api/whatif-examples")
 def api_whatif_examples():
     """Ready-to-open example claims for the what-if beat, so they can be shown upfront
@@ -3321,6 +3350,17 @@ def api_source_edit_reset():
     _reset_sop_caches()
     r = _resolve_pended(c)
     return jsonify({"icn": icn, "after": r["outcome_label"]})
+
+
+# Pre-train the ML models in the background so the first click is instant.
+def _ml_warmup():
+    try:
+        import ml_models; ml_models.warmup()
+        print("ML models trained (prevention + calibrated confidence)")
+    except Exception as e:
+        print("ML warmup skipped:", e)
+import threading as _threading
+_threading.Thread(target=_ml_warmup, daemon=True).start()
 
 
 if __name__ == "__main__":
