@@ -2036,6 +2036,35 @@ def _timely_fields(claim):
             "payment_due_date": pay_by, "filing_limit_date": filing_due,
             "timely_filing": timely, "status_today": status, "status_ok": left >= 0}
 
+# ── Jurisdiction priority policy ────────────────────────────────────────────────
+# The agent adjudicates every pend autonomously on arrival (no queue to prioritize).
+# Prioritization matters only where a HUMAN is the bottleneck — the manual-review queues.
+# There we rank by jurisdiction: high-interest states (Texas — DOI oversight + strict
+# prompt-pay) surface first, so associates work the highest-exposure claims first.
+HIGH_INTEREST_STATES = {"TX"}
+
+def _claim_state(claim):
+    """Deterministic jurisdiction (provider state) for a claim."""
+    npi = str(claim.get("npi_rendering") or claim.get("npi_billing") or "")
+    prov = providers.get(npi, {})
+    if prov.get("state"):
+        return prov["state"]
+    seed = npi or str(claim.get("icn") or claim.get("member_id") or "0")
+    return _STATES[sum(ord(c) for c in seed) % len(_STATES)]
+
+def _priority_of(claim):
+    """Rank + tier + reason for a manual-review work item. Lower rank = worked first."""
+    st = _claim_state(claim)
+    dq = claim.get("days_in_queue") or 0
+    if st in HIGH_INTEREST_STATES:
+        return {"state": st, "priority_rank": 0, "priority_tier": "Priority",
+                "priority_reason": f"High-interest jurisdiction — {st} (state DOI oversight · strict prompt-pay)"}
+    if dq >= PAYMENT_SLA_DAYS - 5:
+        return {"state": st, "priority_rank": 1, "priority_tier": "Elevated",
+                "priority_reason": f"Prompt-pay SLA at risk — {dq}d in queue"}
+    return {"state": st, "priority_rank": 2, "priority_tier": "Routine",
+            "priority_reason": f"Standard priority — {st}"}
+
 # ── API Routes ────────────────────────────────────────────────────────────────
 
 _LINE_AGG = None
@@ -2169,6 +2198,44 @@ def api_process_claim(icn):
     result = resolve_claim(claim)
     return jsonify({**claim, **result})
 
+@app.route("/api/queue-search")
+def api_queue_search():
+    """Search the ENTIRE pend population (not just the sample shown) by ICN, member, provider,
+    CPT, edit code, category, or SOP — returns resolved rows for the main queue."""
+    q = (request.args.get("q") or "").strip().lower()
+    limit = int(request.args.get("limit", 60))
+    if not q:
+        return jsonify({"results": [], "total": 0, "q": q})
+    def _hay(c):
+        return " ".join(str(c.get(k, "")) for k in (
+            "icn", "member_name", "provider_name", "cpt_code", "cpt_description",
+            "edit_code", "edit_category", "edit_description", "provider_specialty")).lower()
+    matched = [c for c in pended_claims if q in _hay(c)]
+    total = len(matched)
+    results = []
+    # Hero multi-line claims first (searchable too)
+    for hero in line_item_claims:
+        if q in (str(hero.get("icn", "")) + " " + str(hero.get("member_name", ""))
+                 + " " + str(hero.get("claim_type", "")) + " " + str(hero.get("label", ""))).lower():
+            lines = hero.get("lines", [])
+            ru = _header_rollup([resolve_line(dict(l), hero) for l in lines], lines)
+            results.append({
+                "icn": hero["icn"], "member_name": hero.get("member_name"),
+                "provider_name": hero.get("provider_name"),
+                "cpt_code": (hero.get("claim_type", "MULTI"))[:4],
+                "billed_amount": hero.get("billed_amount"),
+                "edit_code": f'{ru.get("lines_pended", 0)} pends', "edit_category": hero.get("claim_type", "Multi-line"),
+                "recommendation": ru["outcome_label"], "outcome_label": ru["outcome_label"],
+                "outcome_color": ru.get("outcome_color", "gray"), "confidence": None,
+                "decision_status": "auto", "payment_amount": ru.get("payment_amount", 0),
+                "sop_ref": f'{ru.get("lines_paid", 0)}/{ru.get("lines_total", 0)} lines paid',
+                "is_multi_line": True,
+            })
+            total += 1
+    for c in matched[:max(0, limit - len(results))]:
+        results.append({**c, **resolve_claim(c)})
+    return jsonify({"results": results, "total": total, "shown": len(results), "q": q})
+
 @app.route("/api/process-batch")
 def api_process_batch():
     """Process all featured claims (1 per edit type) for the live demo queue."""
@@ -2244,18 +2311,36 @@ def api_outcome(key):
                 "sop_ref": f'{ru.get("lines_paid", 0)}/{ru.get("lines_total", 0)} lines paid', "is_multi_line": True,
             })
     total = len(matched) + len(hero_matches)
-    # Bring the what-if-editable examples (auth missing, units, timely filing) to the FRONT
-    matched.sort(key=lambda c: 0 if c.get("edit_code") in WHATIF_EDITS else 1)
+    # Manual-review work queues: rank by jurisdiction priority (high-interest states first)
+    # so associates work the highest-exposure claims first. Other queues keep prior order.
+    human = key in ("denied", "human", "clinical", "highdollar")
+    priority_total = 0
+    if human:
+        priority_total = (sum(1 for c in matched if _priority_of(c)["priority_rank"] == 0)
+                          + sum(1 for h in hero_matches if _priority_of(h)["priority_rank"] == 0))
+        for h in hero_matches:
+            h.update(_priority_of(h))
+        matched.sort(key=lambda c: (_priority_of(c)["priority_rank"],
+                                    0 if c.get("edit_code") in WHATIF_EDITS else 1))
+    else:
+        # Bring the what-if-editable examples (auth missing, units, timely filing) to the FRONT
+        matched.sort(key=lambda c: 0 if c.get("edit_code") in WHATIF_EDITS else 1)
     matches = list(hero_matches)   # heroes first so they're easy to find
     for c in matched[:max(0, limit - len(matches))]:
         res = _resolve_pended(c)
-        matches.append({
+        row = {
             "icn": c["icn"], "member_name": c["member_name"], "provider_name": c["provider_name"],
             "cpt_code": c["cpt_code"], "billed_amount": c["billed_amount"],
             "edit_code": c["edit_code"], "edit_category": c["edit_category"],
             "edit_description": c["edit_description"], **res,
-        })
-    return jsonify({"key": key, "results": matches, "shown": len(matches), "total": total})
+        }
+        if human:
+            row.update(_priority_of(c))
+        matches.append(row)
+    if human:
+        matches.sort(key=lambda m: m.get("priority_rank", 2))   # stable → priority jurisdictions on top
+    return jsonify({"key": key, "results": matches, "shown": len(matches),
+                    "total": total, "human": human, "priority_total": priority_total})
 
 @app.route("/api/line-claims")
 def api_line_claims():
@@ -3298,7 +3383,14 @@ def api_whatif_examples():
         if c:
             out.append({"edit_code": ec, "label": label, "icn": c["icn"],
                         "member": c.get("member_name"), "cpt": c.get("cpt_code")})
-    return jsonify({"examples": out})
+    # Pricing-engine (Burgess/Multiplan/Zelis) example — not a what-if, just a quick-open
+    # so the presenter can show the agent calling the pricing engine to reprice a claim.
+    pricing = None
+    pc = next((x for x in pended_claims if x.get("edit_code") == "E-PRICE-006"), None)
+    if pc:
+        pricing = {"edit_code": "E-PRICE-006", "label": "Pricing engine (Burgess)",
+                   "icn": pc["icn"], "member": pc.get("member_name"), "cpt": pc.get("cpt_code")}
+    return jsonify({"examples": out, "pricing": pricing})
 
 @app.route("/api/claim-db/<icn>/<dbkey>")
 def api_claim_db(icn, dbkey):

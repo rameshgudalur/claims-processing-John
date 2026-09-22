@@ -108,6 +108,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
 .queue-wrap{background:#ffffff;border:1px solid #cbd5e1;border-radius:12px;overflow-x:auto;overflow-y:hidden;margin-bottom:20px}
 .queue-table{width:100%;border-collapse:collapse;font-size:.75rem}
 .queue-table thead th{background:#f1f5f9;color:#334155;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid #cbd5e1;white-space:nowrap}
+.queue-table thead th.qsort{cursor:pointer;user-select:none}
+.queue-table thead th.qsort:hover{background:#e2e8f0}
+.queue-table thead th .qcar{color:#2563eb;font-size:.72rem}
 .queue-table tbody tr{border-bottom:1px solid #cbd5e1;cursor:pointer;transition:background .15s}
 .queue-table tbody tr:hover{background:#eef2f7}
 .queue-table tbody tr.processing-row{background:#eaf1fb;animation:row-pulse 1s infinite}
@@ -459,23 +462,33 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <div id="cp-body"></div>
   </div>
 
+  <!-- Queue search -->
+  <div style="display:flex;align-items:center;gap:8px;margin:6px 0 10px 0;flex-wrap:wrap">
+    <input id="queue-search-input" type="text" placeholder="🔍 Search all claims — ICN, member, provider, CPT, edit code, category, specialty…"
+      onkeydown="if(event.key==='Enter')queueSearch()"
+      style="flex:1;min-width:280px;max-width:520px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:.8rem">
+    <button onclick="queueSearch()" style="background:#1d4ed8;border:1px solid #1d4ed8;color:#fff;font-weight:700;font-size:.76rem;padding:8px 16px;border-radius:8px;cursor:pointer">Search</button>
+    <button id="queue-search-clear" onclick="clearQueueSearch()" style="display:none;background:#e2e8f0;border:1px solid #94a3b8;color:#334155;font-weight:700;font-size:.76rem;padding:8px 14px;border-radius:8px;cursor:pointer">✕ Clear</button>
+    <span id="queue-search-note" style="font-size:.74rem;color:#64748b"></span>
+  </div>
+
   <!-- Queue table -->
   <div class="queue-wrap">
     <table class="queue-table">
       <thead>
         <tr>
-          <th>ICN</th>
-          <th>Member</th>
-          <th>Provider</th>
-          <th>CPT</th>
-          <th>Billed</th>
-          <th>Edit</th>
-          <th>Category</th>
-          <th>Recommendation</th>
-          <th>Confidence</th>
-          <th>Decision</th>
-          <th>Payment</th>
-          <th>SOP Ref</th>
+          <th class="qsort" onclick="sortQueueTable(0,'s',this)">ICN<span class="qcar"></span></th>
+          <th class="qsort" onclick="sortQueueTable(1,'s',this)">Member<span class="qcar"></span></th>
+          <th class="qsort" onclick="sortQueueTable(2,'s',this)">Provider<span class="qcar"></span></th>
+          <th class="qsort" onclick="sortQueueTable(3,'s',this)">CPT<span class="qcar"></span></th>
+          <th class="qsort" onclick="sortQueueTable(4,'n',this)">Billed<span class="qcar"></span></th>
+          <th class="qsort" onclick="sortQueueTable(5,'s',this)">Edit<span class="qcar"></span></th>
+          <th class="qsort" onclick="sortQueueTable(6,'s',this)">Category<span class="qcar"></span></th>
+          <th class="qsort" onclick="sortQueueTable(7,'s',this)">Recommendation<span class="qcar"></span></th>
+          <th class="qsort" onclick="sortQueueTable(8,'n',this)">Confidence<span class="qcar"></span></th>
+          <th class="qsort" onclick="sortQueueTable(9,'s',this)">Decision<span class="qcar"></span></th>
+          <th class="qsort" onclick="sortQueueTable(10,'n',this)">Payment<span class="qcar"></span></th>
+          <th class="qsort" onclick="sortQueueTable(11,'s',this)">SOP Ref<span class="qcar"></span></th>
           <th>Action</th>
         </tr>
       </thead>
@@ -1336,17 +1349,24 @@ function _assocOf(i){
   const wrap=Math.floor(k/ASSOC_NAMES.length);
   return wrap ? name+' '+(wrap+1) : name;
 }
+function _prioBadge(r){
+  const tier=r.priority_tier, st=r.state||'';
+  if(tier==='Priority') return `<span title="${(r.priority_reason||'').replace(/"/g,'')}" style="background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;font-weight:800;font-size:.62rem;padding:2px 7px;border-radius:6px;white-space:nowrap">🚩 ${st} · Priority</span>`;
+  if(tier==='Elevated') return `<span title="${(r.priority_reason||'').replace(/"/g,'')}" style="background:#fef3c7;color:#b45309;border:1px solid #fcd34d;font-weight:700;font-size:.62rem;padding:2px 7px;border-radius:6px;white-space:nowrap">▲ ${st} · Elevated</span>`;
+  return `<span style="background:#f1f5f9;color:#64748b;font-size:.62rem;padding:2px 7px;border-radius:6px;white-space:nowrap">${st}</span>`;
+}
 function _renderOutcomeRows(filter){
   const q=(filter||'').trim().toLowerCase();
   const holder=document.getElementById('oc-holder'); if(!holder) return;
   let shown=0;
   const body=_outcomeRows.map((r,i)=>{
-    const hay=(r.icn+' '+r.member_name+' '+(r.edit_code||'')+' '+(r.edit_description||'')+' '+(r.provider_name||'')+(_ocHuman?(' '+_assocOf(i)):'')).toLowerCase();
+    const hay=(r.icn+' '+r.member_name+' '+(r.edit_code||'')+' '+(r.edit_description||'')+' '+(r.provider_name||'')+(_ocHuman?(' '+_assocOf(i)+' '+(r.state||'')+' '+(r.priority_tier||'')):'')).toLowerCase();
     if(q && !hay.includes(q)) return '';
     shown++;
     return `<tr onclick="openFromOutcome(${i})" style="cursor:pointer;border-bottom:1px solid #e2e8f0" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background=''">
       <td style="padding:6px 10px;font-family:monospace;color:#2563eb;font-size:.72rem">${r.icn}</td>
       <td style="padding:6px 10px">${r.member_name}</td>
+      ${_ocHuman?`<td style="padding:6px 10px">${_prioBadge(r)}</td>`:''}
       <td style="padding:6px 10px;font-family:monospace;font-size:.7rem;color:#334155">${r.edit_code}</td>
       <td style="padding:6px 10px;font-size:.72rem;color:#334155">${r.edit_description||''}</td>
       <td style="padding:6px 10px;color:#b45309;white-space:nowrap">$${(r.billed_amount||0).toLocaleString()}</td>
@@ -1360,6 +1380,7 @@ function _renderOutcomeRows(filter){
     <thead><tr style="text-align:left;border-bottom:2px solid ${_ocMeta.color}">
       <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">ICN</th>
       <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Member</th>
+      ${_ocHuman?'<th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Priority</th>':''}
       <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Edit</th>
       <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">What pended</th>
       <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Billed</th>
@@ -1390,9 +1411,12 @@ async function openOutcomePanel(key){
     const d=await fetch(`${API}/api/outcome/${key}?limit=200`).then(r=>r.json());
     _outcomeRows=d.results||[]; _ocKey=key; _ocMeta=meta; _ocTotal=d.total||0; _ocHuman=HUMAN_KEYS.includes(key);
     const assoc=Math.max(1,Math.ceil(_ocTotal/ITEMS_PER_ASSOCIATE));
+    const prioN=d.priority_total||0;
+    const prioLine=prioN?`<div style="margin-top:5px;font-size:.72rem;color:#b91c1c"><strong>🚩 Prioritized:</strong> ${prioN.toLocaleString()} high-interest-jurisdiction claim${prioN===1?'':'s'} (Texas — DOI oversight · strict prompt-pay) sorted to the <strong>top</strong> and handed to the first associates.</div>`:'';
     const allocBanner=_ocHuman?`<div style="background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.74rem;color:#6d28d9">
       <strong>Work allocation:</strong> ${_ocTotal.toLocaleString()} items → <strong>${assoc.toLocaleString()} associates</strong> at ${ITEMS_PER_ASSOCIATE} items each. Each case is staged with SOP, evidence, and a recommendation.
       <button onclick="toggleAllocation()" style="margin-left:8px;background:#6d28d9;border:1px solid #6d28d9;color:#fff;font-weight:700;font-size:.68rem;padding:4px 10px;border-radius:6px;cursor:pointer">📋 View associate allocation</button>
+      ${prioLine}
      </div><div id="oc-alloc" style="display:none;margin-bottom:10px"></div>`:'';
     body.innerHTML=`<div style="position:relative;padding:20px 24px">
       <button onclick="document.getElementById('outcome-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>
@@ -2017,8 +2041,34 @@ function claimAction(icn, act, ev){
     if (cell) cell.innerHTML = '<span style="color:#7c3aed;font-weight:700;font-size:.7rem">⏳ In review</span>';
   }
 }
-async function streamRow(r, idx) {
+let _qsortState = { col: null, dir: 1 };
+function sortQueueTable(col, type, th) {
   const tbody = document.getElementById('queue-tbody');
+  if (!tbody) return;
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  if (rows.length < 2) return;
+  // toggle direction if same column
+  _qsortState.dir = (_qsortState.col === col) ? -_qsortState.dir : 1;
+  _qsortState.col = col;
+  const dir = _qsortState.dir;
+  const cellVal = (tr) => {
+    const td = tr.children[col];
+    const t = td ? (td.textContent || '').trim() : '';
+    if (type === 'n') { const v = parseFloat(t.replace(/[^0-9.\-]/g, '')); return isNaN(v) ? -Infinity : v; }
+    return t.toLowerCase();
+  };
+  rows.sort((a, b) => {
+    const va = cellVal(a), vb = cellVal(b);
+    if (va < vb) return -1 * dir;
+    if (va > vb) return 1 * dir;
+    return 0;
+  });
+  rows.forEach(r => tbody.appendChild(r));
+  // update caret indicators
+  document.querySelectorAll('.queue-table thead th .qcar').forEach(c => c.textContent = '');
+  if (th) { const car = th.querySelector('.qcar'); if (car) car.textContent = dir === 1 ? ' ▲' : ' ▼'; }
+}
+function _queueRowHtml(r){
   const color = r.outcome_color || 'gray';
   const payment = r.payment_amount > 0 ? `$${r.payment_amount.toFixed(2)}` : '—';
   const hrBadge = r.human_review ? `<span class="badge-hr">HR</span>` : '';
@@ -2026,7 +2076,7 @@ async function streamRow(r, idx) {
     + `<button onclick="claimAction('${r.icn}','approve',event)" style="background:#dcfce7;border:1px solid #16a34a;color:#15803d;font-weight:700;font-size:.64rem;padding:3px 8px;border-radius:5px;cursor:pointer">Approve</button>`
     + `<button onclick="claimAction('${r.icn}','review',event)" style="background:#ede9fe;border:1px solid #7c3aed;color:#6d28d9;font-weight:700;font-size:.64rem;padding:3px 8px;border-radius:5px;cursor:pointer">Review</button>`
     + `</div>`;
-  const rowHtml = `
+  return `
     <td style="font-family:monospace;color:#2563eb;font-size:.72rem">${r.icn}</td>
     <td>${r.member_name}</td>
     <td style="color:#334155">${r.provider_name?.split(' ').slice(0,3).join(' ')}</td>
@@ -2041,6 +2091,45 @@ async function streamRow(r, idx) {
     <td style="font-size:.68rem;color:#334155">${r.sop_ref}</td>
     <td id="act-${r.icn}">${actBtns}</td>
   `;
+}
+let _queueBackup = null;
+async function queueSearch(){
+  const inp = document.getElementById('queue-search-input');
+  const note = document.getElementById('queue-search-note');
+  const tbody = document.getElementById('queue-tbody');
+  const q = (inp.value||'').trim();
+  if(!q){ clearQueueSearch(); return; }
+  if(_queueBackup === null) _queueBackup = tbody.innerHTML;   // save the live queue once
+  note.textContent = 'Searching all claims…';
+  try{
+    const d = await fetch(`${API}/api/queue-search?q=${encodeURIComponent(q)}&limit=80`).then(r=>r.json());
+    const rows = d.results||[];
+    tbody.innerHTML = '';
+    if(!rows.length){
+      note.innerHTML = `No claims match "<strong>${q}</strong>".`;
+    } else {
+      for(const r of rows){
+        const tr = document.createElement('tr');
+        tr.id = `row-${r.icn}`;
+        tr.onclick = () => (r.is_multi_line ? openClaimPanel(r) : openClaimByIcn(r.icn));
+        tr.innerHTML = _queueRowHtml(r);
+        tbody.appendChild(tr);
+      }
+      note.innerHTML = `Showing <strong>${rows.length}</strong> of <strong>${(d.total||0).toLocaleString()}</strong> matches across the full pend population.`;
+    }
+    document.getElementById('queue-search-clear').style.display = 'inline-block';
+  }catch(e){ note.textContent = 'Search unavailable.'; }
+}
+function clearQueueSearch(){
+  const tbody = document.getElementById('queue-tbody');
+  if(_queueBackup !== null){ tbody.innerHTML = _queueBackup; _queueBackup = null; }
+  const inp = document.getElementById('queue-search-input'); if(inp) inp.value='';
+  document.getElementById('queue-search-note').textContent = '';
+  document.getElementById('queue-search-clear').style.display = 'none';
+}
+async function streamRow(r, idx) {
+  const tbody = document.getElementById('queue-tbody');
+  const rowHtml = _queueRowHtml(r);
   // If this pend was already ingested as a raw row, resolve it in place; else insert.
   const existing = document.getElementById(`row-${r.icn}`);
   if (existing) {
@@ -2077,6 +2166,10 @@ function resetAct1() {
   document.getElementById('claims-lines-summary').style.display = 'none';
   document.getElementById('whatif-launch').style.display = 'none';
   document.getElementById('queue-tbody').innerHTML = '';
+  _queueBackup = null;
+  const _qsi = document.getElementById('queue-search-input'); if (_qsi) _qsi.value = '';
+  const _qsn = document.getElementById('queue-search-note'); if (_qsn) _qsn.textContent = '';
+  const _qsc = document.getElementById('queue-search-clear'); if (_qsc) _qsc.style.display = 'none';
   const _qn = document.getElementById('queue-sample-note'); if (_qn) _qn.innerHTML = '';
   const _hbr = document.getElementById('hr-badge'); if (_hbr) _hbr.textContent = '—';
   document.getElementById('proc-progress').classList.remove('visible');
@@ -2187,8 +2280,10 @@ async function loadWhatIfLaunch(){
   try{
     const d=await fetch(`${API}/api/whatif-examples`).then(r=>r.json());
     const btns=(d.examples||[]).map(e=>`<button onclick="openClaimByIcn('${e.icn}')" style="background:#fff;border:1px solid #6d28d9;color:#6d28d9;font-weight:700;font-size:.72rem;padding:6px 11px;border-radius:7px;cursor:pointer;margin-right:6px">🔧 ${e.label} — ${e.icn}</button>`).join('');
+    const p=d.pricing;
+    const priceBtn = p ? `<button onclick="openClaimByIcn('${p.icn}')" style="background:#fff;border:1px solid #0d9488;color:#0f766e;font-weight:700;font-size:.72rem;padding:6px 11px;border-radius:7px;cursor:pointer;margin-right:6px">💠 ${p.label} — ${p.icn}</button>` : '';
     el.style.display='block';
-    el.innerHTML=`<span style="font-size:.72rem;font-weight:800;color:#6d28d9;margin-right:8px">What-if examples (open upfront):</span>${btns}`;
+    el.innerHTML=`<span style="font-size:.72rem;font-weight:800;color:#6d28d9;margin-right:8px">Examples (open upfront):</span>${btns}${priceBtn}`;
   }catch(e){}
 }
 function _dbKeyFromLabel(label){
