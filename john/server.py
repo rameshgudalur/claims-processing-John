@@ -2236,6 +2236,34 @@ def api_queue_search():
         results.append({**c, **resolve_claim(c)})
     return jsonify({"results": results, "total": total, "shown": len(results), "q": q})
 
+def _resolve_multi_edit_combined(claim):
+    """Resolve every edit stamped on a single-line multi-edit claim, then combine
+    'most-restrictive-wins'. Returns a queue-row-shaped dict (real CPT, N-edits label)."""
+    edit_resolutions = []
+    for ed in claim.get("edits_detail", []):
+        fake = {**claim, "edit_code": ed["edit_code"], "edit_category": ed["edit_category"],
+                "resolution_path": ed["resolution_path"], "carc_code": ed.get("carc_code"),
+                "rarc_code": ed.get("rarc_code"), "human_review_flag": ed.get("human_review_flag")}
+        edit_resolutions.append(resolve_claim(fake))
+    order = ["human_review", "deny", "escalate", "partial_pay", "request_info", "approve"]
+    outs = [r["outcome"] for r in edit_resolutions]
+    combined = next((o for o in order if o in outs), "approve")
+    lbl = RESOLUTION_LABELS.get(combined, {})
+    pay = (max((r.get("payment_amount", 0) for r in edit_resolutions), default=0.0)
+           if combined in ("approve", "partial_pay") else 0.0)
+    # Confidence in the CLAIM decision = confidence of the edit that drove it (most-restrictive)
+    driver = next((r for r in edit_resolutions if r["outcome"] == combined), None)
+    conf = driver.get("confidence") if driver else None
+    n = len(claim.get("edit_codes", []))
+    return {
+        "outcome": combined, "outcome_label": lbl.get("label", combined),
+        "outcome_color": lbl.get("color", "gray"), "recommendation": lbl.get("label", combined),
+        "payment_amount": pay, "confidence": conf,
+        "decision_status": "pending_review" if combined in ("human_review", "escalate") else "issued",
+        "human_review": combined in ("human_review", "escalate"),
+        "sop_ref": f"{n} edits · most-restrictive",
+    }
+
 @app.route("/api/process-batch")
 def api_process_batch():
     """Process all featured claims (1 per edit type) for the live demo queue."""
@@ -2252,6 +2280,23 @@ def api_process_batch():
             "edit_code":     claim["edit_code"],
             "edit_category": claim["edit_category"],
             "edit_description": claim["edit_description"],
+            **res,
+        })
+    # Surface a couple of single-line MULTI-EDIT claims (one CPT carrying several edits) in the
+    # main queue so the audience sees claims with more than one edit alongside the single-edit rows.
+    for claim in multi_edit_claims[:2]:
+        res = _resolve_multi_edit_combined(claim)
+        n = len(claim.get("edit_codes", []))
+        results.append({
+            "icn":           claim["icn"],
+            "member_name":   claim["member_name"],
+            "provider_name": claim["provider_name"],
+            "cpt_code":      claim["cpt_code"],
+            "billed_amount": claim["billed_amount"],
+            "edit_code":     f"⚡ {n} edits",
+            "edit_category": claim["edit_category"],
+            "edit_description": claim.get("edit_description", "Multiple edits on one line"),
+            "is_multi_edit": True,
             **res,
         })
     return jsonify({"results": results, "count": len(results)})

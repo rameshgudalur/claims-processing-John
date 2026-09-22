@@ -1946,10 +1946,14 @@ async function startProcessing() {
     for (const c of heroRows) {
       const d = await fetch(`${API}/api/claim-lines/${c.icn}?resolve=1`).then(x=>x.json());
       const ru = d.rollup;
+      const _pl = (d.lines||[]).filter(x=>x.pended);
+      const _cptDisp = _pl.length ? `${_pl[0].cpt_code}${_pl.length>1?' +'+(_pl.length-1):''}` : (c.claim_type||'MULTI');
+      const _edCodes = [...new Set(_pl.map(x=>x.edit_code).filter(Boolean))];
+      const _edDisp = _edCodes.length>1 ? `⚡ ${_edCodes.length} edits` : (_edCodes[0]||`${ru.lines_pended} pends`);
       const rr = {
         icn: c.icn, member_name: c.member_name, provider_name: c.provider_name,
-        cpt_code: (c.claim_type||'MULTI').slice(0,4), billed_amount: d.header.billed_amount,
-        edit_code: `${ru.lines_pended} pends`, edit_category: c.claim_type,
+        cpt_code: _cptDisp, billed_amount: d.header.billed_amount,
+        edit_code: _edDisp, edit_category: c.claim_type,
         outcome: ru.outcome, outcome_label: ru.outcome_label, outcome_color: ru.outcome_color,
         payment_amount: ru.payment_amount, sop_ref: `${ru.lines_paid}/${ru.lines_total} lines paid`,
         human_review: ru.outcome === 'human_review', is_multi_line: true,
@@ -2330,6 +2334,44 @@ async function openClaimPanel(r) {
   const panel = document.getElementById('claim-panel');
   const title = document.getElementById('cp-title');
   const body  = document.getElementById('cp-body');
+  _openClaimPanelBody(r, panel, title, body);
+}
+function renderMultiEditPanel(ctx){
+  const c = ctx.claim||{};
+  const edits = ctx.edit_resolutions||[];
+  const cc = ctx.combined_color||'gray';
+  const editCards = edits.map((e,i)=>{
+    const steps = (e.sop_steps||[]).slice(0,3).map(s=>`<li style="font-size:.72rem;color:#334155;margin:2px 0">${s}</li>`).join('');
+    const dbs = (e.dbs_queried||[]).map(db=>`<span style="background:#eef2f7;color:#1d4ed8;font-size:.62rem;padding:1px 6px;border-radius:5px;margin:2px 3px 0 0;display:inline-block">✓ ${db}</span>`).join('');
+    return `<div style="border:1px solid #e2e8f0;border-left:4px solid ${['#991b1b','#9a3412','#1e3a5f'][i]||'#334155'};border-radius:8px;padding:10px 12px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+        <div style="font-size:.6rem;color:#64748b;text-transform:uppercase;letter-spacing:.5px">Edit ${i+1} of ${edits.length}</div>
+        <div><span class="badge-outcome ${e.outcome_color||'gray'}">${e.recommendation||e.outcome_label}</span> ${_confBadge(e.confidence)}</div>
+      </div>
+      <div style="margin-top:3px"><span style="font-family:monospace;font-weight:700;color:#0f172a">${e.edit_code}</span> <span class="badge-cat">${e.edit_category}</span></div>
+      <div style="font-size:.72rem;color:#64748b;margin-top:3px">${e.edit_description||''}</div>
+      ${steps?`<ul style="margin:6px 0 0;padding-left:16px">${steps}</ul>`:''}
+      ${dbs?`<div style="margin-top:6px">${dbs}</div>`:''}
+    </div>`;
+  }).join('');
+  return `
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      <div style="font-size:.78rem;color:#334155">
+        <strong>${c.member_name}</strong> · CPT <span style="font-family:monospace">${c.cpt_code}</span> · ${c.provider_specialty||''}<br>
+        Billed <span style="color:#b45309">$${(c.billed_amount||0).toFixed(2)}</span> · ${(c.edit_codes?c.edit_codes.length:edits.length)} edits on one line
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:.62rem;color:#64748b;text-transform:uppercase;letter-spacing:.5px">Combined decision</div>
+        <span class="badge-outcome ${cc}" style="font-size:.8rem">${ctx.combined_label}</span>
+        <div style="font-size:.72rem;color:#15803d;margin-top:2px">${ctx.combined_payment>0?('Pay $'+ctx.combined_payment.toFixed(2)):''}</div>
+      </div>
+    </div>
+    <div style="background:#fff7ed;border:1px solid #fdba74;border-radius:6px;padding:6px 10px;font-size:.72rem;color:#9a3412;margin-bottom:10px">
+      This single line was stamped with <strong>${edits.length} edits</strong>. The agent resolves <strong>each</strong> edit independently, then applies the <strong>most-restrictive outcome</strong> as the claim decision.
+    </div>
+    ${editCards}`;
+}
+async function _openClaimPanelBody(r, panel, title, body){
 
   // Multi-line hero claims: show the header + resolved service lines + rollup
   if (r.is_multi_line) {
@@ -2341,6 +2383,19 @@ async function openClaimPanel(r) {
       const data = await fetch(`${API}/api/claim-lines/${r.icn}?resolve=1`).then(x=>x.json());
       document.getElementById('cp-lines').innerHTML = renderServiceLines(data, true);
     } catch(e) { document.getElementById('cp-lines').textContent = 'Service lines unavailable.'; }
+    return;
+  }
+
+  // Single-line claim carrying MORE THAN ONE edit: resolve each edit, combine most-restrictive
+  if (r.is_multi_edit) {
+    title.textContent = `${r.icn} — ${r.member_name} — ${r.cpt_code} — multi-edit claim`;
+    body.innerHTML = `<div id="cp-me" style="color:#64748b;font-size:.8rem;padding:6px 0">Resolving each edit…</div>`;
+    panel.classList.add('visible');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    try {
+      const ctx = await fetch(`${API}/api/multi-edit-context/${r.icn}`).then(x=>x.json());
+      document.getElementById('cp-me').innerHTML = renderMultiEditPanel(ctx);
+    } catch(e) { document.getElementById('cp-me').textContent = 'Multi-edit detail unavailable.'; }
     return;
   }
 
