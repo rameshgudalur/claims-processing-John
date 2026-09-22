@@ -315,9 +315,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
       <h3 style="font-size:1.2rem">Claims Pend Processing</h3>
       <p style="font-size:.9rem">~20% of claims fall out of auto-adjudication and enter the <strong>pend queue</strong>. The agent resolves each pended line against <strong>6 live source systems</strong> using the payer's own <strong>SOPs</strong> — approving, partially paying, requesting documentation, or routing the consequential cases to <strong>Human review</strong>.</p>
       <div style="margin-top:10px">
-        <span class="badge green">Gen 1 Live</span>
-        <span class="badge" style="margin-left:4px">Gen 2 Signal</span>
-        <span class="badge amber" style="margin-left:4px">Enterprise Insights</span>
+        <span class="badge amber">Enterprise Insights</span>
       </div>
       <div style="margin-top:14px;font-size:.8rem;font-weight:700;color:#1d4ed8">Click to open the Pend Queue →</div>
     </div>
@@ -424,8 +422,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
     <button class="proc-btn" id="start-btn" onclick="startProcessing()" disabled>▶ Start Live Processing</button>
     <button class="proc-btn" style="background:#cbd5e1;color:#334155;margin-left:8px" id="reset-btn" onclick="resetAct1()">↺ Reset</button>
     <div class="proc-counters">
-      <div class="counter-cap">Agent decisions</div>
-      <div class="counter-grid">
+      <div class="counter-cap">Extracted &amp; agent decisions</div>
+      <div class="counter-grid" style="grid-template-columns:repeat(6,1fr)">
+        <div class="counter-box"><div class="counter-n" id="cnt-claims" style="color:#1d4ed8">0</div><div class="counter-l">Claims</div></div>
         <div class="counter-box"><div class="counter-n" id="cnt-extracted" style="color:#0f172a">0</div><div class="counter-l">Pended Lines</div></div>
         <div class="counter-box"><div class="counter-n" id="cnt-total">0</div><div class="counter-l">Processed</div></div>
         <div class="counter-box clickable" onclick="openOutcomePanel('approved')" title="Click to see all"><div class="counter-n green" id="cnt-approved">0</div><div class="counter-l">Approved for Payment</div></div>
@@ -1130,6 +1129,12 @@ let ingesting = false;
 async function ingestRawPends() {
   if (ingesting) return;
   ingesting = true;
+  // Fresh extraction = no decisions yet. Zero the outcome tiles and clear the processed flag,
+  // so the decision counters (incl. Clinical) stay 0 until Start Live Processing runs.
+  processed = false;
+  Object.keys(counts).forEach(k => counts[k] = 0);
+  ['cnt-total','cnt-approved','cnt-partial','cnt-adr','cnt-denied','cnt-hr','cnt-clin','cnt-highdollar','cnt-missingsop']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '0'; });
   const ib = document.getElementById('ingest-btn');
   ib.disabled = true; ib.textContent = '⬇ Extracting…';
   document.getElementById('queue-tbody').innerHTML = '';
@@ -1173,6 +1178,7 @@ async function ingestRawPends() {
     DB_COUNTS[5] = (stats.total_members||0).toLocaleString() + ' members';
     document.getElementById('hub-stats').style.display = 'flex';
     document.getElementById('hub-ingest-note').style.display = 'block';
+    const _cc = document.getElementById('cnt-claims'); if (_cc) _cc.textContent = (stats.claims_extracted||0).toLocaleString();
     const cls = document.getElementById('claims-lines-summary');
     if (cls) {
       cls.style.display = 'block';
@@ -1315,38 +1321,60 @@ const OUTCOME_META = {
   missingsop:{label:'Missing SOP — held for SOP Governance',color:'#c2410c'}};
 let _outcomeRows = [];
 let _adrClaimCtx = null;
+const HUMAN_KEYS=['denied','human','clinical','highdollar'];   // work queues allocated to associates
+const ITEMS_PER_ASSOCIATE=20;
+let _ocKey=null,_ocMeta=null,_ocTotal=0,_ocHuman=false;
+function _assocOf(i){ return 'Associate '+(Math.floor(i/ITEMS_PER_ASSOCIATE)+1); }
+function _renderOutcomeRows(filter){
+  const q=(filter||'').trim().toLowerCase();
+  const holder=document.getElementById('oc-holder'); if(!holder) return;
+  let shown=0;
+  const body=_outcomeRows.map((r,i)=>{
+    const hay=(r.icn+' '+r.member_name+' '+(r.edit_code||'')+' '+(r.edit_description||'')+' '+(r.provider_name||'')+(_ocHuman?(' '+_assocOf(i)):'')).toLowerCase();
+    if(q && !hay.includes(q)) return '';
+    shown++;
+    return `<tr onclick="openFromOutcome(${i})" style="cursor:pointer;border-bottom:1px solid #e2e8f0" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background=''">
+      <td style="padding:6px 10px;font-family:monospace;color:#2563eb;font-size:.72rem">${r.icn}</td>
+      <td style="padding:6px 10px">${r.member_name}</td>
+      <td style="padding:6px 10px;font-family:monospace;font-size:.7rem;color:#334155">${r.edit_code}</td>
+      <td style="padding:6px 10px;font-size:.72rem;color:#334155">${r.edit_description||''}</td>
+      <td style="padding:6px 10px;color:#b45309;white-space:nowrap">$${(r.billed_amount||0).toLocaleString()}</td>
+      <td style="padding:6px 10px;font-weight:700;color:${_ocMeta.color};white-space:nowrap">${r.outcome_label}</td>
+      ${_ocHuman?`<td style="padding:6px 10px;font-size:.7rem;color:#6d28d9;font-weight:600;white-space:nowrap">${_assocOf(i)}</td>`:''}
+      <td style="padding:6px 10px;color:#1d4ed8;font-size:.7rem;white-space:nowrap">view ▸</td></tr>`;
+  }).join('');
+  const cnt=document.getElementById('oc-count');
+  if(cnt) cnt.textContent = q ? `${shown} match${shown===1?'':'es'} for "${filter}" (of ${_outcomeRows.length} shown)` : `Showing ${_outcomeRows.length} of ${_ocTotal.toLocaleString()}`;
+  holder.innerHTML=`<table style="width:100%;border-collapse:collapse">
+    <thead><tr style="text-align:left;border-bottom:2px solid ${_ocMeta.color}">
+      <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">ICN</th>
+      <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Member</th>
+      <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Edit</th>
+      <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">What pended</th>
+      <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Billed</th>
+      <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Decision</th>
+      ${_ocHuman?'<th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Assigned to</th>':''}
+      <th></th></tr></thead><tbody>${body}</tbody></table>`;
+}
 async function openOutcomePanel(key){
   const modal=document.getElementById('outcome-modal'), body=document.getElementById('outcome-modal-body');
   const meta=OUTCOME_META[key]||{label:key,color:'#334155'};
   body.innerHTML=`<div style="padding:26px;color:#64748b">Loading ${meta.label}…</div>`; modal.style.display='flex';
   try{
-    const d=await fetch(`${API}/api/outcome/${key}?limit=60`).then(r=>r.json());
-    _outcomeRows=d.results||[];
-    const rows=_outcomeRows.map((r,i)=>`
-      <tr onclick="openFromOutcome(${i})" style="cursor:pointer;border-bottom:1px solid #e2e8f0" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background=''">
-        <td style="padding:6px 10px;font-family:monospace;color:#2563eb;font-size:.72rem">${r.icn}</td>
-        <td style="padding:6px 10px">${r.member_name}</td>
-        <td style="padding:6px 10px;font-family:monospace;font-size:.7rem;color:#334155">${r.edit_code}</td>
-        <td style="padding:6px 10px;font-size:.72rem;color:#334155">${r.edit_description||''}</td>
-        <td style="padding:6px 10px;color:#b45309;white-space:nowrap">$${(r.billed_amount||0).toLocaleString()}</td>
-        <td style="padding:6px 10px;font-weight:700;color:${meta.color};white-space:nowrap">${r.outcome_label}</td>
-        <td style="padding:6px 10px;color:#1d4ed8;font-size:.7rem;white-space:nowrap">view ▸</td>
-      </tr>`).join('');
+    const d=await fetch(`${API}/api/outcome/${key}?limit=200`).then(r=>r.json());
+    _outcomeRows=d.results||[]; _ocKey=key; _ocMeta=meta; _ocTotal=d.total||0; _ocHuman=HUMAN_KEYS.includes(key);
+    const assoc=Math.max(1,Math.ceil(_ocTotal/ITEMS_PER_ASSOCIATE));
+    const allocBanner=_ocHuman?`<div style="background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.74rem;color:#6d28d9"><strong>Work allocation:</strong> ${_ocTotal.toLocaleString()} items → <strong>${assoc.toLocaleString()} associates</strong> at ${ITEMS_PER_ASSOCIATE} items each. Each case is staged with SOP, evidence, and a recommendation.</div>`:'';
     body.innerHTML=`<div style="position:relative;padding:20px 24px">
       <button onclick="document.getElementById('outcome-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>
       <div style="font-size:1.1rem;font-weight:800;color:${meta.color};margin-bottom:2px">${meta.label}</div>
-      <div style="font-size:.75rem;color:#64748b;margin-bottom:12px">Showing ${d.shown} of ${(d.total||0).toLocaleString()} — click any row to see the full trace (SOP, evidence, databases, decision) the agent used. Nothing to search for.</div>
+      <div style="font-size:.75rem;color:#64748b;margin-bottom:10px"><span id="oc-count">Showing ${_outcomeRows.length} of ${(d.total||0).toLocaleString()}</span> — click any row for the full trace (SOP, evidence, databases, decision).</div>
+      ${allocBanner}
       ${key==='missingsop' ? _sopGovHtml() : ''}
-      <div style="overflow:auto;max-height:${key==='missingsop'?'44vh':'64vh'}"><table style="width:100%;border-collapse:collapse">
-        <thead><tr style="text-align:left;border-bottom:2px solid ${meta.color}">
-          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">ICN</th>
-          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Member</th>
-          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Edit</th>
-          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">What pended</th>
-          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Billed</th>
-          <th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Decision</th><th></th>
-        </tr></thead><tbody>${rows}</tbody></table></div>
+      <input type="text" oninput="_renderOutcomeRows(this.value)" placeholder="🔍 Search member, ICN, edit${_ocHuman?', associate':''}…" style="width:100%;max-width:360px;padding:7px 11px;border:1px solid #cbd5e1;border-radius:7px;font-size:.76rem;margin-bottom:10px">
+      <div id="oc-holder" style="overflow:auto;max-height:${key==='missingsop'?'40vh':'58vh'}"></div>
     </div>`;
+    _renderOutcomeRows('');
   }catch(e){ body.innerHTML='<div style="padding:26px;color:#dc2626">Unavailable.</div>'; }
 }
 function openFromOutcome(i){
@@ -2013,6 +2041,12 @@ function resetAct1() {
     if (el) el.textContent = '0';
   });
   const _ex = document.getElementById('cnt-extracted'); if (_ex) _ex.textContent = '0';
+  const _clm = document.getElementById('cnt-claims'); if (_clm) _clm.textContent = '0';
+  document.getElementById('cnt-missingsop').textContent = '0';
+  document.getElementById('cnt-clin').textContent = '0';
+  document.getElementById('cnt-highdollar').textContent = '0';
+  document.getElementById('claims-lines-summary').style.display = 'none';
+  document.getElementById('whatif-launch').style.display = 'none';
   document.getElementById('queue-tbody').innerHTML = '';
   const _qn = document.getElementById('queue-sample-note'); if (_qn) _qn.innerHTML = '';
   const _hbr = document.getElementById('hr-badge'); if (_hbr) _hbr.textContent = '—';
@@ -2029,6 +2063,8 @@ function resetAct1() {
   _blankDbCounts();
   closeClaimPanel();
   closeDbExpand();
+  // restore server-side demo state so a re-run shows the full Missing-SOP set again
+  fetch(`${API}/api/sop-inbox/reset`, {method:'POST'}).catch(()=>{});
 }
 
 // ── Claim Detail Panel ────────────────────────────────────────────────────────

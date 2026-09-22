@@ -2218,11 +2218,36 @@ def api_outcome(key):
             hit = oc == target
         if hit:
             matched.append(c)
-    total = len(matched)
+    # Include the hero (multi-line) claims by their ROLLUP outcome, so the main queue and the
+    # work queue reconcile (a claim shown as Partial in the queue appears in the Partial queue).
+    hero_matches = []
+    for hero in line_item_claims:
+        lines = hero.get("lines", [])
+        ru = _header_rollup([resolve_line(dict(l), hero) for l in lines], lines)
+        oc = ru["outcome"]
+        if target == "__clinical__":
+            hh = False
+        elif target == "__highdollar__":
+            hh = oc in ("human_review", "escalate") and _is_high_dollar(hero)
+        elif target == "human_review":
+            hh = oc in ("human_review", "escalate") and not _is_high_dollar(hero)
+        else:
+            hh = oc == target
+        if hh:
+            hero_matches.append({
+                "icn": hero["icn"], "member_name": hero.get("member_name"), "provider_name": hero.get("provider_name"),
+                "cpt_code": hero.get("cpt_code", hero.get("claim_type", "")), "billed_amount": hero.get("billed_amount"),
+                "edit_code": f'{ru.get("lines_pended", 0)} pended lines', "edit_category": hero.get("claim_type", "Multi-line"),
+                "edit_description": hero.get("label", "Multi-line claim"),
+                "outcome": oc, "outcome_label": ru["outcome_label"], "outcome_color": ru.get("outcome_color", "gray"),
+                "payment_amount": ru.get("payment_amount", 0), "carc": "—", "rarc": "—",
+                "sop_ref": f'{ru.get("lines_paid", 0)}/{ru.get("lines_total", 0)} lines paid', "is_multi_line": True,
+            })
+    total = len(matched) + len(hero_matches)
     # Bring the what-if-editable examples (auth missing, units, timely filing) to the FRONT
     matched.sort(key=lambda c: 0 if c.get("edit_code") in WHATIF_EDITS else 1)
-    matches = []
-    for c in matched[:limit]:
+    matches = list(hero_matches)   # heroes first so they're easy to find
+    for c in matched[:max(0, limit - len(matches))]:
         res = _resolve_pended(c)
         matches.append({
             "icn": c["icn"], "member_name": c["member_name"], "provider_name": c["provider_name"],
