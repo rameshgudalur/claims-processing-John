@@ -1325,9 +1325,17 @@ const OUTCOME_META = {
 let _outcomeRows = [];
 let _adrClaimCtx = null;
 const HUMAN_KEYS=['denied','human','clinical','highdollar'];   // work queues allocated to associates
-const ITEMS_PER_ASSOCIATE=20;
+const ITEMS_PER_ASSOCIATE=35;
+const ASSOC_NAMES=["Dana Reyes","Marcus Bell","Priya Shah","Luis Ortega","Aisha Khan","Ben Carter",
+  "Nora Fisher","Sam Okafor","Grace Lin","Ravi Menon","Elena Vargas","Tom Hughes","Maya Patel",
+  "Derek Cole","Sofia Russo","Ivan Petrov","Chloe Adams","Jamal Wright","Hana Kim","Owen Barnes"];
 let _ocKey=null,_ocMeta=null,_ocTotal=0,_ocHuman=false;
-function _assocOf(i){ return 'Associate '+(Math.floor(i/ITEMS_PER_ASSOCIATE)+1); }
+function _assocOf(i){
+  const k=Math.floor(i/ITEMS_PER_ASSOCIATE);
+  const name=ASSOC_NAMES[k%ASSOC_NAMES.length];
+  const wrap=Math.floor(k/ASSOC_NAMES.length);
+  return wrap ? name+' '+(wrap+1) : name;
+}
 function _renderOutcomeRows(filter){
   const q=(filter||'').trim().toLowerCase();
   const holder=document.getElementById('oc-holder'); if(!holder) return;
@@ -1359,6 +1367,21 @@ function _renderOutcomeRows(filter){
       ${_ocHuman?'<th style="padding:6px 10px;font-size:.64rem;color:#64748b;text-transform:uppercase">Assigned to</th>':''}
       <th></th></tr></thead><tbody>${body}</tbody></table>`;
 }
+function toggleAllocation(){
+  const el=document.getElementById('oc-alloc'); if(!el) return;
+  if(el.style.display!=='none'){ el.style.display='none'; return; }
+  const n=Math.max(1,Math.ceil(_ocTotal/ITEMS_PER_ASSOCIATE));
+  let cards='';
+  for(let k=0;k<n;k++){
+    const cnt=Math.min(ITEMS_PER_ASSOCIATE, _ocTotal-k*ITEMS_PER_ASSOCIATE);
+    const name=_assocOf(k*ITEMS_PER_ASSOCIATE);
+    cards+=`<div style="display:flex;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;padding:6px 10px;font-size:.72rem">
+      <span style="font-weight:600;color:#0f172a">${name}</span><span style="color:#6d28d9;font-weight:700;white-space:nowrap">${cnt} case${cnt===1?'':'s'}</span></div>`;
+  }
+  el.innerHTML=`<div style="font-size:.7rem;color:#64748b;margin-bottom:6px">${n.toLocaleString()} associates · ${ITEMS_PER_ASSOCIATE} cases each (last associate takes the remainder)</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;max-height:34vh;overflow:auto">${cards}</div>`;
+  el.style.display='block';
+}
 async function openOutcomePanel(key){
   const modal=document.getElementById('outcome-modal'), body=document.getElementById('outcome-modal-body');
   const meta=OUTCOME_META[key]||{label:key,color:'#334155'};
@@ -1367,7 +1390,10 @@ async function openOutcomePanel(key){
     const d=await fetch(`${API}/api/outcome/${key}?limit=200`).then(r=>r.json());
     _outcomeRows=d.results||[]; _ocKey=key; _ocMeta=meta; _ocTotal=d.total||0; _ocHuman=HUMAN_KEYS.includes(key);
     const assoc=Math.max(1,Math.ceil(_ocTotal/ITEMS_PER_ASSOCIATE));
-    const allocBanner=_ocHuman?`<div style="background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.74rem;color:#6d28d9"><strong>Work allocation:</strong> ${_ocTotal.toLocaleString()} items → <strong>${assoc.toLocaleString()} associates</strong> at ${ITEMS_PER_ASSOCIATE} items each. Each case is staged with SOP, evidence, and a recommendation.</div>`:'';
+    const allocBanner=_ocHuman?`<div style="background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.74rem;color:#6d28d9">
+      <strong>Work allocation:</strong> ${_ocTotal.toLocaleString()} items → <strong>${assoc.toLocaleString()} associates</strong> at ${ITEMS_PER_ASSOCIATE} items each. Each case is staged with SOP, evidence, and a recommendation.
+      <button onclick="toggleAllocation()" style="margin-left:8px;background:#6d28d9;border:1px solid #6d28d9;color:#fff;font-weight:700;font-size:.68rem;padding:4px 10px;border-radius:6px;cursor:pointer">📋 View associate allocation</button>
+     </div><div id="oc-alloc" style="display:none;margin-bottom:10px"></div>`:'';
     body.innerHTML=`<div style="position:relative;padding:20px 24px">
       <button onclick="document.getElementById('outcome-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>
       <div style="font-size:1.1rem;font-weight:800;color:${meta.color};margin-bottom:2px">${meta.label}</div>
