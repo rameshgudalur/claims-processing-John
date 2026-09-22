@@ -1132,6 +1132,9 @@ async function ingestRawPends() {
   // Fresh extraction = no decisions yet. Zero the outcome tiles and clear the processed flag,
   // so the decision counters (incl. Clinical) stay 0 until Start Live Processing runs.
   processed = false;
+  // Restore the Missing-SOP scenario on the server so every run starts with it present
+  // (a prior SOP ingestion persists in the long-running server otherwise).
+  try { await fetch(`${API}/api/sop-inbox/reset`, {method:'POST'}); } catch(e) {}
   Object.keys(counts).forEach(k => counts[k] = 0);
   ['cnt-total','cnt-approved','cnt-partial','cnt-adr','cnt-denied','cnt-hr','cnt-clin','cnt-highdollar','cnt-missingsop']
     .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '0'; });
