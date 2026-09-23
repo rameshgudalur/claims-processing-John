@@ -489,7 +489,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8fafc;color:#0f172
           <th class="qsort" onclick="sortQueueTable(9,'s',this)">Decision<span class="qcar"></span></th>
           <th class="qsort" onclick="sortQueueTable(10,'n',this)">Payment<span class="qcar"></span></th>
           <th class="qsort" onclick="sortQueueTable(11,'s',this)">SOP Ref<span class="qcar"></span></th>
-          <th>Action</th>
         </tr>
       </thead>
       <tbody id="queue-tbody"></tbody>
@@ -1238,7 +1237,6 @@ function streamRawRow(c) {
     <td><span class="badge-outcome gray">pending</span></td>
     <td style="color:#334155">—</td>
     <td style="font-size:.68rem;color:#334155">—</td>
-    <td style="color:#94a3b8">—</td>
   `;
   tbody.appendChild(tr);
 }
@@ -2084,10 +2082,6 @@ function _queueRowHtml(r){
   const color = r.outcome_color || 'gray';
   const payment = r.payment_amount > 0 ? `$${r.payment_amount.toFixed(2)}` : '—';
   const hrBadge = r.human_review ? `<span class="badge-hr">HR</span>` : '';
-  const actBtns = `<div style="display:flex;gap:4px" onclick="event.stopPropagation()">`
-    + `<button onclick="claimAction('${r.icn}','approve',event)" style="background:#dcfce7;border:1px solid #16a34a;color:#15803d;font-weight:700;font-size:.64rem;padding:3px 8px;border-radius:5px;cursor:pointer">Approve</button>`
-    + `<button onclick="claimAction('${r.icn}','review',event)" style="background:#ede9fe;border:1px solid #7c3aed;color:#6d28d9;font-weight:700;font-size:.64rem;padding:3px 8px;border-radius:5px;cursor:pointer">Review</button>`
-    + `</div>`;
   return `
     <td style="font-family:monospace;color:#2563eb;font-size:.72rem">${r.icn}</td>
     <td>${r.member_name}</td>
@@ -2101,7 +2095,6 @@ function _queueRowHtml(r){
     <td id="dec-${r.icn}">${_decisionBadge(r.decision_status)}</td>
     <td style="color:${color === 'green' || color === 'yellow' ? '#15803d' : '#334155'}">${payment}</td>
     <td style="font-size:.68rem;color:#334155">${r.sop_ref}</td>
-    <td id="act-${r.icn}">${actBtns}</td>
   `;
 }
 let _queueBackup = null;
