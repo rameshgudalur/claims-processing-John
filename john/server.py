@@ -1354,6 +1354,20 @@ CLINICAL_GUIDELINES["99231"] = {
         ("No safe lower level of care (observation/outpatient) available", "clinical"),
     ]}
 CLINICAL_GUIDELINES["99232"] = dict(CLINICAL_GUIDELINES["99231"])
+# Bariatric / metabolic surgery — a canonical, criteria-heavy medical-necessity review
+CLINICAL_GUIDELINES["43775"] = {
+    "gid": "MCG-style BAR B-0110", "title": "Bariatric Surgery (Sleeve Gastrectomy) — Medical Necessity",
+    "policy_ref": "Anthem Clinical UM Guideline — Bariatric Surgery",
+    "policy_url": "https://www.anthem.com/medpolicies/abc/active/gl_pw_d085821.html",
+    "criteria": [
+        ("BMI ≥ 40, or ≥ 35 with an obesity-related comorbidity (T2DM, HTN, OSA)", "claim"),
+        ("≥ 6 months of physician-supervised medical weight management documented", "clinical"),
+        ("Behavioral-health / psychological evaluation completed and cleared", "clinical"),
+        ("Nutrition assessment and structured pre-operative education completed", "clinical"),
+        ("No untreated substance use or uncontrolled psychiatric condition", "clinical"),
+    ]}
+CLINICAL_GUIDELINES["43644"] = dict(CLINICAL_GUIDELINES["43775"],
+    title="Bariatric Surgery (Roux-en-Y Gastric Bypass) — Medical Necessity")
 
 _CATEGORY_GUIDELINES = {
     "surgery":  {"gid": "MCG-style SURG S-0000", "title": "Surgical Procedure — Medical Necessity",
@@ -1398,11 +1412,14 @@ def _service_category(cpt, desc):
 def get_guideline(claim):
     cpt = claim.get("cpt_code")
     g = CLINICAL_GUIDELINES.get(cpt)
-    if g:
-        return dict(g, cpt=cpt, source=f"MCG-style clinical criteria (representative) · CMS NCD/LCD · Plan Medical Policy MN — {g['gid']}")
-    cat = _service_category(cpt, claim.get("cpt_description") or claim.get("description"))
-    g = _CATEGORY_GUIDELINES[cat]
-    return dict(g, cpt=cpt, source=f"MCG-style clinical criteria (representative) · CMS NCD/LCD · Plan Medical Policy MN — {g['gid']}")
+    if not g:
+        cat = _service_category(cpt, claim.get("cpt_description") or claim.get("description"))
+        g = _CATEGORY_GUIDELINES[cat]
+    policy = g.get("policy_ref") or "Plan Medical Policy MN"
+    out = dict(g, cpt=cpt, source=f"MCG-style clinical criteria (representative) · CMS NCD/LCD · {policy} — {g['gid']}")
+    if g.get("policy_url"):
+        out["policy_url"] = g["policy_url"]
+    return out
 
 def evaluate_guideline(claim):
     """Adjudicate medical necessity against the MCG-style guideline. The agent evaluates each
@@ -1438,6 +1455,7 @@ def evaluate_guideline(claim):
         outcome = "partial_pay"
         determination = f"Criteria partially met per {g['gid']} — approve at the appropriate/reduced level; '{unmet[0]}' not supported."
     return {"guideline_id": g["gid"], "title": g["title"], "source": g["source"],
+            "policy_ref": g.get("policy_ref"), "policy_url": g.get("policy_url"),
             "cpt": g["cpt"], "criteria": crit, "criteria_total": len(crit),
             "criteria_met": n_met, "criteria_unmet": len(unmet),
             "outcome": outcome, "outcome_label": RESOLUTION_LABELS.get(outcome, {}).get("label", outcome),
@@ -1846,6 +1864,36 @@ def _deconcentrate_auths(cap=2):
             authorizations[an]["member_name"] = sname
 
 _deconcentrate_auths()
+
+def _seed_bariatric_case():
+    """A canonical bariatric-surgery medical-necessity pend so the agent can walk the MCG-style
+    bariatric guideline live (BMI from the claim, then supervised weight-loss / psych / nutrition
+    documentation criteria) → recommendation → clinician sign-off (high-dollar oversight)."""
+    icn = "ICN-2026-MN-BAR1"
+    if icn in claims_index:
+        return
+    c = {
+        "icn": icn, "claim_type": "Institutional", "form": "UB-04 / 837I",
+        "member_id": "MBR-40771", "member_name": "Denise Carter", "member_dob": "1982-06-14",
+        "plan": "Althea Health", "group_name": "Metro Health System",
+        "npi_billing": "1902847733", "npi_rendering": "1902847733",
+        "provider_name": "Metro General Hospital", "provider_specialty": "Acute Care Hospital",
+        "cpt_code": "43775", "cpt_description": "Laparoscopic sleeve gastrectomy (bariatric surgery)",
+        "rev_code": "0360", "modifier": None, "units_billed": 1,
+        "icd10_principal": "E66.01", "icd10_desc": "Morbid (severe) obesity due to excess calories",
+        "icd10_secondary": "E11.9", "place_of_service": "21",
+        "billed_amount": 28450.0, "allowed_amount": 18930.0,
+        "edit_code": "E-MN-002", "edit_category": "Medical Necessity",
+        "edit_description": "Diagnosis does not support procedure — LCD/NCD / clinical-policy review",
+        "resolution_path": "deny_medical_necessity", "carc_code": "CO-50", "rarc_code": "N130",
+        "auth_number": None, "human_review_flag": False,
+        "dos": "2026-02-20", "received_date": "2026-02-26", "pend_date": "2026-03-10",
+        "days_in_queue": 24, "priority": "urgent", "status": "pending", "is_featured": True,
+    }
+    pended_claims.append(c)
+    claims_index[icn] = c
+
+_seed_bariatric_case()
 
 def _pended_line_from(claim):
     """Build a pended service-line dict from a pend record (primary or bundled secondary)."""
