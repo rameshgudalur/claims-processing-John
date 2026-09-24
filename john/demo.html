@@ -1291,6 +1291,7 @@ async function openSopDoc(editCode){
 function closeSopModal(){ document.getElementById('sop-modal').style.display='none'; }
 
 // ── Clinical policy viewer — the coverage rule + MCG-style criteria the agent adjudicates against ──
+function _polSec(title, inner){ return `<div style="margin-top:12px"><div style="font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:6px">${title}</div>${inner}</div>`; }
 async function openClinicalPolicy(cpt){
   const modal=document.getElementById('outcome-modal'), body=document.getElementById('outcome-modal-body');
   body.innerHTML='<div style="padding:28px;color:#64748b">📖 Retrieving clinical policy…</div>'; modal.style.display='flex';
@@ -1318,11 +1319,16 @@ async function openClinicalPolicy(cpt){
         <span>CPT: <strong style="color:#334155;font-family:monospace">${d.cpt}</strong></span>
         <span>Guideline: <strong style="color:#334155">${d.guideline_id}</strong></span>
       </div>
-      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#1e3a5f;line-height:1.55;margin:12px 0">${d.coverage}</div>
-      <div style="font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:6px">Medical-necessity criteria</div>
-      ${crit}
-      ${refs?`<div style="font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin:12px 0 5px">References &amp; basis</div><ul style="margin:0;padding-left:18px">${refs}</ul>`:''}
-      <div style="font-size:.63rem;color:#94a3b8;font-style:italic;margin-top:10px">${d.source}</div>
+      ${d.status?`<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:.66rem;color:#64748b;margin-top:3px"><span>Status: <strong style="color:#15803d">${d.status}</strong></span>${d.review_date?`<span>Last reviewed: <strong style="color:#334155">${d.review_date}</strong></span>`:''}${d.next_review?`<span>Next review: <strong style="color:#334155">${d.next_review}</strong></span>`:''}</div>`:''}
+      ${d.purpose?_polSec('1 · Purpose', `<div style="font-size:.78rem;color:#334155;line-height:1.55">${d.purpose}</div>`):''}
+      ${d.scope?_polSec('2 · Scope / applicability', `<div style="font-size:.78rem;color:#334155;line-height:1.55">${d.scope}</div>`):''}
+      ${_polSec('3 · Coverage position', `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#1e3a5f;line-height:1.55">${d.coverage}</div>`)}
+      ${_polSec('4 · Medical-necessity criteria', crit)}
+      ${(d.not_medically_necessary&&d.not_medically_necessary.length)?_polSec('5 · Considered NOT medically necessary when', `<ul style="margin:0;padding-left:18px">${d.not_medically_necessary.map(x=>`<li style="font-size:.74rem;color:#b91c1c;margin-bottom:3px;line-height:1.5">${x}</li>`).join('')}</ul>`):''}
+      ${(d.documentation&&d.documentation.length)?_polSec('6 · Documentation requirements', `<ul style="margin:0;padding-left:18px">${d.documentation.map(x=>`<li style="font-size:.74rem;color:#334155;margin-bottom:3px;line-height:1.5">${x}</li>`).join('')}</ul>`):''}
+      ${d.coding?_polSec('7 · Coding', `<div style="font-size:.74rem;color:#334155;line-height:1.6"><div><strong>CPT:</strong> ${d.coding.cpt||'—'}</div><div><strong>ICD-10:</strong> ${d.coding.icd10||'—'}</div>${d.coding.denial_codes?`<div><strong>Denial:</strong> ${d.coding.denial_codes}</div>`:''}</div>`):''}
+      ${refs?_polSec('8 · References &amp; basis', `<ul style="margin:0;padding-left:18px">${refs}</ul>`):''}
+      <div style="font-size:.63rem;color:#94a3b8;font-style:italic;margin-top:12px;border-top:1px solid #e2e8f0;padding-top:8px">${d.source}${d.full_document?'':' · representative criteria (no full policy document on file for this service)'}</div>
     </div>`;
   }catch(e){ body.innerHTML='<div style="padding:28px;color:#dc2626">Clinical policy unavailable.</div>'; }
 }
@@ -1805,13 +1811,16 @@ function renderServiceLines(data, resolved) {
           + _btn('deny','Deny','#fee2e2','#dc2626','#b91c1c')
           + _btn('escalate','Escalate','#ffedd5','#f59e0b','#c2410c')
           + `</div></div>`;
-      } else if (pend) {
+      } else if (pend && _isHRline) {
+        // Human-review / escalate lines: the examiner acts here
         lineBtns = `<div id="lact-${icn}-${l.line_no}" style="margin-top:5px" onclick="event.stopPropagation()">`
           + _btn('approve','Approve','#dcfce7','#16a34a','#15803d')
-          + (_isHRline
-              ? _btn('deny','Deny','#fee2e2','#dc2626','#b91c1c') + _btn('escalate','Escalate','#ffedd5','#f59e0b','#c2410c')
-              : _btn('review','Review','#ede9fe','#7c3aed','#6d28d9'))
+          + _btn('deny','Deny','#fee2e2','#dc2626','#b91c1c')
+          + _btn('escalate','Escalate','#ffedd5','#f59e0b','#c2410c')
           + `</div>`;
+      } else if (pend) {
+        // Agent auto-adjudicated this line (approve / partial / deny) — no examiner action needed
+        lineBtns = `<div style="margin-top:4px;font-size:.6rem;color:#64748b;font-style:italic">✓ Agent-adjudicated — no examiner action needed</div>`;
       }
       decCell = `<td style="font-weight:700;color:${col}"><span id="declbl-${icn}-${l.line_no}">${res.outcome_label}</span>${trace?`<div style="font-size:.6rem;font-weight:400;color:#64748b;margin-top:3px;white-space:normal;max-width:230px">↳ Traceable to: ${trace}</div>`:''}${lineBtns}</td>`;
       payCell = `<td style="color:${res.payment_amount>0?'#15803d':'#334155'}">${res.payment_amount>0?'$'+res.payment_amount.toFixed(2):'—'}</td>`;

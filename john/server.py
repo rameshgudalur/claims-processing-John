@@ -1470,7 +1470,12 @@ def api_guideline(cpt):
 _POLICY_BODIES = {
     "43775": {
         "policy_id": "CG-SURG-01", "version": "2026.1", "effective_date": "2026-01-01",
+        "review_date": "2025-11-14", "next_review": "2026-11-01", "status": "Active",
         "title": "Bariatric Surgery & Other Treatments for Clinically Severe Obesity",
+        "purpose": ("Define the medical-necessity criteria used to determine coverage for bariatric "
+                    "(metabolic / weight-loss) surgery for the treatment of clinically severe obesity."),
+        "scope": ("Applies to requests for laparoscopic sleeve gastrectomy (43775), Roux-en-Y gastric "
+                  "bypass (43644), and adjustable gastric banding in members age 18 and older."),
         "coverage": ("Bariatric surgery (e.g., laparoscopic sleeve gastrectomy, Roux-en-Y gastric "
                      "bypass) is considered MEDICALLY NECESSARY when ALL of the criteria below are met; "
                      "it is NOT medically necessary when one or more criteria are not met."),
@@ -1481,6 +1486,23 @@ _POLICY_BODIES = {
             "Pre-operative nutrition assessment and structured pre-operative education completed.",
             "No untreated substance use disorder and no uncontrolled psychiatric condition that would preclude surgery.",
         ],
+        "not_medically_necessary": [
+            "One or more of the medical-necessity criteria above are not met.",
+            "Surgery performed primarily for cosmetic purposes.",
+            "Active, untreated substance use disorder or uncontrolled psychiatric illness.",
+            "Documented inability/unwillingness to comply with post-operative follow-up and nutritional requirements.",
+        ],
+        "documentation": [
+            "Height, weight, and calculated BMI, with documentation of any obesity-related comorbidities.",
+            "Records of ≥ 6 months of physician-supervised medical weight management within the prior 24 months.",
+            "Behavioral-health / psychological evaluation report with surgical clearance.",
+            "Nutrition assessment and pre-operative education records.",
+        ],
+        "coding": {
+            "cpt": "43775 (sleeve gastrectomy) · 43644 (Roux-en-Y gastric bypass) · 43770 (adjustable gastric band)",
+            "icd10": "E66.01 (morbid obesity, excess calories) · E66.2 (morbid obesity w/ alveolar hypoventilation) · Z68.41–Z68.45 (BMI 40+)",
+            "denial_codes": "If not medically necessary: CARC CO-50 / RARC N130",
+        },
         "references": [
             "CMS NCD 100.1 — Bariatric Surgery for Treatment of Morbid Obesity",
             "ASMBS / AACE / TOS Clinical Practice Guidelines — Perioperative Support of the Bariatric Surgery Patient",
@@ -1505,9 +1527,17 @@ def get_clinical_policy(cpt):
     return {
         "cpt": cpt, "guideline_id": g["gid"], "policy_ref": g.get("policy_ref") or g["gid"],
         "policy_id": body.get("policy_id"), "version": body.get("version"),
-        "effective_date": body.get("effective_date"), "title": body.get("title") or g["title"],
+        "effective_date": body.get("effective_date"), "review_date": body.get("review_date"),
+        "next_review": body.get("next_review"), "status": body.get("status"),
+        "title": body.get("title") or g["title"],
+        "purpose": body.get("purpose"), "scope": body.get("scope"),
         "coverage": body.get("coverage", "This service is covered when it meets the plan's medical-necessity criteria below."),
-        "criteria": crit, "references": body.get("references", []), "source": g["source"],
+        "criteria": crit,
+        "not_medically_necessary": body.get("not_medically_necessary", []),
+        "documentation": body.get("documentation", []),
+        "coding": body.get("coding"),
+        "references": body.get("references", []), "source": g["source"],
+        "full_document": bool(body),
     }
 
 @app.route("/api/clinical-policy/<cpt>")
@@ -1600,8 +1630,9 @@ def resolve_claim(claim):
         "outcome_label":  RESOLUTION_LABELS.get(outcome, {}).get("label", outcome),
         "outcome_color":  RESOLUTION_LABELS.get(outcome, {}).get("color", "gray"),
         "payment_amount": payment,
-        "carc":           claim["carc_code"],
-        "rarc":           claim["rarc_code"],
+        # Denial CARC/RARC only apply to adverse outcomes — an approved claim carries none.
+        "carc":           (None if outcome == "approve" else claim["carc_code"]),
+        "rarc":           (None if outcome == "approve" else claim["rarc_code"]),
         "sop_ref":        rule["sop_ref"] if rule else "N/A",
         "sop_steps":      steps,
         "executed_steps": executed_steps,
@@ -1931,7 +1962,7 @@ def _seed_bariatric_case():
         "icd10_secondary": "E11.9", "place_of_service": "24",
         "billed_amount": 4850.0, "allowed_amount": 3620.0,
         "edit_code": "E-MN-002", "edit_category": "Medical Necessity",
-        "edit_description": "Diagnosis does not support procedure — LCD/NCD / clinical-policy review",
+        "edit_description": "Bariatric surgery — medical-necessity review required (clinical policy)",
         "resolution_path": "deny_medical_necessity", "carc_code": "CO-50", "rarc_code": "N130",
         "auth_number": None, "human_review_flag": False, "mn_force_met": True,
         "dos": "2026-02-20", "received_date": "2026-02-26", "pend_date": "2026-03-10",
