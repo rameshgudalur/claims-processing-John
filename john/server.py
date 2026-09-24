@@ -1435,7 +1435,7 @@ def evaluate_guideline(claim):
             crit.append({"criterion": text, "status": "met",
                          "note": f"Confirmed from claim — diagnosis {icd} / procedure {g['cpt']}"})
         else:
-            met = rnd.random() > 0.28   # documentation review — most criteria met
+            met = True if claim.get("mn_force_met") else (rnd.random() > 0.28)   # documentation review — most criteria met
             if met:
                 crit.append({"criterion": text, "status": "met",
                              "note": "Clinical documentation on file satisfies this criterion"})
@@ -1465,6 +1465,54 @@ CLINICAL_RESOLUTION_PATHS = {"request_documentation", "deny_medical_necessity"}
 @app.route("/api/guideline/<cpt>")
 def api_guideline(cpt):
     return jsonify(get_guideline({"cpt_code": cpt, "cpt_description": ""}))
+
+# Viewable clinical-policy documents (the coverage rule + criteria the agent adjudicates against).
+_POLICY_BODIES = {
+    "43775": {
+        "policy_id": "CG-SURG-01", "version": "2026.1", "effective_date": "2026-01-01",
+        "title": "Bariatric Surgery & Other Treatments for Clinically Severe Obesity",
+        "coverage": ("Bariatric surgery (e.g., laparoscopic sleeve gastrectomy, Roux-en-Y gastric "
+                     "bypass) is considered MEDICALLY NECESSARY when ALL of the criteria below are met; "
+                     "it is NOT medically necessary when one or more criteria are not met."),
+        "criteria_detail": [
+            "BMI ≥ 40 kg/m², OR ≥ 35 kg/m² with a clinically significant obesity-related comorbidity (type 2 diabetes, hypertension, obstructive sleep apnea).",
+            "≥ 6 consecutive months of physician-supervised medical weight management within the prior 24 months, documented in the record.",
+            "Pre-operative behavioral-health / psychological evaluation completed, with clearance for surgery.",
+            "Pre-operative nutrition assessment and structured pre-operative education completed.",
+            "No untreated substance use disorder and no uncontrolled psychiatric condition that would preclude surgery.",
+        ],
+        "references": [
+            "CMS NCD 100.1 — Bariatric Surgery for Treatment of Morbid Obesity",
+            "ASMBS / AACE / TOS Clinical Practice Guidelines — Perioperative Support of the Bariatric Surgery Patient",
+            "Althea Health Medical Policy CG-SURG-01",
+        ],
+    },
+}
+_POLICY_BODIES["43644"] = dict(_POLICY_BODIES["43775"],
+    title="Bariatric Surgery (Roux-en-Y Gastric Bypass) — Clinically Severe Obesity")
+
+def get_clinical_policy(cpt):
+    """The clinical policy document behind the medical-necessity determination for a CPT."""
+    g = get_guideline({"cpt_code": cpt, "cpt_description": ""})
+    body = _POLICY_BODIES.get(cpt, {})
+    detail = body.get("criteria_detail", [])
+    crit = []
+    for i, (text, typ) in enumerate(g["criteria"]):
+        crit.append({"criterion": text, "type": typ,
+                     "detail": detail[i] if i < len(detail) else "",
+                     "verify": "Verifiable from the claim / coding" if typ == "claim"
+                               else "Requires clinical documentation / clinician judgment"})
+    return {
+        "cpt": cpt, "guideline_id": g["gid"], "policy_ref": g.get("policy_ref") or g["gid"],
+        "policy_id": body.get("policy_id"), "version": body.get("version"),
+        "effective_date": body.get("effective_date"), "title": body.get("title") or g["title"],
+        "coverage": body.get("coverage", "This service is covered when it meets the plan's medical-necessity criteria below."),
+        "criteria": crit, "references": body.get("references", []), "source": g["source"],
+    }
+
+@app.route("/api/clinical-policy/<cpt>")
+def api_clinical_policy(cpt):
+    return jsonify(get_clinical_policy(cpt))
 
 
 _PEND_RESOLVE_CACHE = {}
@@ -1872,22 +1920,22 @@ def _seed_bariatric_case():
     if icn in claims_index:
         return
     c = {
-        "icn": icn, "claim_type": "Institutional", "form": "UB-04 / 837I",
-        "member_id": "MBR-40771", "member_name": "Denise Carter", "member_dob": "1982-06-14",
+        "icn": icn, "claim_type": "Professional", "form": "CMS-1500 / 837P",
+        "member_id": "MBR-40771", "member_name": "Daniel Carter", "member_dob": "1980-03-22",
         "plan": "Althea Health", "group_name": "Metro Health System",
         "npi_billing": "1902847733", "npi_rendering": "1902847733",
-        "provider_name": "Metro General Hospital", "provider_specialty": "Acute Care Hospital",
+        "provider_name": "Metro Surgical Associates", "provider_specialty": "Bariatric Surgery",
         "cpt_code": "43775", "cpt_description": "Laparoscopic sleeve gastrectomy (bariatric surgery)",
-        "rev_code": "0360", "modifier": None, "units_billed": 1,
+        "rev_code": None, "modifier": None, "units_billed": 1,
         "icd10_principal": "E66.01", "icd10_desc": "Morbid (severe) obesity due to excess calories",
-        "icd10_secondary": "E11.9", "place_of_service": "21",
-        "billed_amount": 28450.0, "allowed_amount": 18930.0,
+        "icd10_secondary": "E11.9", "place_of_service": "24",
+        "billed_amount": 4850.0, "allowed_amount": 3620.0,
         "edit_code": "E-MN-002", "edit_category": "Medical Necessity",
         "edit_description": "Diagnosis does not support procedure — LCD/NCD / clinical-policy review",
         "resolution_path": "deny_medical_necessity", "carc_code": "CO-50", "rarc_code": "N130",
-        "auth_number": None, "human_review_flag": False,
+        "auth_number": None, "human_review_flag": False, "mn_force_met": True,
         "dos": "2026-02-20", "received_date": "2026-02-26", "pend_date": "2026-03-10",
-        "days_in_queue": 24, "priority": "urgent", "status": "pending", "is_featured": True,
+        "days_in_queue": 12, "priority": "high", "status": "pending", "is_featured": True,
     }
     pended_claims.append(c)
     claims_index[icn] = c
@@ -2210,6 +2258,9 @@ def _featured_ordered():
                 result.append(lst.pop(0))
     for i, c in enumerate(result):  # lead with an approval if one exists
         if _resolve_pended(c)["outcome"] == "approve":
+            result.insert(0, result.pop(i)); break
+    for i, c in enumerate(result):  # pin the bariatric medical-necessity showcase claim upfront
+        if c.get("icn") == "ICN-2026-MN-BAR1":
             result.insert(0, result.pop(i)); break
     _FEATURED_ORDER = result
     return result

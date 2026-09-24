@@ -1290,6 +1290,43 @@ async function openSopDoc(editCode){
 }
 function closeSopModal(){ document.getElementById('sop-modal').style.display='none'; }
 
+// ── Clinical policy viewer — the coverage rule + MCG-style criteria the agent adjudicates against ──
+async function openClinicalPolicy(cpt){
+  const modal=document.getElementById('outcome-modal'), body=document.getElementById('outcome-modal-body');
+  body.innerHTML='<div style="padding:28px;color:#64748b">📖 Retrieving clinical policy…</div>'; modal.style.display='flex';
+  try{
+    const d=await fetch(`${API}/api/clinical-policy/${cpt}`).then(r=>r.json());
+    const crit=(d.criteria||[]).map((c,i)=>`
+      <div style="border-left:3px solid ${c.type==='claim'?'#16a34a':'#7c3aed'};background:${c.type==='claim'?'#f0fdf4':'#faf5ff'};border-radius:0 6px 6px 0;padding:8px 11px;margin-bottom:6px">
+        <div style="display:flex;justify-content:space-between;gap:8px"><div style="font-size:.76rem;font-weight:700;color:#0f172a">${i+1}. ${c.criterion}</div>
+        <span style="font-size:.56rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:${c.type==='claim'?'#15803d':'#6d28d9'};white-space:nowrap">${c.type==='claim'?'Claim-verifiable':'Clinical doc'}</span></div>
+        ${c.detail?`<div style="font-size:.72rem;color:#334155;line-height:1.5;margin-top:3px">${c.detail}</div>`:''}
+        <div style="font-size:.63rem;color:#64748b;font-style:italic;margin-top:2px">${c.verify}</div>
+      </div>`).join('');
+    const refs=(d.references||[]).map(r=>`<li style="font-size:.72rem;color:#334155;margin-bottom:2px">${r}</li>`).join('');
+    body.innerHTML=`<div style="position:relative;padding:22px 26px">
+      <button onclick="document.getElementById('outcome-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:1.3rem;color:#64748b;cursor:pointer">✕</button>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:.64rem;font-weight:700;letter-spacing:.5px;color:#1d4ed8;background:#dbeafe;padding:2px 8px;border-radius:5px">📖 CLINICAL POLICY</span>
+        ${d.policy_id?`<span style="background:#dcfce7;color:#15803d;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:6px">${d.policy_id}</span>`:''}
+      </div>
+      <div style="font-size:1.12rem;font-weight:800;color:#0f172a;margin-top:8px">${d.policy_ref}</div>
+      <div style="font-size:.82rem;color:#334155;margin-top:2px">${d.title}</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:.68rem;color:#64748b;margin-top:6px">
+        ${d.version?`<span>Version: <strong style="color:#334155">${d.version}</strong></span>`:''}
+        ${d.effective_date?`<span>Effective: <strong style="color:#334155">${d.effective_date}</strong></span>`:''}
+        <span>CPT: <strong style="color:#334155;font-family:monospace">${d.cpt}</strong></span>
+        <span>Guideline: <strong style="color:#334155">${d.guideline_id}</strong></span>
+      </div>
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#1e3a5f;line-height:1.55;margin:12px 0">${d.coverage}</div>
+      <div style="font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:6px">Medical-necessity criteria</div>
+      ${crit}
+      ${refs?`<div style="font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin:12px 0 5px">References &amp; basis</div><ul style="margin:0;padding-left:18px">${refs}</ul>`:''}
+      <div style="font-size:.63rem;color:#94a3b8;font-style:italic;margin-top:10px">${d.source}</div>
+    </div>`;
+  }catch(e){ body.innerHTML='<div style="padding:28px;color:#dc2626">Clinical policy unavailable.</div>'; }
+}
+
 // ── Pend Code Catalog — reference of every pend/edit code the agent handles ──────
 async function openPendCatalog(){
   const modal=document.getElementById('catalog-modal'), body=document.getElementById('catalog-modal-body');
@@ -1849,7 +1886,7 @@ function renderServiceLines(data, resolved) {
         ${res.clinical ? `
         <div style="font-size:.62rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin:6px 0 3px">Clinical review — ${res.clinical.guideline_id} (MCG-style)</div>
         <div style="border:1px solid #bfdbfe;background:#f8fbff;border-radius:6px;padding:7px 10px;margin-bottom:5px">
-          ${res.clinical.policy_ref?`<div style="font-size:.68rem;margin-bottom:5px">📖 Clinical policy: ${res.clinical.policy_url?`<a href="${res.clinical.policy_url}" target="_blank" rel="noopener" style="color:#1d4ed8;font-weight:700">${res.clinical.policy_ref}</a>`:`<strong style="color:#1d4ed8">${res.clinical.policy_ref}</strong>`}</div>`:''}
+          ${res.clinical.policy_ref?`<div style="font-size:.68rem;margin-bottom:5px">📖 Clinical policy: <a onclick="openClinicalPolicy('${res.clinical.cpt}')" style="color:#1d4ed8;font-weight:700;cursor:pointer;text-decoration:underline">${res.clinical.policy_ref}</a> <span style="font-size:.6rem;color:#64748b">▸ view</span></div>`:''}
           ${res.clinical.criteria.map(c=>`<div style="display:flex;gap:6px;padding:3px 0;font-size:.71rem"><span style="color:${c.status==='met'?'#15803d':'#dc2626'}">${c.status==='met'?'✓':'✕'}</span><span style="flex:1;color:#334155">${c.criterion}</span><span style="font-size:.58rem;font-weight:700;color:${c.status==='met'?'#15803d':'#dc2626'}">${c.status==='met'?'MET':'NOT MET'}</span></div>`).join('')}
           <div style="font-size:.7rem;color:#854d0e;margin-top:5px"><strong>Determination:</strong> ${res.clinical.determination}</div>
         </div>` : ''}
@@ -3193,7 +3230,7 @@ async function runLineTrace(claim) {
         `${cl.guideline_id} · ${cl.title}`, `
         <div style="border:1px solid #bfdbfe;background:#f8fbff;border-radius:8px;padding:11px 13px">
           <div style="font-size:.74rem;color:#1d4ed8;font-weight:700;margin-bottom:6px">📖 ${cl.guideline_id} — ${cl.title}</div>
-          ${cl.policy_ref?`<div style="font-size:.7rem;margin-bottom:6px">📖 Clinical policy: ${cl.policy_url?`<a href="${cl.policy_url}" target="_blank" rel="noopener" style="color:#1d4ed8;font-weight:700">${cl.policy_ref}</a>`:`<strong style="color:#1d4ed8">${cl.policy_ref}</strong>`}</div>`:''}
+          ${cl.policy_ref?`<div style="font-size:.7rem;margin-bottom:6px">📖 Clinical policy: <a onclick="openClinicalPolicy('${cl.cpt}')" style="color:#1d4ed8;font-weight:700;cursor:pointer;text-decoration:underline">${cl.policy_ref}</a> <span style="font-size:.6rem;color:#64748b">▸ view</span></div>`:''}
           <div style="font-size:.62rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">Guideline criteria evaluated against the claim — ${cl.criteria_met}/${cl.criteria_total} met</div>
           ${critHtml}
           <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid ${_clcol};border-radius:6px;padding:9px 11px;margin-top:9px;font-size:.74rem;color:#334155"><strong style="color:${_clcol}">Determination — ${cl.outcome_label}:</strong> ${cl.determination}</div>
