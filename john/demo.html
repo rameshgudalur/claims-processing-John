@@ -1499,20 +1499,20 @@ async function sopIngest(){
     if(!d.ingested||!d.ingested.length){ if(st) st.textContent='No SOP in the landing zone yet — drop one first.'; return; }
     const mix=Object.entries(d.outcome_mix||{}).map(([k,v])=>`${v} ${k}`).join(' · ');
     if(st) st.innerHTML=`✅ Agent ingested ${d.ingested.length} SOP(s) and <strong>re-resolved ${d.re_resolved}</strong> held claims → ${mix}. Missing-SOP remaining: <strong>${d.missing_sop_remaining}</strong>.`;
-    await refreshOutcomeCounters();
+    await refreshOutcomeCounters(true);
     setTimeout(()=>openOutcomePanel('missingsop'), 1400);
   }catch(e){ if(st) st.textContent='Ingest failed.'; }
 }
 async function sopReset(){
   const st=document.getElementById('sopgov-status');
   try{ await fetch(`${API}/api/sop-inbox/reset`,{method:'POST'});
-    await refreshOutcomeCounters();
+    await refreshOutcomeCounters(true);
     if(st) st.textContent='↺ Reset — SOPs cleared; claims back in the Needs-SOP queue.';
     setTimeout(()=>openOutcomePanel('missingsop'), 800);
   }catch(e){ if(st) st.textContent='Reset failed.'; }
 }
-async function refreshOutcomeCounters(){
-  if(!processed) return;
+async function refreshOutcomeCounters(force){
+  if(!processed && !force) return;
   try{ const s=await fetch(`${API}/api/resolve-summary`).then(r=>r.json());
     const set=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=(v||0).toLocaleString();};
     set('cnt-approved',s.approve); set('cnt-partial',s.partial_pay); set('cnt-adr',s.request_info);
