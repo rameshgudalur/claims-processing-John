@@ -102,7 +102,7 @@ def _pad_reference_dbs():
               "Harbor Medical Group","Lakeside Physicians","Cornerstone Health Partners","Valley Care Associates",
               "Northgate Medical","Pioneer Health Network"]
     PLANS = ["HMO Choice 250","PPO Select 500","HDHP Saver 1500","EPO Core 350","POS Plus 400","Medicare Advantage Complete"]
-    CARRIERS = ["Aetna","Cigna","UnitedHealthcare","Anthem BCBS","Humana","Kaiser","Medicare Part B"]
+    CARRIERS = ["Aetna","Cigna","UnitedHealthcare","BlueCross BlueShield","Humana","Kaiser","Medicare Part B"]
     def name(): return f"{rnd.choice(FIRST)} {rnd.choice(LAST)}"
     # Providers -> ~1,240
     pnpi = 1600000000
@@ -1357,8 +1357,7 @@ CLINICAL_GUIDELINES["99232"] = dict(CLINICAL_GUIDELINES["99231"])
 # Bariatric / metabolic surgery — a canonical, criteria-heavy medical-necessity review
 CLINICAL_GUIDELINES["43775"] = {
     "gid": "MCG-style BAR B-0110", "title": "Bariatric Surgery (Sleeve Gastrectomy) — Medical Necessity",
-    "policy_ref": "Anthem Clinical UM Guideline — Bariatric Surgery",
-    "policy_url": "https://www.anthem.com/medpolicies/abc/active/gl_pw_d085821.html",
+    "policy_ref": "Althea Health Clinical UM Guideline — Bariatric Surgery (CG-SURG-01)",
     "criteria": [
         ("BMI ≥ 40, or ≥ 35 with an obesity-related comorbidity (T2DM, HTN, OSA)", "claim"),
         ("≥ 6 months of physician-supervised medical weight management documented", "clinical"),

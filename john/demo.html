@@ -1849,7 +1849,7 @@ function renderServiceLines(data, resolved) {
         ${res.clinical ? `
         <div style="font-size:.62rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin:6px 0 3px">Clinical review — ${res.clinical.guideline_id} (MCG-style)</div>
         <div style="border:1px solid #bfdbfe;background:#f8fbff;border-radius:6px;padding:7px 10px;margin-bottom:5px">
-          ${res.clinical.policy_url?`<div style="font-size:.68rem;margin-bottom:5px">📖 Clinical policy: <a href="${res.clinical.policy_url}" target="_blank" rel="noopener" style="color:#1d4ed8;font-weight:700">${res.clinical.policy_ref||'Plan medical policy'}</a></div>`:''}
+          ${res.clinical.policy_ref?`<div style="font-size:.68rem;margin-bottom:5px">📖 Clinical policy: ${res.clinical.policy_url?`<a href="${res.clinical.policy_url}" target="_blank" rel="noopener" style="color:#1d4ed8;font-weight:700">${res.clinical.policy_ref}</a>`:`<strong style="color:#1d4ed8">${res.clinical.policy_ref}</strong>`}</div>`:''}
           ${res.clinical.criteria.map(c=>`<div style="display:flex;gap:6px;padding:3px 0;font-size:.71rem"><span style="color:${c.status==='met'?'#15803d':'#dc2626'}">${c.status==='met'?'✓':'✕'}</span><span style="flex:1;color:#334155">${c.criterion}</span><span style="font-size:.58rem;font-weight:700;color:${c.status==='met'?'#15803d':'#dc2626'}">${c.status==='met'?'MET':'NOT MET'}</span></div>`).join('')}
           <div style="font-size:.7rem;color:#854d0e;margin-top:5px"><strong>Determination:</strong> ${res.clinical.determination}</div>
         </div>` : ''}
@@ -3193,7 +3193,7 @@ async function runLineTrace(claim) {
         `${cl.guideline_id} · ${cl.title}`, `
         <div style="border:1px solid #bfdbfe;background:#f8fbff;border-radius:8px;padding:11px 13px">
           <div style="font-size:.74rem;color:#1d4ed8;font-weight:700;margin-bottom:6px">📖 ${cl.guideline_id} — ${cl.title}</div>
-          ${cl.policy_url?`<div style="font-size:.7rem;margin-bottom:6px">📖 Clinical policy: <a href="${cl.policy_url}" target="_blank" rel="noopener" style="color:#1d4ed8;font-weight:700">${cl.policy_ref||'Plan medical policy'}</a></div>`:''}
+          ${cl.policy_ref?`<div style="font-size:.7rem;margin-bottom:6px">📖 Clinical policy: ${cl.policy_url?`<a href="${cl.policy_url}" target="_blank" rel="noopener" style="color:#1d4ed8;font-weight:700">${cl.policy_ref}</a>`:`<strong style="color:#1d4ed8">${cl.policy_ref}</strong>`}</div>`:''}
           <div style="font-size:.62rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">Guideline criteria evaluated against the claim — ${cl.criteria_met}/${cl.criteria_total} met</div>
           ${critHtml}
           <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid ${_clcol};border-radius:6px;padding:9px 11px;margin-top:9px;font-size:.74rem;color:#334155"><strong style="color:${_clcol}">Determination — ${cl.outcome_label}:</strong> ${cl.determination}</div>
