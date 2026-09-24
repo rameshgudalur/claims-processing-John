@@ -505,10 +505,10 @@ KG_RULES = {
     ],
     "E-MN-002": [
         {"rule_id":"KG-MN-003", "check":"LCD/MCG Medical Necessity Criteria",
-         "template":"LCD L33787 (or applicable LCD) for CPT {cpt}: coverage criteria require diagnosis from approved ICD-10 list. Billed diagnosis {icd10} does not meet LCD coverage criteria. Medical necessity not established.",
-         "source":"CMS LCD L33787 · MCG Clinical Criteria · Plan Medical Policy MN-002"},
+         "template":"Coverage for CPT {cpt} requires the billed diagnosis to be an approved indication under the applicable CMS LCD/NCD and the plan's medical policy, and the clinical criteria to be met. The agent evaluates the billed diagnosis {icd10} and documentation against these criteria — see the clinical determination below.",
+         "source":"CMS LCD/NCD · MCG Clinical Criteria · Plan Medical Policy MN-002"},
         {"rule_id":"KG-MN-004", "check":"Clinical Reviewer Routing Rule",
-         "template":"Medical necessity denial requires clinical reviewer sign-off per Plan Policy MN-002 §4.2. Claim routed to clinical review queue. Denial cannot be issued without licensed clinician attestation.",
+         "template":"Per Plan Policy MN-002 §4.2, medical-necessity determinations follow the clinical policy: claims meeting all criteria are approved; an adverse (denial) determination is not released without licensed clinical-reviewer sign-off.",
          "source":"Plan Medical Policy MN-002 §4.2 · URAC UM Standards"},
     ],
 }
