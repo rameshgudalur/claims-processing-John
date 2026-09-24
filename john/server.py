@@ -2427,6 +2427,22 @@ def api_claim_lines(icn):
             r = resolve_line(ln, claim)
             ln["resolution"] = r
             resolutions.append(r)
+            # Units-exhausted lines (E-AUTH-004): a real auth exists but units_remaining = 0. The
+            # examiner's genuine two-step is Update auth units -> Approve; stage the real numbers.
+            if ln.get("pended") and ln.get("edit_code") == "E-AUTH-004":
+                an = claim.get("auth_number")
+                auth = authorizations.get(an) if an else None
+                if auth:
+                    uc = int(ln.get("units") or claim.get("units_billed") or 1)
+                    ua = int(auth.get("units_authorized") or 0)
+                    uu = int(auth.get("units_used") or 0)
+                    ln["auth_apply"] = {
+                        "auth_number": auth.get("auth_number"), "kind": "units_exhausted",
+                        "edit": "E-AUTH-004", "units_claim": uc,
+                        "units_authorized_before": ua, "units_used": uu, "remaining_before": max(0, ua - uu),
+                        "added": uc, "remaining_after": uc,   # add enough to cover this claim's units
+                        "line_allowed": ln.get("allowed"),
+                    }
         payload["rollup"] = _header_rollup(resolutions, out_lines)
     return jsonify(payload)
 

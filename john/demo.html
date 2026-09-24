@@ -1430,6 +1430,7 @@ async function openOutcomePanel(key){
 }
 function openFromOutcome(i){
   const r=_outcomeRows[i]; if(!r) return;
+  _lastQueueKey = _ocKey;   // remember which queue, so an examiner decision decrements its tile
   document.getElementById('outcome-modal').style.display='none';
   openClaimPanel(r);
 }
@@ -1669,17 +1670,61 @@ Althea Health — Claims Operations (Agentic Adjudication)`;
   modal.style.display='flex';
 }
 
+let _authApply = {};   // per-line staged auth application (icn-line -> {auth_number, units, allowed})
+let _lastQueueKey = null;                 // which review queue the open claim came from (for count decrement)
+let _openClaimTile = null;                // review tile the OPEN claim belongs to (derived from the claim itself)
+const _decrementedClaims = new Set();     // decrement each claim's queue tile at most once
+const QUEUE_TILE = {denied:'cnt-denied', human:'cnt-hr', clinical:'cnt-clin', highdollar:'cnt-highdollar'};
+function applyAuthUnit(icn, ln){
+  const aa = _authApply[icn+'-'+ln]; if (!aa) return;
+  const m = document.getElementById(`authmsg-${icn}-${ln}`);
+  const msg = (aa.kind === 'units_exhausted')
+    ? `✓ Auth ${aa.auth_number} units updated — +${aa.added} unit${aa.added>1?'s':''} authorized (${aa.remaining_after} remaining) · edit ${aa.edit||'E-AUTH-004'} cleared`
+    : `✓ Auth ${aa.auth_number} applied — ${aa.units_claim} unit${aa.units_claim>1?'s':''} used, ${aa.remaining_after} remaining · edit E-AUTH-001 cleared`;
+  if (m) m.innerHTML = `<span style="color:#15803d;font-weight:700;font-size:.62rem">${msg}</span>`;
+  const apb = document.getElementById(`applyauth-${icn}-${ln}`);
+  if (apb) { apb.disabled = true; apb.style.opacity = '.5'; apb.style.cursor = 'default'; apb.textContent = (aa.kind === 'units_exhausted') ? '✓ Units updated' : '✓ Auth applied'; }
+  const ab = document.getElementById(`appbtn-${icn}-${ln}`);
+  if (ab) { ab.disabled = false; ab.style.opacity = '1'; ab.style.cursor = 'pointer'; ab.removeAttribute('title'); }
+}
 function lineAction(icn, ln, act, ev){
   if (ev) ev.stopPropagation();
-  const el = document.getElementById(`lact-${icn}-${ln}`);
-  if (!el) return;
-  const msg = {
-    approve:  '<span style="color:#15803d;font-weight:700;font-size:.62rem">✓ Approved by examiner</span>',
-    deny:     '<span style="color:#dc2626;font-weight:700;font-size:.62rem">✕ Denied by examiner</span>',
-    escalate: '<span style="color:#c2410c;font-weight:700;font-size:.62rem">↑ Escalated to lead / MD review</span>',
-    review:   '<span style="color:#7c3aed;font-weight:700;font-size:.62rem">⏳ In examiner review</span>',
+  const META = {
+    approve:  ['✓ Approved by examiner',          'Approved (examiner)',           '#15803d', '#dcfce7', '#16a34a', 'payment'],
+    deny:     ['✕ Denied by examiner',            'Denied (examiner)',             '#dc2626', '#fee2e2', '#dc2626', 'denial'],
+    escalate: ['↑ Escalated to lead / MD review', 'Escalated to lead / MD review', '#c2410c', '#ffedd5', '#f59e0b', 'escalation'],
+    review:   ['⏳ In examiner review',            'In examiner review',            '#7c3aed', '#ede9fe', '#7c3aed', 'review'],
   };
-  el.innerHTML = msg[act] || msg.review;
+  const [tag, label, col, bg, bd, flow] = META[act] || META.review;
+  // 1) the action confirmation under the line buttons (auth-approve shows the released payment)
+  const _aa = _authApply[icn+'-'+ln];
+  let confirmTxt = tag;
+  if (act === 'approve' && _aa && _aa.line_allowed != null) confirmTxt = `✓ Approved by examiner — payment released $${Number(_aa.line_allowed).toLocaleString()}`;
+  const el = document.getElementById(`lact-${icn}-${ln}`);
+  if (el) el.innerHTML = `<span style="color:${col};font-weight:700;font-size:.62rem">${confirmTxt}</span>`;
+  // 2) the line's Decision label (no longer stuck on "Human Review")
+  const dl = document.getElementById(`declbl-${icn}-${ln}`);
+  if (dl) { dl.textContent = label; if (dl.parentElement) dl.parentElement.style.color = col; }
+  if (act === 'review') return;
+  // 3) the claim header disposition — clear the "human review required" wording
+  const rl = document.getElementById(`rolluplbl-${icn}`);
+  if (rl) { rl.textContent = (act==='escalate' ? 'Escalated to lead / MD review' : 'Examiner decision — ' + label.replace(' (examiner)','')); rl.style.color = col; }
+  const rb = document.getElementById(`rollup-${icn}`); if (rb) rb.style.borderLeftColor = col;
+  // 4) the Human Review box → decision recorded
+  const hb = document.getElementById(`hrbox-${icn}`);
+  if (hb) { hb.style.background = bg; hb.style.borderColor = bd;
+    hb.innerHTML = `<h4 style="color:${col}">✓ Examiner decision recorded</h4>`
+      + `<p style="color:${col}">${tag} — logged with examiner ID + timestamp; downstream ${flow} workflow triggered.</p>`; }
+  // 5) the Edit & Decision box "Decision" field — no longer "Human Review"
+  const cd = document.getElementById(`cpdecision-${icn}`);
+  if (cd) { cd.textContent = label; cd.className = 'cp-field-value'; cd.style.color = col; }
+  // 6) decrement the review tile this claim belongs to (examiner cleared one from the queue)
+  const tileId = _openClaimTile || (_lastQueueKey ? QUEUE_TILE[_lastQueueKey] : null);
+  if (tileId && !_decrementedClaims.has(icn)) {
+    _decrementedClaims.add(icn);
+    const tile = document.getElementById(tileId);
+    if (tile) { const n = parseInt((tile.textContent||'0').replace(/[^0-9]/g,'')) || 0; if (n>0) tile.textContent = (n-1).toLocaleString(); }
+  }
 }
 function renderServiceLines(data, resolved) {
   const lines = data.lines || [];
@@ -1709,15 +1754,29 @@ function renderServiceLines(data, resolved) {
       ].filter(Boolean).join(' · ');
       const _isHRline = (res.outcome === 'human_review' || res.outcome === 'escalate');
       const _btn = (act,label,bg,bd,fg)=>`<button onclick="lineAction('${icn}',${l.line_no},'${act}',event)" style="background:${bg};border:1px solid ${bd};color:${fg};font-weight:700;font-size:.6rem;padding:2px 7px;border-radius:5px;cursor:pointer;margin-right:3px">${label}</button>`;
-      const lineBtns = pend
-        ? `<div id="lact-${icn}-${l.line_no}" style="margin-top:5px" onclick="event.stopPropagation()">`
+      const _aa = l.auth_apply;
+      let lineBtns = '';
+      if (pend && _aa && _isHRline) {
+        // Two-step for auth lines: Update auth units -> (enables) Approve
+        _authApply[icn+'-'+l.line_no] = _aa;
+        const _authLbl = (_aa.kind === 'units_exhausted') ? 'Update auth units' : 'Apply auth unit';
+        lineBtns = `<div style="margin-top:5px" onclick="event.stopPropagation()">`
+          + `<div id="authmsg-${icn}-${l.line_no}"></div>`
+          + `<div id="lact-${icn}-${l.line_no}" style="margin-top:3px">`
+          + `<button id="applyauth-${icn}-${l.line_no}" onclick="applyAuthUnit('${icn}',${l.line_no})" style="background:#eff6ff;border:1px solid #2563eb;color:#1d4ed8;font-weight:700;font-size:.6rem;padding:2px 7px;border-radius:5px;cursor:pointer;margin-right:3px">${_authLbl}</button>`
+          + `<button id="appbtn-${icn}-${l.line_no}" disabled onclick="lineAction('${icn}',${l.line_no},'approve',event)" style="background:#dcfce7;border:1px solid #16a34a;color:#15803d;font-weight:700;font-size:.6rem;padding:2px 7px;border-radius:5px;opacity:.45;cursor:not-allowed;margin-right:3px" title="Apply the auth unit first">Approve</button>`
+          + _btn('deny','Deny','#fee2e2','#dc2626','#b91c1c')
+          + _btn('escalate','Escalate','#ffedd5','#f59e0b','#c2410c')
+          + `</div></div>`;
+      } else if (pend) {
+        lineBtns = `<div id="lact-${icn}-${l.line_no}" style="margin-top:5px" onclick="event.stopPropagation()">`
           + _btn('approve','Approve','#dcfce7','#16a34a','#15803d')
           + (_isHRline
               ? _btn('deny','Deny','#fee2e2','#dc2626','#b91c1c') + _btn('escalate','Escalate','#ffedd5','#f59e0b','#c2410c')
               : _btn('review','Review','#ede9fe','#7c3aed','#6d28d9'))
-          + `</div>`
-        : '';
-      decCell = `<td style="font-weight:700;color:${col}">${res.outcome_label}${trace?`<div style="font-size:.6rem;font-weight:400;color:#64748b;margin-top:3px;white-space:normal;max-width:230px">↳ Traceable to: ${trace}</div>`:''}${lineBtns}</td>`;
+          + `</div>`;
+      }
+      decCell = `<td style="font-weight:700;color:${col}"><span id="declbl-${icn}-${l.line_no}">${res.outcome_label}</span>${trace?`<div style="font-size:.6rem;font-weight:400;color:#64748b;margin-top:3px;white-space:normal;max-width:230px">↳ Traceable to: ${trace}</div>`:''}${lineBtns}</td>`;
       payCell = `<td style="color:${res.payment_amount>0?'#15803d':'#334155'}">${res.payment_amount>0?'$'+res.payment_amount.toFixed(2):'—'}</td>`;
     }
     const hi = pend ? 'style="background:#fffdf5;border-left:3px solid #f59e0b"' : '';
@@ -1755,8 +1814,8 @@ function renderServiceLines(data, resolved) {
           .map(([k,v,c])=>`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:7px;padding:6px 10px;font-size:.72rem"><div style="color:#64748b;font-size:.62rem;text-transform:uppercase;letter-spacing:.4px">${k}</div><div style="color:${c};font-weight:700;margin-top:2px">$${(v||0).toLocaleString()}</div></div>`).join('')}
       </div>
       <div style="font-size:.66rem;color:#64748b;margin-top:5px">Billed = Allowed + write-off · Allowed = Paid + member responsibility/denied portion. The unpaid balance is fully accounted, not lost.</div>` : '';
-    rollupBanner = `<div style="background:#f1f5f9;border:1px solid #cbd5e1;border-left:4px solid ${col};border-radius:8px;padding:10px 14px;margin-top:10px;font-size:.82rem">
-      <strong>Header disposition:</strong> <span style="color:${col};font-weight:700">${r.outcome_label}</span>
+    rollupBanner = `<div id="rollup-${icn}" style="background:#f1f5f9;border:1px solid #cbd5e1;border-left:4px solid ${col};border-radius:8px;padding:10px 14px;margin-top:10px;font-size:.82rem">
+      <strong>Header disposition:</strong> <span id="rolluplbl-${icn}" style="color:${col};font-weight:700">${r.outcome_label}</span>
       &nbsp;·&nbsp; Total paid <strong style="color:#15803d">$${r.payment_amount.toFixed(2)}</strong>
       &nbsp;·&nbsp; ${r.lines_paid}/${r.lines_total} lines paid${r.lines_denied?`, ${r.lines_denied} denied`:''}, ${r.lines_pended} pended
       <div style="font-size:.72rem;color:#334155;margin-top:4px">The claim pays only what its lines support — one line's edit does not have to hold the whole claim.</div>
@@ -2323,6 +2382,7 @@ async function openClaimDb(icn, label){
 async function openClaimByIcn(icn){
   // Open a claim from anywhere (e.g., the Observability trace) so the audience can verify
   // every figure — CARC/RARC, allowed, SOP — against the actual claim data.
+  _lastQueueKey = null;   // opened via search/trace, not from a specific review queue
   try {
     if (_obsTimer) { clearInterval(_obsTimer); _obsTimer = null; }
     showView('act1-view');
@@ -2373,6 +2433,15 @@ function renderMultiEditPanel(ctx){
     ${editCards}`;
 }
 async function _openClaimPanelBody(r, panel, title, body){
+  // Which review tile does this claim belong to? (so an examiner decision decrements the right count,
+  // regardless of whether the claim was opened from the queue, from search, or the main list.)
+  _openClaimTile = null;
+  if (r && r.human_review) {
+    const _rsn = ((r.human_review_reason||'') + ' ' + (r.edit_category||'') + ' ' + (r.resolution_path||'')).toLowerCase();
+    if (_rsn.includes('high-dollar') || _rsn.includes('high dollar')) _openClaimTile = 'cnt-highdollar';
+    else if (_rsn.includes('medical necessity') || _rsn.includes('medical_nec') || _rsn.includes('lcd') || _rsn.includes('ncd') || _rsn.includes('clinical')) _openClaimTile = 'cnt-clin';
+    else _openClaimTile = 'cnt-hr';
+  }
 
   // Multi-line hero claims: show the header + resolved service lines + rollup
   if (r.is_multi_line) {
@@ -2414,14 +2483,10 @@ async function _openClaimPanelBody(r, panel, title, body){
   ).join('');
 
   const hrBlock = r.human_review ? `
-    <div class="hr-box">
+    <div class="hr-box" id="hrbox-${r.icn}">
       <h4>⚠ Human Review Required</h4>
       <p>${r.human_review_reason || 'This claim requires human examiner review before final disposition.'}</p>
-      <div class="hr-actions">
-        <button class="hr-btn approve" onclick="examinerAction('approve','${r.icn}')">Approve</button>
-        <button class="hr-btn deny"    onclick="examinerAction('deny','${r.icn}')">Deny</button>
-        <button class="hr-btn escalate" onclick="examinerAction('escalate','${r.icn}')">Escalate</button>
-      </div>
+      <p style="font-size:.72rem;color:#6d28d9;margin-top:6px;font-weight:600">↓ Record the decision on the pended service line below (Approve · Deny · Escalate).</p>
     </div>` : '';
 
   body.innerHTML = `
@@ -2440,7 +2505,7 @@ async function _openClaimPanelBody(r, panel, title, body){
         <div class="cp-field"><span class="cp-field-label">Edit Code</span><span class="cp-field-value" style="font-family:monospace;color:#2563eb">${r.edit_code}</span></div>
         <div class="cp-field"><span class="cp-field-label">Category</span><span class="cp-field-value">${r.edit_category}</span></div>
         <div class="cp-field"><span class="cp-field-label">Description</span><span class="cp-field-value" style="font-size:.7rem">${r.edit_description}</span></div>
-        <div class="cp-field"><span class="cp-field-label">Decision</span><span class="cp-field-value ${color}">${r.outcome_label}</span></div>
+        <div class="cp-field"><span class="cp-field-label">Decision</span><span class="cp-field-value ${color}" id="cpdecision-${r.icn}">${r.outcome_label}</span></div>
         <div class="cp-field"><span class="cp-field-label">Payment</span><span class="cp-field-value green">${payment}</span></div>
         <div class="cp-field"><span class="cp-field-label">CARC / RARC</span><span class="cp-field-value" style="font-family:monospace;font-size:.7rem">${r.carc} / ${r.rarc}</span></div>
       </div>
