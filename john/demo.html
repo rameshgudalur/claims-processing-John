@@ -2339,6 +2339,7 @@ function _whatIfFields(r){
   return null;
 }
 function _whatIfHtml(r){
+  if(r && r.icn === 'ICN-2026-4858') return '';   // showcase regular claim — keep the walkthrough clean, no what-if
   const f = _whatIfFields(r); if(!f) return '';
   const inputs = f.fields.map(([k,lab,typ,def])=>`
     <label style="display:flex;flex-direction:column;font-size:.66rem;color:#64748b;font-weight:600">${lab}
