@@ -1292,6 +1292,17 @@ function closeSopModal(){ document.getElementById('sop-modal').style.display='no
 
 // ── Clinical policy viewer — the coverage rule + MCG-style criteria the agent adjudicates against ──
 function _polSec(title, inner){ return `<div style="margin-top:12px"><div style="font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:6px">${title}</div>${inner}</div>`; }
+async function loadFullPolicyDoc(cpt){
+  const el=document.getElementById('polfulldoc'); if(!el) return;
+  if(el.dataset.loaded){ el.innerHTML=''; el.dataset.loaded=''; return; }   // toggle off
+  el.innerHTML='<div class="muted" style="font-size:.72rem;padding:6px 0">Loading full policy document…</div>';
+  try{
+    const d=await fetch(`${API}/api/clinical-policy-doc/${cpt}`).then(r=>r.json());
+    const safe=(d.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    el.innerHTML=`<div style="margin-top:6px;border:1px solid #cbd5e1;border-radius:8px;background:#fcfcfb;max-height:46vh;overflow:auto;padding:12px 14px;white-space:pre-wrap;font-size:.72rem;line-height:1.55;color:#334155">${safe}</div>`;
+    el.dataset.loaded='1';
+  }catch(e){ el.innerHTML='<div style="color:#dc2626;font-size:.72rem">Full policy document unavailable.</div>'; }
+}
 async function openClinicalPolicy(cpt){
   const modal=document.getElementById('outcome-modal'), body=document.getElementById('outcome-modal-body');
   body.innerHTML='<div style="padding:28px;color:#64748b">📖 Retrieving clinical policy…</div>'; modal.style.display='flex';
@@ -1320,6 +1331,7 @@ async function openClinicalPolicy(cpt){
         <span>Guideline: <strong style="color:#334155">${d.guideline_id}</strong></span>
       </div>
       ${d.status?`<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:.66rem;color:#64748b;margin-top:3px"><span>Status: <strong style="color:#15803d">${d.status}</strong></span>${d.review_date?`<span>Last reviewed: <strong style="color:#334155">${d.review_date}</strong></span>`:''}${d.next_review?`<span>Next review: <strong style="color:#334155">${d.next_review}</strong></span>`:''}</div>`:''}
+      ${d.has_document?`<button onclick="loadFullPolicyDoc('${d.cpt}')" style="margin:12px 0 2px;background:#1d4ed8;border:1px solid #1d4ed8;color:#fff;font-weight:700;font-size:.72rem;padding:7px 13px;border-radius:7px;cursor:pointer">📄 View full policy document</button><div id="polfulldoc"></div>`:''}
       ${d.purpose?_polSec('1 · Purpose', `<div style="font-size:.78rem;color:#334155;line-height:1.55">${d.purpose}</div>`):''}
       ${d.scope?_polSec('2 · Scope / applicability', `<div style="font-size:.78rem;color:#334155;line-height:1.55">${d.scope}</div>`):''}
       ${_polSec('3 · Coverage position', `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#1e3a5f;line-height:1.55">${d.coverage}</div>`)}

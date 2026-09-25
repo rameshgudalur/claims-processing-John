@@ -1357,7 +1357,7 @@ CLINICAL_GUIDELINES["99232"] = dict(CLINICAL_GUIDELINES["99231"])
 # Bariatric / metabolic surgery — a canonical, criteria-heavy medical-necessity review
 CLINICAL_GUIDELINES["43775"] = {
     "gid": "MCG-style BAR B-0110", "title": "Bariatric Surgery (Sleeve Gastrectomy) — Medical Necessity",
-    "policy_ref": "Althea Health Clinical UM Guideline — Bariatric Surgery (CG-SURG-01)",
+    "policy_ref": "Althea Health Clinical UM Guideline — Bariatric Surgery (CG-SURG-83)",
     "criteria": [
         ("BMI ≥ 40, or ≥ 35 with an obesity-related comorbidity (T2DM, HTN, OSA)", "claim"),
         ("≥ 6 months of physician-supervised medical weight management documented", "clinical"),
@@ -1469,8 +1469,8 @@ def api_guideline(cpt):
 # Viewable clinical-policy documents (the coverage rule + criteria the agent adjudicates against).
 _POLICY_BODIES = {
     "43775": {
-        "policy_id": "CG-SURG-01", "version": "2026.1", "effective_date": "2026-01-01",
-        "review_date": "2025-11-14", "next_review": "2026-11-01", "status": "Active",
+        "policy_id": "CG-SURG-83", "version": "2025 (Publish 12/18/2025)", "effective_date": "2025-12-18",
+        "review_date": "2025-11-06", "next_review": "2026-11-01", "status": "Revised", "has_document": True,
         "title": "Bariatric Surgery & Other Treatments for Clinically Severe Obesity",
         "purpose": ("Define the medical-necessity criteria used to determine coverage for bariatric "
                     "(metabolic / weight-loss) surgery for the treatment of clinically severe obesity."),
@@ -1506,7 +1506,7 @@ _POLICY_BODIES = {
         "references": [
             "CMS NCD 100.1 — Bariatric Surgery for Treatment of Morbid Obesity",
             "ASMBS / AACE / TOS Clinical Practice Guidelines — Perioperative Support of the Bariatric Surgery Patient",
-            "Althea Health Medical Policy CG-SURG-01",
+            "Althea Health Clinical UM Guideline CG-SURG-83",
         ],
     },
 }
@@ -1537,12 +1537,27 @@ def get_clinical_policy(cpt):
         "documentation": body.get("documentation", []),
         "coding": body.get("coding"),
         "references": body.get("references", []), "source": g["source"],
-        "full_document": bool(body),
+        "full_document": bool(body), "has_document": bool(body.get("has_document")),
     }
+
+# The original (de-branded) source policy document, served as plain text for the viewer.
+_POLICY_DOC_FILES = {"43775": "bariatric_policy.txt", "43644": "bariatric_policy.txt"}
 
 @app.route("/api/clinical-policy/<cpt>")
 def api_clinical_policy(cpt):
     return jsonify(get_clinical_policy(cpt))
+
+@app.route("/api/clinical-policy-doc/<cpt>")
+def api_clinical_policy_doc(cpt):
+    fn = _POLICY_DOC_FILES.get(cpt)
+    if not fn:
+        return jsonify({"error": "no source document on file for this service", "text": ""}), 404
+    try:
+        text = (DATA / fn).read_text(encoding="utf-8")
+    except Exception as exc:
+        return jsonify({"error": str(exc), "text": ""}), 500
+    pol = get_clinical_policy(cpt)
+    return jsonify({"cpt": cpt, "policy_ref": pol.get("policy_ref"), "policy_id": pol.get("policy_id"), "text": text})
 
 
 _PEND_RESOLVE_CACHE = {}

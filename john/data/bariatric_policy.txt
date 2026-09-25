@@ -1,0 +1,842 @@
+CG-SURG-83 Bariatric Surgery and Other Treatments for Clinically Severe Obesity
+•
+•
+Clinical UM Guideline
+Subject: Bariatric Surgery and Other Treatments for Clinically Severe Obesity
+Guideline #: CG-SURG-83 Publish Date: 12/18/2025
+Status: Revised Last Review Date: 11/06/2025
+Description
+This document addresses surgical and other treatments for clinically severe obesity. Clinically severe obesity is a result of persistent and uncontrollable weight gain that constitutes a present or potential threat to life. There are a variety of surgical procedures and other treatment modalities intended for the treatment of clinically severe obesity.
+Note : For additional information, please see:
+• CG-MED-59 Upper Gastrointestinal Endoscopy in Adults
+• CG-SURG-92 Paraesophageal Hernia Repair
+Clinical Indications
+Medically Necessary:
+Gastric bypass and gastric restrictive procedures are considered medically necessary when all of the following criteria are met:
+• Individual is age 18 years or older; and
+• The recommended surgery is one of the following procedures:
+• Biliopancreatic bypass with duodenal switch; or
+• Endoscopic sleeve gastroplasty; or
+• Laparoscopic adjustable gastric banding; or
+• Roux-en-Y procedure up to 150 cm; or
+• Single anastomosis duodenal-ileal bypass with sleeve gastrectomy (SADI-S); or
+• Duodenal jejunal bypass with gastric sleeve (DJB-SG); or
+• Sleeve gastrectomy; and
+• A body mass index (BMI) of one of the following:
+• 40 or greater, or
+• 35 or greater with an obesity-related co-morbid condition including, but not limited to:
+• Diabetes mellitus; or
+• Cardiovascular disease; or
+• Hypertension; or
+• Life threatening cardio-pulmonary problems (for example, severe obstructive sleep apnea, Pickwickian syndrome, obesity related cardiomyopathy); or
+• Metabolic dysfunction-associated steatohepatitis (MASH), metabolic dysfunction-associated steatotic liver disease (MASLD), or other obesity related liver disease; and
+• Documentation of all of the following:
+• Past participation in a weight loss program; and
+• Inadequate weight loss despite a committed attempt at conservative medical therapy (for example, comprehensive lifestyle interventions, including a combination of diet, exercise, and behavioral modifications); and
+• Pre-operative medical and mental health evaluations and clearances; and
+• Pre-operative education which addresses the risks, benefits, realistic expectations and the need for long-term follow-up and adherence to behavioral modifications; and
+• A treatment plan which addresses the pre- and post-operative needs of an individual undergoing bariatric surgery.
+Reoperation
+Surgical repair/correction or reversal following gastric bypass and gastric restrictive procedures is considered medically necessary when there is documentation of a surgical complication related to the original surgery, such as a fistula, obstruction, erosion, disruption/leakage of a suture/staple line, band herniation, stricture, documented gastroesophageal reflux disease (GERD) or pouch enlargement/dilation.
+Surgical revision/conversion to another surgical procedure* is considered medically necessary when either criteria A or B are met:
+• For inadequate weight loss or weight gain 1 year or longer after a prior procedure, all the following criteria are met:
+• BMI of 40 or greater; or
+• BMI of 35 or greater with an obesity-related co-morbid condition, including but not limited to:
+• Diabetes mellitus; or
+• Cardiovascular disease; or
+• Hypertension; or
+• Life threatening cardio-pulmonary problems, (for example, severe obstructive sleep apnea, Pickwickian syndrome, obesity related cardiomyopathy); and
+• Pre-operative medical and mental health evaluations and clearances; and
+• Pre-operative education which addresses the risks, benefits, realistic expectations and the need for long-term follow-up and adherence to behavioral modifications; and
+• A treatment plan which addresses the pre- and post-operative needs of an individual undergoing bariatric surgery. or
+• There is documentation of a complication related to the initial procedure (including but not limited to, obstruction, stricture or documented GERD).
+* Revision/ conversion indications apply to the procedures listed under criteria B for the initial procedure.
+Not Medically Necessary:
+Initial and reoperative bariatric procedures are considered not medically necessary when the criteria listed above are not met.
+Endoluminal reoperative bariatric procedures including, but not limited to, transoral outlet reduction (TORe) or restorative obesity surgery endoluminal (ROSE) are considered not medically necessary for all indications.
+Bariatric surgical procedures including, but not limited to, laparoscopic adjustable gastric banding are considered not medically necessary for individuals with a BMI below 35 kg/m².
+All other gastric bypass/restrictive procedures and other treatment modalities are considered not medically necessary including, but not limited to the following:
+• One anastomosis gastric bypass, also known as mini gastric bypass; or
+• Jejunoileal bypass; or
+• Biliopancreatic bypass without duodenal switch; or
+• Single anastomosis duodenal switch (SADI); or
+• Very long limb (greater than 150 cm) gastric bypass; or
+• Primary Obesity Surgery Endoluminal (POSE); or
+• Laparoscopic gastric plication (laparoscopic greater curvature plication [LGCP]) with or without gastric banding; or
+• Balloon systems, (such as the Orbera Intragastic Balloon System or the TransPyloric Shuttle); or
+• Vagus (or vagal) nerve blocking devices; or
+• Endoscopically placed percutaneous aspiration tube (such as AspireAssist ® ); or
+• Gastrointestinal liners; or
+• Vertical banded gastroplasty.
+Further Consideration:
+A bariatric surgeon with experience in the pediatric population may request further consideration of a case of an individual under 18 years old with severe morbid obesity and unique circumstances by contacting a Medical Director. For further information, see Rationale section Bariatric Surgery in Adolescents and Children .
+Coding
+The following codes for treatments and procedures applicable to this guideline are included below for informational purposes. Inclusion or exclusion of a procedure, diagnosis or device code(s) does not constitute or imply member coverage or provider reimbursement policy. Please refer to the member's contract benefits in effect at the time of service to determine coverage or non-coverage of these services as it applies to an individual member.
+Gastric bypass and gastric restrictive procedures/reoperations: When services may be Medically Necessary when criteria are met:
+CPT
+43644
+Laparoscopy, surgical, gastric restrictive procedure; with gastric bypass and Roux-en-Y gastroenterostomy (roux limb 150 cm or less)
+43645
+Laparoscopy, surgical, gastric restrictive procedure; with gastric bypass and small intestine reconstruction to limit absorption
+43770
+Laparoscopy, surgical, gastric restrictive procedure; placement of adjustable gastric restrictive device (eg, gastric band and subcutaneous port components)
+43771
+Laparoscopy, surgical, gastric restrictive procedure; revision of adjustable gastric restrictive device component only
+43772
+Laparoscopy, surgical, gastric restrictive procedure; removal of adjustable gastric restrictive device component only
+43773
+Laparoscopy, surgical, gastric restrictive procedure; removal and replacement of adjustable gastric restrictive device component only
+43774
+Laparoscopy, surgical, gastric restrictive procedure; removal of adjustable gastric restrictive device and subcutaneous port components
+43775
+Laparoscopy, surgical, gastric restrictive procedure; longitudinal gastrectomy (ie, sleeve gastrectomy)
+43843
+Gastric restrictive procedure, without gastric bypass, for morbid obesity; other than vertical-banded gastroplasty
+43845
+Gastric restrictive procedure with partial gastrectomy, pylorus-preserving duodenoileostomy and ileoileostomy (50 to 100 cm common channel) to limit absorption (biliopancreatic diversion with duodenal switch)
+43846
+Gastric restrictive procedure, with gastric bypass for morbid obesity; with short limb (150 cm or less) Roux-en-Y gastroenterostomy
+43847
+Gastric restrictive procedure, with gastric bypass for morbid obesity; with small intestine reconstruction to limit absorption
+43848
+Revision, open, of gastric restrictive procedure for morbid obesity, other than adjustable gastric restrictive device (separate procedure)
+43886
+Gastric restrictive procedure, open; revision of subcutaneous port component only
+43887
+Gastric restrictive procedure, open; removal of subcutaneous port component only
+43888
+Gastric restrictive procedure, open; removal and replacement of subcutaneous port component only
+43889
+Gastric restrictive procedure, transoral, endoscopic sleeve gastroplasty (ESG), including argon plasma coagulation, when performed
+43999
+Unlisted procedure, stomach [when specified as single anastomosis duodenal-ileal bypass with sleeve gastrectomy (SADI-S) or duodenal jejunal bypass with gastric sleeve (DJB-SG)]
+HCPCS
+C9784
+Gastric restrictive procedure, endoscopic sleeve gastroplasty, with esophagogastroduodenoscopy and intraluminal tube insertion, if performed, including all system and tissue anchoring components [Note: code will be deleted as of 1/1/2026]
+ICD-10 Procedure
+0DP60CZ
+Removal of extraluminal device from stomach, open approach
+0DP64CZ
+Removal of extraluminal device from stomach, percutaneous endoscopic approach
+0DV60CZ
+Restriction of stomach with extraluminal device, open approach
+0DV64CZ
+Restriction of stomach with extraluminal device, percutaneous endoscopic approach
+0DV60ZZ
+Restriction of stomach, open approach
+0DV64ZZ
+Restriction of stomach, percutaneous endoscopic approach
+0DW60CZ
+Revision of extraluminal device in stomach, open approach
+0DW64CZ
+Revision of extraluminal device in stomach, percutaneous endoscopic approach
+ICD-10 Diagnosis
+All diagnoses
+When services may also be Medically Necessary when criteria are met for other bypass and excision procedures:
+ICD-10 Procedure
+0D160ZA
+Bypass stomach to jejunum, open approach
+0D160ZB
+Bypass stomach to ileum, open approach
+0D164ZA
+Bypass stomach to jejunum, percutaneous endoscopic approach
+0D164ZB
+Bypass stomach to ileum, percutaneous endoscopic approach
+0D164Z9
+Bypass stomach to duodenum, percutaneous endoscopic approach
+0D190ZB
+Bypass duodenum to ileum, open approach
+0DB60Z3
+Excision of stomach, open approach, vertical
+0DB64Z3
+Excision of stomach, percutaneous endoscopic approach, vertical
+0DB68Z3
+Excision of stomach, via natural or artificial opening endoscopic, vertical
+0DB60ZZ
+Excision of stomach, open approach
+0DB64ZZ
+Excision of stomach, percutaneous endoscopic approach
+ICD-10 Diagnosis
+E66.01
+Morbid (severe) obesity due to excess calories
+E66.09
+Other obesity due to excess calories
+E66.1
+Drug-induced obesity
+E66.2
+Morbid (severe) obesity with alveolar hypoventilation (Pickwickian syndrome)
+E66.3
+Overweight
+E66.811
+Obesity, class 1
+E66.812
+Obesity, class 2
+E66.813
+Obesity, class 3
+E66.89
+Other obesity not elsewhere classified
+E66.9
+Obesity, unspecified
+E88.82
+Obesity due to disruption of MC4R pathway
+Z46.51
+Encounter for fitting and adjustment of gastric lap band
+Z68.35-Z68.39
+Body mass index [BMI] 35.0-39.9, adult
+Z68.41-Z68.45
+Body mass index [BMI] 40 or greater, adult
+Z68.51-Z68.56
+Body mass index [BMI] pediatric [special consideration]
+Z98.84
+Bariatric surgery status
+When services are Not Medically Necessary: For the procedure codes listed above when criteria are not met, when the following BMI diagnosis codes are indicated, or when the code describes a procedure or situation designated in the Clinical Indications section as not medically necessary.
+ICD-10 Diagnosis
+Z68.20-Z68.29
+Body mass index [BMI] 20.0-29.9, adult
+Z68.30-Z68.34
+Body mass index [BMI] 30.0-34.9, adult
+Other procedures: When services are Not Medically Necessary:
+For the following procedure codes or any other procedure code used to describe a procedure identified as not medically necessary
+CPT
+43290
+Esophagogastroduodenoscopy, flexible, transoral; with deployment of intragastric bariatric balloon
+43291
+Esophagogastroduodenoscopy, flexible, transoral; with removal of intragastric bariatric balloon(s)
+43632
+Gastrectomy, partial distal; with gastrojejunostomy (Billroth II) [when specified as bariatric surgery]
+43633
+Gastrectomy, partial, distal; with Roux-en-Y reconstruction [when specified as bariatric surgery]
+43659
+Unlisted laparoscopy procedure, stomach [when specified as gastric plication (laparoscopic greater curvature plication [LGCP]) with or without gastric banding, or mini-gastric bypass procedure]
+43842
+Gastric restrictive procedure, without gastric bypass, for morbid obesity; vertical-banded gastroplasty
+43999
+Unlisted procedure, stomach [when specified as endoluminal gastric restrictive surgery such as duodenal-jejunal endoluminal liner (Barricaid device), endoscopic POSE procedure, or aspiration therapy]
+44238
+Unlisted laparoscopy procedure, intestine (except rectum) [when specified as a bariatric procedure identified as not medically necessary such as SADI]
+64999
+Unlisted procedure, nervous system [when specified as implantation, revision, replacement, or removal of vagus nerve blocking neurostimulator electrode array or pulse generator at the esophagogastric junction]
+0813T
+Esophagogastroduodenoscopy, flexible, transoral, with volume adjustment of intragastric bariatric balloon
+HCPCS
+C9785
+Endoscopic outlet reduction, gastric pouch application, with endoscopy and intraluminal tube insertion, if performed, including all system and tissue anchoring components
+ICD-10 Procedure
+0D160ZA
+Bypass stomach to jejunum, open approach [when specified as Billroth II)
+0DV60DZ
+Restriction of stomach with intraluminal device, open approach
+0DV63DZ
+Restriction of stomach with intraluminal device, percutaneous approach
+0DV64DZ
+Restriction of stomach with intraluminal device, percutaneous endoscopic approach
+0DV67DZ
+Restriction of stomach with intraluminal device, via natural or artificial opening
+0DV68DZ
+Restriction of stomach with intraluminal device, via natural or artificial opening endoscopic
+0DP60DZ
+Removal of intraluminal device from stomach, open approach
+0DP63DZ
+Removal of intraluminal device from stomach, percutaneous approach
+0DP64DZ
+Removal of intraluminal device from stomach, percutaneous endoscopic approach
+0DP67DZ
+Removal of intraluminal device from stomach, via natural or artificial opening
+0DP68DZ
+Removal of intraluminal device from stomach, via natural or artificial opening endoscopic
+ICD-10 Diagnosis
+E66.01
+Morbid (severe) obesity due to excess calories
+E66.09
+Other obesity due to excess calories
+E66.1
+Drug-induced obesity
+E66.2
+Morbid (severe) obesity with alveolar hypoventilation (Pickwickian syndrome)
+E66.3
+Overweight
+E66.811-E66.89
+Other obesity
+E66.9
+Obesity, unspecified
+E88.82
+Obesity due to disruption of MC4R pathway
+Z46.51
+Encounter for fitting and adjustment of gastric lap band
+Z68.20-Z68.29
+Body mass index [BMI] 20.0-29.9, adult
+Z68.30-Z68.34
+Body mass index [BMI] 30.0-34.9, adult
+Z68.35-Z68.39
+Body mass index [BMI] 35.0-39.9, adult
+Z68.41-Z68.45
+Body mass index [BMI] 40 or greater, adult
+Z68.51-Z68.56
+Body mass index [BMI] pediatric [special consideration]
+Z98.84
+Bariatric surgery status
+Discussion/General Information
+Summary
+Clinically severe obesity presents significant morbidity and mortality risks, and treatment options include both surgical and nonsurgical interventions. The evidence shows that established bariatric procedures, such as Roux-en-Y gastric bypass, sleeve gastrectomy, duodenal switch, and endoscopic sleeve gastroplasty, produce durable weight loss and improvement in obesity-related comorbidities when conservative therapy has failed. Even modest weight reduction of 5% can improve metabolic and cardiovascular parameters, while losses of 10-15% or more can induce disease remission and reduce long-term mortality. Procedure-specific risks vary, with malabsorptive operations carrying higher nutritional complication rates. Preoperative optimization, including comprehensive medical, behavioral, and psychosocial evaluation, is critical for improving postoperative outcomes and long-term success.
+Professional societies, including the American Diabetes Association (ADA), American Association of Clinical Endocrinologists (AACE), American College of Endocrinology (ACE), American Society for Metabolic and Bariatric Surgery (ASMBS), and American Academy of Pediatrics (AAP) support a multidisciplinary, individualized approach to obesity management. The ADA recommends combining nutrition, physical activity, pharmacotherapy, and metabolic surgery when indicated. The ASMBS and International Federation for the Surgery of Obesity and Metabolic Disorders (IFSO) endorse expanding eligibility for metabolic surgery to include individuals across all obesity classes with comorbidities, while recognizing the need for continued long-term data. The AAP recommends metabolic surgery for adolescents with class 2 or higher obesity and serious comorbidities, provided it is performed by experienced multidisciplinary teams. Collectively, these organizations affirm that metabolic and bariatric surgery are safe, effective, and durable interventions when integrated into lifelong, comprehensive obesity care.
+Discussion
+Background
+According to the National Institutes of Health (NIH), an increase of 20% or more above an individual’s ideal body weight is the point at which excess weight becomes a health risk. By 2030, it is predicted that nearly one in two adults will be obese and nearly one in four adults will be categorized as having severe obesity (Ward, 2019). Clinically severe obesity is associated with a higher risk of one or more obesity-related health conditions that result either in significant physical disability or even death. While medical complications of obesity may occur in moderately obese people, the frequency increases dramatically as weight increases.
+The first line treatment of clinically severe obesity is dietary and lifestyle changes, including regular exercise. Weight loss is accomplished when there is a caloric deficit, that is, calories out must be greater than calories in. This can be accomplished by decreasing the calories ingested with some form of dietary restriction and by increasing the calories expended through increased physical activity. All available therapies (dietary, behavioral, pharmacologic, and surgical) help with weight loss by changing the calories ingested, absorbed, or expended.
+Weight loss can result in a reduction of comorbidities, a decrease in mortality and an increase in the quality of life. Wolfe and associates (2016) note:
+The fundamental basis for bariatric surgery for the purpose of accomplishing weight loss is the determination that severe obesity is a disease associated with multiple adverse effects on health which can be reversed or improved by successful weight loss in patients who have been unable to sustain weight loss by non-surgical means.
+Surgery for clinically severe obesity (bariatric surgery) falls into two categories: gastric restrictive procedures and malabsorptive procedures. The first category, gastric restrictive procedures, includes procedures in which a small pouch is created in the stomach. Weight loss occurs as the individual feels full sooner, having eaten much less than usual. This category also includes adjustable gastric banding procedures in which a band is placed around the upper portion of the stomach to reduce stomach size. The second category, malabsorptive procedures, includes procedures that rearrange the connections between the stomach and intestines, causing the food to be poorly digested and incompletely absorbed. Weight loss is due to malabsorption without necessarily requiring dietary modification. A more recent treatment modality consists of devices which decrease appetite or induce feelings of satiety.
+Indications for Treatment
+Surgery for the treatment of clinically severe obesity may be appropriate in a select group of individuals. Bariatric surgery is an underutilized modality, less than 2% of individuals who may be considered eligible undergo surgery every year (Jirapinyo, 2024). According to the NIH, weight loss surgery candidates include those individuals suffering from the complications of extreme obesity, for whom conservative medical therapy has failed. Possible surgical candidates are those with severe obesity, defined as a body mass index (BMI) of 40 or greater, or 35 or greater with other medical complications. Such complications include, but are not limited, to the following:
+• Type 2 diabetes;
+• Heart disease;
+• Sleep apnea;
+BMI is the generally accepted measure of determining the degree of overweight or obesity, being easy to measure, reliable, and correlated with percentage of body fat and body fat mass. However, BMI may overestimate or underestimate the degree of adiposity in certain individuals (for example, muscular persons or in older persons due to loss of muscle mass associated with aging respectively). While some data (American Diabetes Associates, 2022; Mui, 2018) suggests that at-risk BMI for overweight and obesity may be suboptimal for defining diabetes risk in Asian Americans (with a proposal for using a lower BMI cut for diabetes screening), high-quality prospective data is still needed to confirm that lower BMI thresholds are appropriate as a method of identifying candidates for bariatric surgery. The ASMBS recommends the BMI be adjusted for ethnicity, with Asian American adult’s BMI cutoff for obesity be lowered. This recommendation is graded D: primary based on expert opinion (Mechanick, 2019). Furthermore, determining the optimal BMI cut point for identifying Asian Americans is complex given that there is tremendous heterogeneity among the Asian American subgroups (Hsu, 2015; Jih, 2014). Hsu (2015) noted:
+Additional research will help to further elucidate current findings on the relationship between BMI and incident diabetes in Asian Americans. … while some data exist for several Asian ethnic subgroups, insufficient disaggregated data are available for many of the Asian ethnic groups that comprise this very heterogeneous population.
+Bariatric procedures can be an aid in achieving weight loss, but successful and sustained weight loss requires that individuals are compliant with significant life-long lifestyle changes. Bariatric procedures are invasive therapies, which come with inherent risks associated with all invasive procedures. The risks and potential complications vary between each technique and each individual, some of which are permanent.
+Weight loss goals
+Adequate weight loss for health improvement is generally defined as a modest reduction of about 5% of initial body weight, as this level is consistently associated with improvements in blood pressure, lipids, and glycemic control. Even smaller reductions of 3% can yield measurable benefits, while greater weight losses confer additional advantages, including reduced risk or remission of obesity-related conditions like type 2 diabetes, fatty liver disease, and sleep apnea. Clinically relevant weight loss is outcome-dependent, with larger reductions providing progressively greater health benefits.
+Horn (2022) detailed weight loss benefits over a continuum: 2-5% can improve glycemia and cardiovascular risk factors; a weight loss of at least 5% is considered clinically meaningful with broad improvements in blood pressure, lipids, liver fat, and diabetes prevention; ≥ 10% yields greater benefits including higher rates of type 2 diabetes remission, reduced cardiovascular risk, and improvements in sleep apnea and osteoarthritis; and ≥ 15% is associated with substantial improvements across multiple comorbidities, including nonalcoholic steatohepatitis (NASH) and polycystic ovary syndrome (PCOS).
+The 2025 ADA standards of medical care in diabetes-assessment and monitoring of the individual with overweight or obesity notes the following:
+8.5 Provide weight management treatment, aiming for any magnitude of weight loss. Weight loss of 3-7% of baseline weight improves glycemia and other intermediate cardiovascular risk factors. A* Sustained loss of >10% of body weight usually confers greater benefits, including disease-modifying effects and possible remission of type 2 diabetes, and may improve long-term cardiovascular outcomes and mortality. B *
+* See definitions section for ADA evidence grading table.
+Nonsurgical preoperative interventions
+The United States Preventive Services Task Force (USPSTF) statement from 2018 recommends that adults with a BMI of 30 or higher be referred to intensive, multicomponent behavioral interventions (Grade B). The USPSTF characterized the intensive behavioral weight loss programs included in their evaluation:
+Most of the intensive behavioral weight loss interventions considered by the USPSTF lasted for 1 to 2 years, and the majority had 12 or more sessions in the first year. One-third of the interventions had a “core” phase (ranging from 3-12 months) followed by a “support” or “maintenance” phase (ranging from 9-12 months). Most behavioral interventions encouraged self-monitoring of weight and provided tools to support weight loss or weight loss maintenance (eg, pedometers, food scales, or exercise videos).
+Most behavioral interventions encouraged self-monitoring of weight and provided tools to support weight loss or weight loss maintenance (eg, pedometers, food scales, or exercise videos). Similar behavior change techniques and weight loss messages were used across the trials.
+The USPSTF noted that the interventionists collaborating with individuals varied across programs and included primary care physicians, lifestyle coaches, registered dietitians, behavioral therapists, psychologists, and exercise physiologists. The type and number of interactions varied widely across programs. Interventions included group counseling, individual counseling, classroom sessions and phone or web-based messaging. Programs which combined behavioral interventions and pharmacotherapy reported greater success.
+The 2025 ADA standards of care in diabetes-obesity and weight management for the prevention and treatment of type 2 diabetes contain the following recommendations:
+8.4 In people with type 2 diabetes and overweight or obesity, weight management should represent a primary goal of treatment along with glycemic management. A *
+8.6 Individualize initial treatment approaches for obesity (i.e., lifestyle and nutritional therapy, pharmacologic agents, or metabolic surgery) A * based on the person’s medical history, life circumstances, preferences, and motivation. C * Consider combining treatment approaches if appropriate. E *
+8.7 Nutrition, physical activity, and behavioral therapy are recommended for people with type 2 diabetes and overweight or obesity to achieve both weight and health outcome goals. B *
+8.8a Interventions including high frequency of counseling (≥16 sessions in 6 months) with focus on nutrition changes, physical activity, and behavioral strategies to achieve a 500-750 kcal/day energy deficit should be recommended for weight loss and should be considered when available. A *
+8.8b If access to such interventions is limited, consider alternative structured programs delivering behavioral counseling (face-to-face or remote). E *
+8.9 Nutrition recommendations should be individualized to the person’s preferences and nutritional needs. Use nutritional plans that create an energy deficit, regardless of macronutrient composition, to achieve weight loss. A *
+8.11 For those who achieve weight loss goals, continue to monitor progress, provide ongoing support, and recommend continuing interventions to maintain weight goals long term. E * Effective long-term (≥1 year) weight maintenance programs provide monthly contact and support, include frequent self-monitoring of body weight (weekly or more frequently) and other self-monitoring strategies (e.g., food diaries or wearables), and encourage regular physical activity (200-300 min/week). A *
+8.12 Short-term nutrition intervention using structured, very-low-calorie meals (800-1,000 kcal/day) should be prescribed only to carefully selected individuals by trained practitioners in medical settings with close monitoring. Long-term, comprehensive weight maintenance strategies and counseling should be integrated to maintain weight loss. B *
+8.26 In people who undergo metabolic surgery, routinely screen for psychosocial and behavioral health changes and refer to a qualified behavioral health professional as needed. C *
+8.27 Monitor individuals who have undergone metabolic surgery for insufficient weight loss or weight recurrence at least every 6-12 months. E * In those who have insufficient weight loss or experience weight recurrence, assess for potential predisposing factors and, if appropriate, consider additional weight loss interventions (e.g., weight management pharmacotherapy). C *
+* See definitions section for ADA evidence grading table.
+The AACE and ACE 2016 clinical practice guidelines for medical care in obese individuals recommend lifestyle therapy which includes healthy meals with reduced calories and physical therapy for those suffering with obesity with associated comorbidities or those at risk for developing obesity related comorbidities. AACE and ACE also recommend that lifestyle therapy should include the following:
+Behavioral interventions that enhance adherence to prescriptions for a reduced-calorie meal plan and increased physical activity (behavioral interventions can include: self-monitoring of weight, food intake, and physical activity; clear and reasonable goal-setting; education pertaining to obesity, nutrition, and physical activity; face-to-face and group meetings; stimulus control; systematic approaches for problem solving; stress reduction; cognitive restructuring [i.e., cognitive behavioral therapy], motivational interviewing; behavioral contracting; psychological counseling; and mobilization of social support structures).
+The 2019 Clinical practice guideline developed by AACE, ACE, The Obesity Society, ASMBS, Obesity Medicine Association (OMA), and American Society of Anesthesiologists (ASA) addresses the nonsurgical support of those who will be undergoing bariatric procedures (Mechanick, 2019). The guideline notes that the initial history and physical (H&P) include a weight loss history as well an evaluation of commitment. An evaluation of the weight loss history is repeated in the context of the psychosocial evaluation, noting:
+Formal domains for preoperative psychosocial evaluation are weight history, eating-disorder symptoms (e.g., night-eating syndrome, binge eating, compensatory behaviors, anorexia nervosa), psychosocial history, developmental and family history, current and past mental health treatment, cognitive functioning, personality traits and temperament, current stressors, social support, quality of life, health-related behaviors (substance abuse, smoking history, adherence, and physical activity), motivation and knowledge base (including weight loss expectations), and self-harm and suicide.
+In 2021, the ASMBS published preoperative recommendations meant to minimize the risk of complications and optimize surgical outcomes by managing modifiable risk factors (Carter, 2021). The society defined preoperative optimization as active risk mitigation, by actively identifying and potentially delaying surgery until a specific goal is met. These recommendations include smoking cessation and achieving adequate glycemic control prior to surgery. The society also recommends a thorough evaluation by an individual’s primary care physician as well as assessing behavior patterns such as eating and physical activity patterns.
+In 2022, the ASMBS and the IFSO published a guideline on the indications for metabolic and bariatric surgery. The societies note that the standard for selection criteria for bariatric surgery (BMI ≥ 40 kg/m 2   or BMI ≥35 kg/m 2 with co-morbidities) proposed by the NIH in 1991 has evolved. The authors propose less importance on strict BMI categories, arguing that bariatric and metabolic surgery be expanded to include all classes of obesity. The evidence cited by the guideline to support recommending surgery in individuals with BMIs of 30 kg/m 2   to <35 kg/m 2   or expanding recommendations in those with a BMI of ≥ 35 kg/m 2 without comorbidities is limited. The size of the trial arms includes 50 or less participants in most cases, with inclusion criteria being non-specific to the target population. Considerable heterogeneity exists between cited studies, with inconsistent results reported. In a cited joint statement by international diabetes organizations (Brito, 2017), the authors noted that a firm link between the use of metabolic surgery to control diabetes and to prevent diabetic complications has not yet been established. The authors concluded:
+Bariatric surgery is effective for patients with T2D but is invasive and has risks, and its effects often wane over time.
+The consensus guideline recommends considering surgery for patients with T2D, particularly those with severe obesity, and advances the field by providing guidance for preoperative evaluation and postoperative follow-up.
+Preoperative weight loss may lead to a less complex surgical procedure and improved postoperative outcomes. This has been theorized to be due to improvements in the vascular or respiratory system or improved technical aspects, such as reduced liver volume (Carter, 2021; Mechanick, 2019; Sun, 2020). However, any delays might be at the expense of further aggravating obesity replated conditions. Pre-procedure weight loss may be recommended in selected cases to improve co-morbidities in some individuals but is not recommended as a standard measure.
+Bariatric Surgery to Treat Indications Other than Obesity
+The rates of metabolic diseases, such as diabetes and  nonalcoholic fatty liver diseases (NAFLD) have increased as the rates of obesity have increased. Approximately 30% to 53% of incident diabetes cases in the U.S can be attributed to obesity (Cameron, 2021). NAFLD affects approximately 20% to 30% of individuals in the general population in western countries. NAFLD also affects up to 90% of morbidly obese individuals and is closely related to both obesity and type 2 diabetes (Laursen, 2019; Lee, 2019). In 2023, international liver societies revised the terminology from NAFLD to metabolic dysfunction associated steatotic liver disease (MASLD). This change emphasizes the metabolic causes of the condition, such as obesity, diabetes, and insulin resistance, rather than focusing on the absence of alcohol use. The updated term also promotes clearer communication and reduces stigma associated with the previous name.
+A 2013 Agency for Healthcare Research and Quality (AHRQ) systematic review compared bariatric surgery with nonsurgical therapy in adults with metabolic disease and a BMI of 30-34.9 kg/m². Across 24 studies, individuals who underwent surgery achieved greater weight loss and glycemic improvement than those receiving lifestyle or pharmacologic therapy, with HbA1c and metabolic markers improving within 1 month postoperatively. Short-term complications were infrequent and generally minor, though long-term safety and mortality data were lacking. The investigators commented:
+Due to the dearth of long-term studies of bariatric surgery in this particular target population, few data exist about long-term adverse effects, and we found no evidence regarding major clinical endpoints, such as all-cause mortality, cardiovascular mortality and morbidity, and peripheral arterial disease.
+The AACE, the Obesity Society, and the ASMBS practice guideline for the Perioperative Nutritional, Metabolic, and Nonsurgical Support of the Bariatric Surgery Patient (Mechanick, 2019) includes lower-level recommendations (Grade B, Best Evidence Level [BEL] 2) for individuals with a BMI of 30-34.9kg/m 2 with diabetes or metabolic syndrome. The authors note that the current evidence does not support that surgery may be appropriate in the absence of obesity.
+Bariatric surgery has been investigated as a treatment for type 2 diabetes mellitus (T2DM). To date, studies reporting the results of bariatric surgery on T2DM have primarily focused on individuals with a BMI greater than or equal to 40 or 35-39.9 kg/m 2 with a clinically significant obesity-related comorbidity. Studies comparing conventional medical therapy and bariatric surgery have reported improved diabetic control in the bariatric surgery groups (Mingrone, 2012; Schauer, 2012). There have been very few studies that investigated the safety and efficacy of bariatric surgery, also referred to as metabolic surgery, in individuals with a BMI less than 35 kg/m 2 .
+In a 2019 systematic review and meta-analysis, Lee and colleagues reviewed the effects of bariatric surgery on biopsy confirmed NAFLD in obese individuals. While no RCTs were identified, prospective (n=17) and retrospective (n=15) studies were included. Individuals with steatosis (n=1329), inflammation (n=657), ballooning degeneration (n=320) or fibrosis (n=619) prior to bariatric surgery reported complete resolution at 1 year following surgery in 66%, 50%, 76% and 40% of individuals; respectively.
+Aminian and associates (2021) reviewed the association between bariatric surgery and incident major adverse liver outcomes and cardiovascular events (MACE) in obese individuals with biopsy-proven fibrotic NASH without cirrhosis. This large-scale retrospective study included individuals who had undergone RYGB or sleeve gastrectomy (n=650) and a nonsurgical control group (n=508). Individuals had a mean BMI of 44.1 (interquartile range [IQR], 39.4-51.4) and were followed for a median follow-up of 7 years (IQR, 4-10 years). The primary endpoints were identified as the incidence major adverse liver outcomes and MACE, which was a composite of coronary artery events, cerebrovascular events, heart failure, or cardiovascular death. At 10 years post-surgery, the reported cumulative incidence of major adverse liver outcomes was 2.3% (95% confidence interval [CI], 0%-4.6%) in the bariatric surgery group and 9.6% (95% CI, 6.1%-12.9%) in the nonsurgical group (adjusted absolute risk difference, 12.4% [95% CI, 5.7%-19.7%]; adjusted hazard ratio [HR], 0.12 [95% CI, 0.02-0.63], p=0.01). The bariatric surgery group also reported improved MACE outcomes compared to the nonsurgical group at 10 years: 8.5% (95% CI, 5.5%-11.4%) versus 15.7% (95% CI, 11.3%-19.8%) (adjusted absolute risk difference, 13.9% [95% CI, 5.9%- 21.9%]; adjusted HR, 0.30 [95% CI, 0.12-0.72], p=0.007). The mean body weight in the surgical group was reduced by 22.4% compared to a 4.6% decrease in the nonsurgical group.
+The ASMBS published a position statement regarding metabolic surgery (MBS) and bariatric surgery on nonalcoholic steatohepatitis (Mazzini, 2021). The guideline addressed the impact of laparoscopic RYGB and LSG on the management of NASH. The society concluded:
+Based on the evidence presented herein, MBS has a positive impact on NAFLD and NASH, either with or without fibrosis, and should be considered as a therapeutic tool among those patients with severe obesity. Randomized controlled trials are needed to determine whether MBS should be considered as a frontline therapy for NAFLD and NASH.
+Gastroparesis is a rare condition affecting the gastric emptying following the ingestion of solid foods. The delayed gastric emptying causes multiple symptoms including nausea, vomiting, early satiety, pain, belching, and bloating . RYGB without gastrectomy has been proposed as a treatment of gastroparesis. Only a few uncontrolled studies with a limited number of participants have been published (Moszkowicz, 2022; Papasavas 2014). The evidence does not show that bariatric surgery is as effective as the current treatment modalities.
+Bariatric Surgery in Adolescents and Children ( Return to Clinical Indications )
+Greater than 1 in 5 children in the U.S. are classified as obese. These rates continue to increase, with the rise of children with severe obesity experiencing the most significant rise (Skinner, 2018). The classification of obesity in children and adolescents varies from the adult classification system. Obesity categorization is typically based upon relative BMI or BMI percentile (Skinner, 2018). The AAP defines childhood obesity as a BMI of  ≥ 95 th percentile for age and gender while severe obesity is defined as a BMI of  ≥ 120 th percentile for age and gender (Hampl, 2023). The use of bariatric surgery in children and adolescents has been limited, but the surgical rates have been increasing since the early 2000s as evidence showing safety, effectiveness and durability has been published (Hampl, 2023; Shoar, 2017).
+The 2019, AAP guidelines noted that  severe obesity in the pediatric population (ages 13-18) has been increasingly linked to the development and progression of multiple comorbid states, including increased cardiometabolic risk resulting in end-organ damage in adulthood (Armstrong, 2019). As bariatric surgery has become more common, the outcomes have supported that indications for surgery might mirror adult indications. There are potential complications that might be of particular concern in the pediatric population. The long-term effects of micronutrient deficiencies, which are common after RYGB and vertical sleeve gastrectomy, are unknown as most pediatric longitudinal studies of bariatric surgery do not follow participants long-term or through life events such as pregnancy, to assess for related complications. Early data suggests that those individuals with baseline anxiety or depression might be at higher risk for postoperative anxiety and depression. While bariatric surgery has been shown to be an effective tool in treating the pediatric population with severe obesity, the AAP recommends that the pediatrician understand and communicate the efficacy, risks, benefits, and long-term health implications associated with bariatric surgery to the family when making decisions regarding surgical options.
+The AAP published a clinical practice guideline on the evaluation and treatment of children and adolescents with obesity (Hampl, 2023). Procedures most commonly performed in the pediatric age group, laparoscopic RYGB and vertical sleeve gastrectomy have resulted in significant and sustained weight loss. There is evidence to suggest that adolescents following bariatric surgery have a high probability of experiencing a remission of certain cardiometabolic risk factors including, but not limited to hypertension, T2DM and dyslipidemia. While bariatric surgery in this population is associated with a cumulative benefit on obesity related diseases over time, surgery requires long-term follow-up. Approximately 13% to 25% of surgeries performed on the pediatric population require subsequent procedures up to 5 years following the initial surgery. Long-term medical management is required to monitor for and treat any micronutrient deficiencies which might develop. AAP acknowledges that a multicomponent and individualized approach is needed when evaluating and individual for bariatric surgery eligibility noting:
+Age is not the sole determinant of eligibility for metabolic and bariatric surgery. The pediatrician or other pediatric health care providers [PHCP] should take into account the patient’s physical and psychosocial needs. Evaluation for metabolic and bariatric surgery should include a holistic view of the patient and family, including individual and social risk factors. Families should be fully informed of the benefits and risks of metabolic and bariatric surgery, and their preferences are paramount.
+In 2018, the ASMBS updated the pediatric bariatric surgery guidelines in response to an expanding body of evidence. Severe obesity has been linked to the development of a number of chronic conditions and risk factors associated with premature mortality in adults. These include, but are not limited to, cardiovascular disease, dyslipidemia, hypertension, insulin resistance, type 2 diabetes, obstructive sleep apnea, nonalcoholic fatty liver disease. The ASMBS recommends that surgery be considered for the following:
+• BMI ≥ 35 kg/m 2 or 120% of the 95th percentile with a clinically significant co-morbid condition(s); or
+• BMI ≥ 40 kg/m 2 or 140% of the 95th percentile (whichever is lower).
+While the recommendations are in place for adolescents (defined as between the ages of 10 and 19 years), there may be children who should be considered for surgery prior to adolescence due to the presence of obesity related complications. RYGB and vertical sleeve gastrectomy are considered safe and effective treatments in the pediatric population. Other procedures are considered less desirable; BPD carries a higher risk of reoperation and adjustable lap banding is not FDA approved in those below 18 years of age. In cases in which there is inadequate weight loss, the ASMBS recommends evaluation by a dietician and a psychologist to assess eating patterns. Treatment options can include the addition of weight loss medications or revision surgery.
+In a scientific statement on severe obesity in children and adolescents, the American Heart Association (AHA) reviewed multiple comorbid conditions associated with severe obesity in youths, including metabolic disorders, hypertension, non-alcoholic fatty liver disease, musculoskeletal problems and obstructive sleep apnea syndrome (Kelly, 2013). The AHA concluded that severely obese youths are much more likely to become severely obese adults with commensurate risks and adverse outcomes. Various medical treatment options were also described, along with results of the available studies. Regarding bariatric surgery, it was noted:
+In light of the limited effectiveness of lifestyle modification and medical therapy, shown to date, for severe obesity, surgical procedures that have an evidence base that supports their efficacy and safety should be considered for patients who demonstrate medical necessity and psychosocial readiness… The most recent and authoritative practice recommendations (Pratt, 2009) emphasize the concept that a combination of both severe obesity and the existence of comorbidities should be present to medically justify an operation to treat obesity. There is good evidence that RYGB is reasonably safe and highly effective compared with lifestyle modification for the treatment of severe obesity. Relatively good safety and efficacy data for AGB (adjustable gastric banding) in adolescents have been reported, although a high rate of reoperation and sparse long-term data, along with a lack of FDA approval for the device, hamper recommendations for usage before adulthood. All adolescents undergoing bariatric surgery should be strongly encouraged to participate in prospective longitudinal outcomes studies to improve the evidence base to evaluate the risks and benefits of operations in this age group… Bariatric surgery is the most effective treatment for severe obesity in adolescents; however, surgery is appropriate and available for only some adolescents with severe obesity, and broadening availability will depend on the results of long-term outcome studies, currently in progress… Innovative approaches to fill the gap between lifestyle/medication and surgery are urgently needed.
+The Endocrine Society clinical practice guideline on pediatric obesity (2017) reviewed the treatment of pediatric obesity, including bariatric surgery. Bariatric surgery is recommended only under limited circumstances in individuals in the later stages of development (Tanner pubertal development stages 4 or 5 and final or near final adult height) with a BMI of greater than 40 kg/m 2 and mild co-morbidities, or greater than 35 kg/m 2 and major co-morbidities. This recommendation is categorized as a weak recommendation based on low quality evidence. While the results of studies have been promising, there continues to be concerns regarding potential nutritional deficiencies and compliance in this population. Adolescents undergoing bariatric surgery will require life-long follow-up.
+Inge and associates (2019) compared the 5-year outcomes of adolescents to adults who underwent RYGB and had previously participated in Longitudinal Assessment of Bariatric Surgery (LABS) and the Teen-LABS studies. Individuals were evaluated at baseline, at 6 months post-operative and then annually for 5 years. The mean age of the adolescent group (n=161) at baseline was 17 years. At 5 years, both groups reported similar weight changes (-26% in adolescents versus -29% in adults). The adolescent group reported higher remission rates of type 2 diabetes and hypertension compared to the adult group. However, the adolescent group also reported a higher rate of abdominal reoperations and nutritional deficiencies compared to the adult group. The authors suggest that there may be greater plasticity for reversal of obesity related complications among adolescent individuals compared to the adults. The authors concluded that in some individuals, the benefits of bariatric surgery as an adolescent may outweigh postponing surgery until adulthood; noting “longer-term follow-up and further research will be important for refinement of the risks and benefits of bariatric surgery in adolescents.” Furthermore, the benefits of bariatric surgery need to be balanced with the additional risks in the adolescent age group who may not have a fully developed capacity to make decisions about a life altering procedure (Adams, 2019; O’Brien, 2010; Pratt, 2009; Treadwell, 2008).
+The 2025 ADA Standards of Medical Care in Diabetes includes the following recommendations for children and adolescents:
+Metabolic surgery may be considered for the treatment of adolescents with type 2 diabetes who have class 2 obesity or higher (BMI > 35 kg/m 2 or 120% of 95 th percentile for age and sex, whichever is lower) and who have elevated A1C and/or serious comorbidities despite lifestyle and pharmacologic intervention. A *
+Metabolic surgery should be performed only by an experienced surgeon working as part of a well-organized and engaged multidisciplinary team including a surgeon, endocrinologist, registered dietician nutritionist, behavioral health specialist, and nurse. A *
+In eligible individuals under the age of 18 years, who are skeletally mature, it is the consensus in the practice community that potential candidates for surgery be evaluated for the following:
+• The individual's psychiatric profile and developmental stage is such that the candidate is able to understand, tolerate and comply with all phases of pre- and post-operative care and is committed to long-term post-operative follow-up requirements; and
+• An informed consent is conducted including documentation that the individual has received and can fully understand a thorough explanation of the risks, benefits, and uncertainties of the procedure being planned for.
+Bariatric Procedures
+Biliopancreatic bypass with duodenal switch (BPD-DS)
+BPD-DS is a combined restrictive-malabsorptive bariatric procedure. It typically begins with a sleeve gastrectomy that preserves the pylorus, followed by division of the proximal duodenum and an anastomosis to distal ileum, creating long biliopancreatic and alimentary limbs and a short common channel to induce durable malabsorption alongside gastric restriction. Originally termed Scopinaro BPD, the more modern form of the surgery emphasizes a preserved pylorus and the duodeno-ileal reconstruction as key distinctions from the original. BPD-DS is a long-standing bariatric modality with long-term data demonstrating durable weight loss and metabolic benefit (Möller, 2023). In a randomized clinical trial (RCT) with 5-year follow-up, BPD-DS achieved greater BMI reduction and superior lipid/glucose improvements compared to RYGB in individuals with a BMI of 50 to 60, although BPD-DS is associated with more nutritional/GI adverse effects (Risstad, 2015).
+In the 2019 AACE/TOS/ASMBS/OMA/ASA guideline (Mechanick), BPD-DS is listed as one of the primary bariatric/metabolic procedures to consider for individuals considering bariatric surgery (Grade A; BEL 1). The recommendation includes an explicit caution that BPD-DS carries greater nutritional risk due to the longer bypassed small intestine (Grade A; BEL 1). BPD-DS is associated with strong metabolic effects, durable weight loss and being particularly effective in individuals with very high BMIs.
+Endoscopic sleeve gastroplasty (ESG)
+ESG is a minimally invasive, organ-sparing bariatric procedure performed via endoscopy that uses full-thickness sutures along the greater curvature of the gastric body, reducing gastric volume and slowing gastric emptying without stapling, resection, or anastomosis.
+The IFSO Bariatric Endoscopy Committee position statement (Dayyeh, 2024) recognizes ESG as a minimally invasive intervention with meaningful weight loss with a low rate of serious AEs. While much of the evidence to date is observational, these multicenter and real-world cohorts consistently demonstrate efficacy and safety, and an RCT provides moderate-quality data supporting its benefit. Taken together, the maturing evidence base supports ESG as a valid bariatric surgery particularly for individuals seeking a less invasive approach. Ongoing trials are expected to further standardize indications and long-term outcomes.
+Dayyeh and colleagues (2022) compared the safety and efficacy of lifestyle modifications and lifestyle modifications combined with ESG in a prospective, multicenter, randomized trial (MERIT). Individuals with a BMI between 30kg/m ² and less than 40kg/m² were randomized to the control group (n=124) or the trial group (n=85). The primary efficacy endpoint was the comparison between percentage of excess weight lost (EWL) at 52 weeks. At the end of 52 weeks, participants were eligible to crossover to the trial group. They were then followed for an additional 52 weeks. The ESG group had a significant percentage of EWL at 52 weeks (49.2%) compared to the control group (3.2%). The ESG group also experienced greater total body weight loss (13.6%) versus the control group (0.8%). Improvements in metabolic comorbidities were observed in 80% of the ESG group compared to 45% of the control group. Moreover, 93% of ESG participants showed improvement in diabetes indices, versus 15% in the control group with similar trends observed for hypertension and metabolic syndrome. At 104 weeks, 83% of the achieved weight loss was maintained.
+Adjustable gastric banding (AGB)
+AGB is a restrictive procedure which involves surgically placing a gastric band around the exterior of the stomach; the stomach is not entered. The procedure can be reversed by removing the band. Complications may include slippage of the external band or band erosion through the stomach wall (2-5% of surgeries). Furthermore, incorrect positioning of the band may result in vomiting, as well as ineffective weight loss. In June 2001, the FDA cleared the Lap-Band ® System (Allergan, Inc., Irvine, CA and sold to Apollo Endosurgery, Inc., Austin, TX, in 2013). Curently, the LAP-BAND system is the only FDA approved system for adjustable gastric banding in the United States. The popularity of adjustable lap bands has decreased significantly since 2011. In 2020, there was an estimated 2393 lap bands placed compared to an estimated 55,932 in 2011. This decrease can be attributed to a high rate of complications which required revision or removal of the band and less than optimal weight loss for many individuals.
+A number of studies supported the clinical efficacy of adjustable gastric banding, although weight loss tended to be less robust when compared to other surgical procedures, such as Roux-en-Y (Angrisani, 2007; Arterburn, 2014; Biertho, 2003; Bowne, 2006; Dolan, 2004; Jan, 2005; Miller, 2007; Morino, 2003). Initially, LAGB was a popular choice as the procedure is minimally invasive and reversible. While the short-term results were promising, the long-term failure and complications rates are substantial. Approximately 70% of individuals reported complications at 15 years follow-up with 61.7% requiring additional surgery to address the complication (Gangemi, 2018),
+On February 16, 2011, the FDA approved an expanded indication for the Lap-Band device to include individuals with a BMI at least 30 kg/m2 with one or more obesity related comorbid conditions. This expansion was based on the results of a prospective, single-arm, nonrandomized, 5-year study sponsored by the manufacturer, Allergan, Inc. At the time of the FDA approval, the 1-year results showed device clinical efficacy with at least 80.5% of the participating individuals achieving at least a 30% EWL at 1 year (FDA, 2011). At 2 years, the 1-year results were maintained (Michaelson, 2013). There are several limitations associated with this study. The study included individuals with a BMI of up to 40 kg/m2, only 41% had a BMI of 30‐35 kg/m2. Based upon the design of the study, there appears to be a significant potential for bias. Arterburn (2013) noted that as the prevalence of severe comorbidities in this population is less, the evidence currently does not support that the benefit of preventing comorbidities in this population outweighs the risk.
+Roux-en-Y procedure (RYGB)
+RYGB is one of the most commonly performed and well-studied types of bariatric surgery. Multiple studies have shown that RYGB provides durable weight loss, improves diabetes control in individuals with obesity when compared to medical therapy (Eisenberg, 2023; Gracia, 2009; Mingrone, 2012; Salminen, 2022; Schauer, 2017). RYGB is a commonly used revisional surgery to treat intractable GERD resulting from sleeve gastrectomy (Clapp, 2024; Santoro, 2024)
+Sleeve gastrectomy (SG)
+Sleeve gastrectomy is the most common bariatric procedure performed. In 2020, sleeve gastrectomy accounted for over 60% of all procedures performed (ASMBS, 2022). Sleeve gastrectomy is commonly performed laparoscopically. Sleeve gastrectomy can be associated with gastroesophageal reflux (GERD), esophagitis, and Barrett esophagus (BE). The long-term results of studies evaluating sleeve gastrectomy has supported the overall safety and efficacy of this established procedure. Sleeve gastrectomy is associated with significant and sustained weight loss (Himpens, 2010; Peterli, 2018; Salminen, 2022; Shoar, 2017).
+Single-anastomosis duodeno-ileal bypass with sleeve gastrectomy (SADI-S)
+The SADI-S, also known as loop duodenal switch, stomach intestinal pylorus-sparing surgery (SIPS), the one-anastomosis duodenal switch or loop DS, is a variant of the duodenal switch (DS) which was developed to address the inherent limitations of the current standard bariatric surgeries including inadequate weight loss, weight regain, variable improvement of weight-related co-morbidities, hypoabsorptive complications, internal hernias, and technical difficulty (Kallies, 2020). The procedure involves first creating a sleeve gastrectomy then replacing the RYGB reconstruction with a single anastomosis duodenoileostomy with a 250 cm or longer absorptive channel. The 1-loop Billroth II-like connection avoids the need for forming a distal ileo-ileal anastomosis and alimentary limb. These changes reduce operative time and decrease postoperative complications, including nutritional deficiencies, obstruction, anastomotic leak, and hernias (Nakanishi, 2022).
+In 2020, the ASMBS issued an updated statement on SADI-S, revising their previous recommendation that the procedure be done only under a study protocol to recommending SADI-S as a primary treatment of obesity or metabolic disease. The recommendation is partially based on the fact that the SADI-S is a variant of the established DS rather than a novel surgical procedure; therefore less published, peer-reviewed evidence is required. While the ASMBS has endorsed the SADI-S procedure, the society also notes the following:
+Publication of long-term safety and efficacy outcomes is still needed and is strongly encouraged, particularly with published details on SG size and common channel length.
+There remain concerns about intestinal adaptation, nutritional issues, optimal limb lengths, and long-term weight loss/regain after this procedure. As such, ASMBS recommends a cautious approach to the adoption of this procedure, with attention to ASMBS-published guidelines on nutritional and metabolic support of bariatric patients, in particular for DS patients.
+Since the publication of the 2020 ASMBS statement, additional literature has been published. Finno and colleagues (2020) reported on the outcomes of individuals were treated with either duodenal switch or SADI-S up to 2 years following surgery at a single institution. At 2 years, both groups reported similar BMI changes, % EWL and rate of participants who reached a BMI < 35. The duodenal switch group had a significantly higher number of long-term complications, primarily mesenteric internal hernias. The SADI-S group reported a higher incidence of GERD.
+In 2025, Robert and colleagues reported 2-year outcomes of a multicenter, randomized superiority trial comparing SADI-S and RYGB in individuals with a BMI of ≥ 40 kg/m² or ≥ 35 kg/m² with comorbidities (SADISLEEVE). The study population included those undergoing primary surgery and those undergoing a revisional procedure following suboptimal response to a previous sleeve gastrectomy. The primary outcome was the 2-year % EWL. At 2 years, the SADI-S group achieved significantly greater EWL vs. RYGB (-76.0% vs. -68.1%; p=0.026). Both groups had a similar safety profile. The SADI-S group reported a higher number of early surgical complications including anastomotic leaks and diarrhoea (6% vs. 2%) while the RYGB group reported more late complications, notably internal hernias. Nutritional outcomes were generally similar, with low malnutrition rates, though the SADI-S group experienced more steatorrhea and lower fat-soluble vitamin levels, offset by higher vitamin B12 levels; both groups required supplementation. Diabetes remission at 2 years did not differ significantly (57% SADI-S vs. 62% RYGB).Both procedures improved comorbidities and quality of life, with no major differences in diabetes remission, hypertension, or dyslipidaemia.
+Sabatella and colleagues (2025) performed a meta-analysis of eight studies including 4259 individuals (1625 SADI-S; 2634 RYGB) to compare weight loss, diabetes remission, and complications between the two procedures. Pooled analysis showed that SADI-S achieved significantly greater total weight loss (mean difference [MD]: 10.0%; 95% CI: 4.7-15.4; p<0.001) and excess weight loss (MD: 10.2%; 95% CI: 5.2-15.1; p<0.01). Diabetes remission was also significantly higher in the SADI-S group (odds ratio [OR], 3.48; 95% CI: 2.02-6.02; p<0.001). Subgroup analysis indicated that individuals with BMI < 50 kg/m² undergoing SADI-S experienced fewer short-term complications (OR, 0.45; 95% CI: 0.33-0.61; p<0.01), as well as shorter hospital stays and lower rates of severe complications. Long-term complications trended lower after SADI-S (OR, 0.19; 95% CI: 0.03-1.36; p=0.10), though the difference was not statistically significant.
+SG with duodeno-enteric bypass variants
+Variations of sleeve gastrectomy with duodeno-enteric bypass differ mainly by the site of anastomosis and degree of malabsorption. SADI-S is the most studied procedure. Duodenojejunal bypass with sleeve gastrectomy (DJB-SG) joins the duodenum to the proximal jejunum, offering metabolic benefits with minimal malabsorption, and is studied primarily for T2DM. Other approaches include ileal interposition with sleeve and sleeve plus jejunoileal bypass. While all share the principle of combining sleeve restriction with intestinal diversion, they vary in complexity, efficacy, and nutritional risk.
+Kim (2025) retrospectively compared SADJB-SG with RYGB in 84 individuals and found similar 1-year weight loss (approximately 27% vs. 30% total weight loss [TWL]) and metabolic remission, but no dumping syndrome or marginal ulcers in the SADJB-SG group, complications observed only after RYGB. Seki (2017) followed 120 individuals with T2DM undergoing LSG-DJB for up to 5 years, reporting approximately 31% TWL and diabetes remission rates of 64% at 1 year, 55% at 3 years, and 64% at 5 years, with approximately 11% relapse among early remitters. Major complications included leaks, hemorrhage, and internal hernia, but no mortality. Both studies were limited by retrospective design, small cohorts, single-center experience, and incomplete long-term follow-up. These preliminary studies indicate there may be some potential benefit in this approach, but the limited evidence is not sufficient to consider this a standard bariatric surgery modality.
+Vertical banded gastroplasty (VBG)
+VBG is an early form of a primarily restrictive procedure which had been used to treat morbid obesity. This surgery has been largely replaced by other procedures and is rarely performed anymore due to a general lack of sustained weight loss and a high rate of complications which require revision surgery (Ece, 2016; Griggs, 2018).
+Malabsorptive procedures (other than the biliopancreatic bypass with duodenal switch)
+Malabsorptive procedures represent earliest forms of surgical treatment for severe obesity. Procedures such as jejunoileal bypass were associated with severe short- and long-term complications and are no longer recommended as a treatment of severe obesity (Morris, 2017). The available evidence does not support that the safety, efficacy, and durability is comparable to the standard DS procedure.
+Mini gastric bypass
+The mini gastric bypass is also known as one AGB (OAGB or omega-loop gastric bypass (Solouki, 2018). The procedure is a modified gastric bypass which consists of one gastrojejunal anastomosis between a long gastric pouch and a jejunal omega loop, with the standard biliopancreatic limb length being 200 cm (Robert, 2019). Complications can include biliary reflux and anastomotic ulcers (Robert, 2019; Ruiz-Taylor, 2019). The use of the mini gastric bypass, specifically the OAGB has been growing and it is the third more frequently performed procedure performed worldwide, following SG and RYGB (Ruiz-Tovar, 2019).
+Ruiz-Taylor and colleagues (2019) reported on the outcomes of a Spanish prospective study in which individuals with a BMI > 40 or > 35 with the presence of comorbidities were randomized to receive either SG, RYGB or OAGB. Individuals were followed up to 5 years postoperatively. The biliopancreatic limb length in the OAGB group ranged from 200 to 350 cm long. At 1 year, the BMI for the SG, RYGB, and OAGB groups were 28.9 ± 2.1 Kg/m 2 , RYGB 28.7 ± 2 Kg/m 2 , and 25 ± 1.6 Kg/m 2 respectively. At 5 years, the BMI for the SG, RYGB, and OAGB groups were 30.8 ± 2.2 Kg/m 2 , 29.9 ± 2.3 Kg/m 2 , and 25.1 ± 1.8 Kg/m 2 respectively. The BMI was significantly lower in the OAGB group compared to the RYGB or SG groups. In addition to BMI, the authors reported on the remission rates of type 2 diabetes, hypertension and dyslipidemia for each group. At 5 years, the OAGB group reported significantly greater remission rates for all three conditions when compared to both SG and RYGB. During the 5-year follow-up period, 2 individuals presented with uncontrollable biliary reflux and were converted to RYGB, and 3 individuals presented with anastomotic ulcers and were medically treated. A total of 3 individuals each in the SG and RYGB group presented with weight regain. Over the follow-up period, the OAGB group had higher iron and folic acid needs, which the authors noted would be expected as this procedure is a mostly malabsorptive procedure.
+In the Omega Loop Versus Roux-en-Y Gastric Bypass (YOMEGA) trial, a French multicentre, randomised, open-label, non-inferiority trial, Robert and associates (2019) compared the outcomes between laparoscopic OAGB (n=129) and RYGB (n=124). Individuals with a BMI ≥ 40 or ≥ 35 with at least one comorbidity, were randomized to the OAGB or RYGB group. The biliopancreatic limb length in the OAGB group was 200 cm long. Individuals were subject to follow-up to 2 years. The primary endpoint was set as the percentage excess BMI at 2 years while secondary endpoints included early and late complications as well as disease remission status. Data was available for 117 participants in each group. At 2 years, the mean percentage excess BMI loss in the RYGB group versus the OAGB group was -85.8% (SD 23.1) and -87.9% (SD 23.6) respectively. There was no significant difference between the groups in the proportions of diabetic individuals who were in diabetes remission at 2 years. There were significantly more overall and surgery-related serious adverse events in the OAGB group compared to the RYGB group at 2 years follow-up. The authors noted that in terms of weight loss and metabolic improvement, OAGB does not appear to be inferior to RYGB. However, the OAGB group did report higher incidences of diarrhea, steatorrhoea, and nutritional adverse events. A total of 4 of the individuals who initially underwent OAGB surgery later converted to RYGB due to anastomotic leak (1), Wernicke encephalopathy (1), and intractable severe biliary reflux (2). Endoscopy performed at 2 years showed the presence of bile in the gastric pouch in 9 individuals in the OAGB group and 1 individual having intestinal metaplasia compared to none of the individuals in the RYGB group having these issues. The authors note the small trial size and short follow-up as limitations to the study, stating that “other complications such as those associated with malabsorption, which can take years to develop, could not be assessed in our trial.”  The authors conclude:
+OAGB is not inferior to RYGB in terms of weight loss and metabolic improvement at 2 years … Higher incidences of diarrhea, steatorrhea, and nutritional adverse events were observed in the OAGB group than in the RYGB group, suggesting a malabsorptive effect of this bariatric procedure.
+While OAGB is used in other countries, it is not considered to be a clinically appropriate for the treatment of obesity in the United States at this time. The American Society for Metabolic and Bariatric Surgery (ASMBS) does not recommend OAGB as a primary weight loss procedure.
+Laparoscopic gastric plication
+On October 6, 2011, the ASMBS issued a policy statement on laparoscopic gastric plication, also known as laparoscopic greater curvature plication (LGCP). Gastric plication involves mobilizing the greater curvature of the stomach similar to the dissection for a SG and infolding (or imbricating) the stomach to achieve gastric restriction utilizing specialized surgical tools and sutures manufactured by Ethicon Endo-Surgery, Inc. (Cincinnati, OH). According to the ASMBS statement:
+The rationale for this procedure addresses issues that may limit the acceptance of other bariatric procedures, specifically, gastric plication does not involve gastric resection, intestinal bypass or placement of a foreign body, and could potentially provide a lower risk alternative for individuals and referring physicians.
+The current available literature regarding gastric plication procedures does not support that this procedure provides improved health outcomes, both long and short term over the standard techniques, such as laparoscopic sleeve gastrectomy (Grubnik, 2016; Tang, 2015; Ye, 2017).
+Endoscopic Surgery
+When endoscopic techniques for obesity management were first developed, they were primarily used as revisional procedures rather than primary weight loss interventions. These adjunctive interventions were proposed as a way to repair dilated gastrojejunal anastomoses, close fistulas or leaks or manage strictures or obstructions. Endoscopic gastric remodeling is the first endoscopic procedure used as the primary surgical or metabolic intervention. Gastric remodeling, which involves suturing or plication to reduce the stomach volume without cutting or removing tissue, can be used on different areas of the stomach. Primary obesity surgery endoluminal (POSE) creates multiple plications at the gastric fundus and distal body to reduce stomach capacity and slow gastric emptying.
+In adults with obesity, the American Society for Gastrointestinal Endoscopy (ASGE) and the European Society of Gastrointestinal Endoscopy (ESGE) guideline on primary endoscopic bariatric and metabolic therapies (2024) provides conditional recommendations for several endoscopic weight-loss interventions in combination with lifestyle modification: intragastric balloon (IGB), endoscopic gastroplasty, aspiration therapy, and, in individuals with obesity and type 2 diabetes, the duodenal-jejunal bypass liner. These recommendations are supported by moderate-quality evidence for IGB, endoscopic gastroplasty, and bypass liner, but only low-quality evidence for aspiration therapy. Other approaches, such as the transpyloric shuttle in obesity and duodenal mucosal resurfacing in diabetes, are not recommended outside of clinical trials due to knowledge gaps. Overall, while early data suggest potential benefit and safety, most available studies are limited by design and quality, underscoring the need for further high-quality, RCTs to better define the role of these endoscopic procedures in obesity management
+Bariatric Medical Devices
+The FDA (2019) currently includes four categories of regulated devices which are intended for weight loss. These devices include:
+• Gastric Band - bands are placed around the top portion of the stomach leaving only a small portion available for food.
+• Electrical Stimulation Systems - electrical stimulator is placed in the abdomen to block nerve activity between the brain and stomach (currently there are no marketed devices).
+• Gastric Balloon Systems - inflatable balloons are placed in the stomach to take up space and delay gastric emptying.
+• Gastric Emptying Systems - a tube is inserted between the stomach and outside of abdomen to drain food after eating.
+IGBs
+IGBs are endoscopically implanted intragastric devices which are filled with liquid or gas after insertion and intended to reduce gastric capacity, delay gastric emptying and stimulate the feeling of satiety. IGBs are intended for temporary use, approximately 6 to 12 months, as the risk of complications, such as balloon deflation and migration significantly increase after this time (Tate, 2018). There are currently four FDA approved devices:  Orbera ™ Intragastric Balloon System (Apollo Endosurgery, Inc., Austin, TX); TransPyloric Shuttle Delivery Device (BAROnova, Inc., San Carlos, CA) and the Obalon Balloon System (Obalon ® Therapeutics, Inc., San Diego, CA). The FDA approved device, Spatz3 (Spatz FGIA, Inc., Fort Lauderdale, FL) is the only adjustable gastric balloon system. Tate and Geliebter (2017) reviewed eight recent RCTs which compared percentage total body weight loss (%TBWL) between IGBs to control groups or bariatric surgery and pharmacotherapy. The authors noted that while IGBs did appear to provide statistically significant weight loss, IGB is not as efficacious as bariatric surgery. The current evidence does not show that long-term health outcomes associated with the use of this temporary device are equivalent to the accepted standard treatments (Brunaldi, 2019; Dang, 2018; Moore, 2020). A previous liquid-filled device, ReShape Balloon, is no longer available in the U.S market.
+The Allurion Gastric Balloon System ™ (Allurion Technologies Inc., Natick, MA) was approved by the FDA on February 20, 2026. The system is approved for short-term weight loss in adults with a BMI between 30 and 40. The balloon, attached to a catheter, is swallowed. After placement is confirmed, the balloon is filled with liquid and the catheter is removed. The approval was based on the results of the AllUrion Device in Adults With Clinical ObesITY (AUDACITY study; NCT05368259), which has not yet been published.
+On April 27, 2020, the FDA communicated the risks of liquid-filled intragastric balloons, namely the Orbera and ReShape, to health care providers. The letter addressed the potential risks of these devices, including hyperinflation, acute pancreatitis and death. The recommendations including:
+• Instruct patients about the symptoms of potentially life-threatening complications such as balloon deflation, gastrointestinal obstruction, ulceration, and gastric and esophageal perforation and advise them when to seek medical attention.
+• Monitor patients closely during the entire duration of treatment with liquid-filled intragastric balloon systems for potential complications, including acute pancreatitis, spontaneous hyperinflation, and other potentially life-threatening complications.
+• Report any adverse events related to intragastric balloon systems through MedWatch, the FDA Safety Information and Adverse Event Reporting program.
+IGBs have been associated with a number of complications including gastrointestinal symptoms (for example, nausea, vomiting, abdominal pain, constipation, acid reflux, dyspepsia) gastric ulcers, small bowel obstruction, pancreatitis or gastric erosion. Severe adverse events including esophageal tears or perforation, pulmonary embolism, pneumonia and gastric perforation were reported. Up to 9% of IGBs require early removal due to intolerance (Dang, 2018). In a propensity-matched analysis evaluating safety, the safety profile of IGBs and laparoscopic bariatric surgery were compared (Dang, 2018). IGB had twice the adverse outcome rate of laparoscopic bariatric surgery, largely due to a nonoperative reintervention rate that was more than quadruple in the IGB arm. The authors noted that while the nonoperative reintervention rate will be inherently higher in the IGB group due to the need for balloon removal at 6 months, the study looked at only unplanned removal before 30 days. Complications can be the related to the placement of the IGB, the location of the device or IGB removal. Procedure related complications occur primarily during balloon removal. The use of IGB therapy is not generally associated with meaningful and sustained weight loss and frequently individuals undergo repeated usage of IGB therapy (Crossan, 2022).
+Aspiration Therapy
+The first and currently only FDA approved device, AspireAssist ® (Aspire Bariatrics, Inc., King of Prussia, PA) was approved on June 14, 2016. A tube placed inside the stomach is connected to an outer port, and 20 to 30 minutes following a meal, the  stomach contents are drained via gravity through the outer port. As the food has not been fully broken down and absorbed, approximately 30% of the calories consumed are removed. The device is intended for long-term use. Common adverse events include complications at the tunneling site, pain, nausea/vomiting, abdominal discomfort, and change in bowel habits.
+Thompson and associates (2019) reported on the 4-year outcomes of individuals who participated in the pivotal, multicenter RCT in which participants received either aspiration therapy and lifestyle therapy or lifestyle therapy only. While the authors reported that 69% (40/58) of the participants achieved at least 10% total weight loss at 4 years post procedure, there was a significant drop-out rate throughout the course of the study. A total of 111 individuals originally received the AspireAssist device, with 29 individuals electing to have the tube removed within the first year. Between years 2, 3, and 4, the number of individuals with the AspireAssist device remaining in place dropped each year (43, 22, and 15, respectively). Individuals remaining in the study at 4 years reported an average number of connections as 1.5, raising questions regarding the long-term effectiveness of treatment.
+Electrical Stimulation System
+In 2015, the FDA approved the MAESTRO ® Rechargeable System (EnteroMedics, Inc., St. Paul, MN) for use in individuals with a BMI of 40 to 45 or with a BMI of 35 to 39.9 and one or more comorbidity. MAESTRO provides vagal blocking (VBLOC ® ) therapy by delivering intermittent, controllable, electrical blocking signals to the abdominal anterior and posterior nerve trunks of the vagus nerve. The FDA clearance was based on results of two randomized controlled trials, the first of which included 233 participants with a BMI of 35 or greater. The weight loss and adverse events of 157 individuals who received the active Maestro device were compared to 76 participants in the control group who received a Maestro electrical pulse generator that was not activated. The 12-month outcomes data found that the trial participants in the group with the activated device lost 8.5% more excess weight than the control group (with the inactivated device). The investigators noted that approximately half (52.5%) of the participants in the activated device group lost at least 20% of their excess weight, while 38.3% of participants with the activated device lost at least 25% of their excess weight. However, the study did not meet its original endpoint, which was for the group with the activated device to lose at least 10% more excess weight than the control group (Sarr, 2012). In the second study, the ReCharge trial, all participants had devices implanted but no leads were placed in the sham group. Primary efficacy outcomes were not met in either of these trials (Ikramuddin, 2014). The MAESTRO device is no longer being marketed in the United States. There remains no evidence that VBLOC therapy is an appropriate and accepted treatment of obesity.
+Complications
+Revision/Reoperation
+According to the ASMBS, in 2016 a total of 216,000 bariatric surgeries were performed with 13.9% of these surgeries being classified as revisions. This is an increase from 2011 when the revision rate was reported as 6%. Some procedures, such as the adjustable gastric band, reported significant rates of revision at 30-60% (Kirshtein, 2016). In a retrospective review of 214 individuals who had subsequent revisional bariatric procedures following adjustable lap band removal, Kirshtein and associates (2016) noted that individuals who underwent band removal without conversion or rebanding gained weight, while those who underwent further bariatric surgery succeeded in further weight loss.
+In a 2014 systematic review, Brethauer and colleagues reviewed the current evidence regarding reoperative bariatric surgery. A total of 175 articles covering multiple procedures, such as Roux-en-Y, adjustable gastric banding, sleeve gastrectomy and biliopancreatic diversion with or without duodenal switch, were included. The authors concluded:
+The reported outcomes after reoperative bariatric surgery are generally favorable and demonstrate that additional weight loss and co-morbidity reduction is achieved with additional therapy. The risks of reoperative bariatric surgery are higher than with primary bariatric surgery and the evidence highlights the need for careful patient selection and surgeon expertise.
+In addition to surgical complications following bariatric procedures (for example, stricture, erosion, leakage, band slippage), it has been noted that some individuals do not achieve or maintain adequate weight loss post-operatively, despite documented compliance with postoperative nutritional and exercise regimens. In general, it may take up to 2 years to reach maximum weight loss following bariatric surgery. Conversion bariatric surgery may be proposed when adequate weight loss has not occurred after 1 to 2 years following the initial surgery or weight loss has not been maintained. There is overall agreement that adequate weight loss has been achieved when at least 50% of EWL has been achieved, or when the body weight has reached within 30% of ideal weight ranges (by age, gender, height, etc.). Inadequate weight loss due to noncompliance with the recommended postoperative regimens is not considered to be a failure of the original surgery.
+GERD
+Increased BMI, waist circumference and weight gain are associated with the presence of GERD (Katz, 2013; Flores, 2019). New-onset GERD, or the exacerbation of GERD is common following bariatric surgery, affecting up to 33% of individuals (Brethauer, 2014). The typical symptoms of GERD include dyspepsia, epigastric pain, early satiety, belching, and bloating (Katz, 2013). As noted by Brethauer (2014) “treatment of GERD is initially medical with acid suppression but if symptoms are refractory to medical therapy or if there is an associated anatomic etiology for the GERD, surgical revision may be required”. The American College of Gastroenterology’s (ACG) 2013 guideline on GERD notes that a presumptive diagnosis of GERD can be made based on a clinical history of heartburn and regurgitation and can be empirically treated with empiric proton pump inhibitors (PPIs). The ACG guideline also notes “The diagnosis of GERD is made using some combination of symptom presentation, objective testing with endoscopy, ambulatory reflux monitoring, and response to antisecretory therapy”. The ACG includes several recommendations regarding objective testing to confirm the diagnosis of GERD:
+Patients with non-cardiac chest pain suspected due to GERD should have diagnostic evaluation before institution of therapy. (Conditional recommendation, moderate level of evidence) A cardiac cause should be excluded in patients with chest pain before the commencement of a gastrointestinal evaluation (Strong recommendation, low level of evidence).
+Barium radiographs should not be performed to diagnose GERD (Strong recommendation, high level of evidence).
+Upper endoscopy is not required in the presence of typical GERD symptoms. Endoscopy is recommended in the presence of alarm symptoms and for screening of patients at high risk for complications. Repeat endoscopy is not indicated in patients without Barrett’s esophagus in the absence of new symptoms. (Strong recommendation, moderate level of evidence).
+Ambulatory esophageal reflux monitoring is indicated before consideration of endoscopic or surgical therapy in patients with non-erosive disease (NERD), as part of the evaluation of patients refractory to PPI therapy, and in situations when the diagnosis of GERD is in question. (Strong recommendation, low level evidence). Ambulatory reflux monitoring is the only test that can assess reflux symptom association (Strong recommendation, low level of evidence).
+The incidence of GERD related to bariatric surgery varies with the procedure performed. Approximately 33.3% of LAGB postoperative individuals report exacerbated or new onset GERD at 7 years post-operative. Sleeve gastrectomy (SG) has a similar incidence rate of long-term GERD at 20-30%. GERD is initially treated with conservative measures such as acid suppression or band deflation/adjustment in LAGB. If symptoms are not controlled by medical therapy, there are several surgical options available including band repositioning, hiatal hernia repair or conversion to RYGB (Brethauer, 2014). In individuals initially treated with VBG who are undergoing corrective surgery, approximately 5.6-16.0% of these cases are related to GERD. While revision surgery is an option, revisions do not eliminate the potential mechanical complications; as a result many VBG procedures are converted to an RYGB. Individuals complaining of GERD following biliopancreatic diversion with duodenal switch are initially treated with conservative measures such as behavioral or medical therapies, while a resleeve or fundectomy surgery is an option for those individuals with GERD refractory to conservative therapy.
+Surgical treatment of GERD involves augmenting lower esophageal sphincter (LES) pressure, decreasing LES compliance, and restoring functional anatomy when needed. The gold standard surgical treatment of GERD is laparoscopic antireflux surgery (Flores, 2019). There is no literature regarding the use of bariatric surgery therapy as primary therapy in treatment resistant GERD.
+Obstruction or stricture
+The incidence of strictures following bariatric procedures vary based on the initial surgical procedure but is generally reported to be between 1-2% and 16-23.0%. Treatment options include endoscopic balloon dilation, endoscopic dilatation with or without stenting and resection of the stricture to conversion to another procedure, generally RYGB (Brethauer, 2014).
+Obstructions commonly occur early in the post-operative period but can occur at any time interval following surgery. The treatment of obstructions varies depending upon the cause of the obstruction and the type of bariatric procedure performed. Obstructions following RYGB or biliopancreatic diversion with duodenal switch occur for a variety of reasons and typically require surgical repair to identify and correct the source of the obstruction. Treatment options of post-operative obstruction following LAGB include conservative measures such as observation, band adjustments (fluid removal) or more invasive measures such as the endoscopic removal of impacted food, replacement of the band with a larger band or band removal. Treatment of obstructions following SG include supportive therapy and endoscopic dilation/stenting. Cases of persistent obstruction are treated with conversion to RYGB.
+Endoluminal procedures to treat weight regain or insufficient weight loss
+Dilatation of the gastrojejunal anastomosis or the gastric pouch following the initial bariatric surgery causes insufficient weight loss or weight recidivism. Weight regain following RYGB is not unusual, with individuals regaining approximately 20% to 30% of the weight they lost at 10 years postoperative (Jirapinyo, 2020). Several endoluminal procedures have been developed as a way to correct the dilatation without re-exposure to surgical risks. Endoluminal procedures include the use of suturing procedures or devices to decrease gastric pouch size (Goh, 2020). The current data fails to show sustained adequate weight loss compared to surgical revision (Goh, 2020).
+Transoral outlet reduction (TORe) or Endoscopic gastrojejunal revision
+TORe is a minimally invasive endoscopic procedure which reduces the size of the gastrojejunal anastomosis and is proposed as a revisional surgical option for RYGB. TORe can be accomplished a number of ways including with plication devices superficial suturing devices and over-the-scope clip devices. TORe procedures can be further defined by the suture pattern used: purse string or interrupted.
+A meta-analysis by Dhindsa and colleagues (2020) evaluated the efficacy and safety of a particular TORe device (Overstitch™; Apollo Endosurgery, Texas, United States) to treat weight regain following RYGB. The primary outcomes chosen included technical success of the procedure, the absolute weight loss and the percent of total weight loss at 3, 6, and 12 months after the procedure. A total of 13 prospective and retrospective studies with 850 individuals were included in the analysis. The pooled rate of technical success was 99.89%. While the pooled percent absolute weight loss and percent total weight loss at 3 and 6 months showed persistent weight loss, there was some weight recidivism at 12 months. The adverse event rate was 11.4% (± 10.11); there was no mortality. The meta-analysis was limited by the short-term follow-up and lack of any control or comparison groups.
+Brunaldi and associations (2018) evaluated several endoscopic therapies which were used to address weight regain following RYGB. A total of 32 observational studies were evaluated, including full-thickness endoscopic suturing (n=26), superficial-thickness endoscopic suturing (n=3,), argon plasma coagulation (n=2) and over-the-scope clip (n=1). Full-thickness suturing device studies reported 20% excess weight loss at 1 year. While full endoscopic suturing appeared to be effective at treating weight regain, the follow-up on the included studies was largely limited to 12 months or less. Adverse event rates were not reported. The applicability of the findings were limited by the lack control or comparison arms, low quality of the studies, heterogeneity within the individuals and short-term follow-up.
+TORe has been evaluated in several retrospective studies. While there is limited evidence that reports outcomes showing efficacy and safety for up to 5 years, this study as well as the other published trials are limited by multiple factors, including a lack of a control arm, limited sample size, limited long-term data,  significant loss to follow-up and heterogeneity among the devices used (Dolan, 2021; Franken, 2023; Jirapinyo, 2018; Jirapinyo, 2020; Trans, 2016; Vargas, 2018). The ASMBS does not address TORe in any clinical guidelines. The use of TORe, a revisional procedure, is not considered in accordance with generally accepted standards of medical practice.
+Restorative Obesity Surgery Endoluminal (ROSE)
+ROSE utilizes a device which creates plications in the stoma and stomach to decrease the size and fuse the tissue into place using anchors to restore the stomach structure to its original size following surgery. Like all endoluminal procedures, the benefit is there are no incisions and a shorter post-operative recovery period. While the intended reduction in pouch and stoma diameter size is generally achieved, over the first-year post-procedure, the size generally increases. The procedure has been shown to achieve only modest reductions in weight loss in the short-term and fail to maintain weight loss over time (Gallo, 2016).
+Operator Dependence in the Safety and Efficacy of Bariatric Procedures
+Evidence from a number of reports and case series exists for “operator dependence” in determining the risks and benefits of any bariatric procedure. It is important that the surgeon be extensively trained in the respective procedure and that the initial surgeries are supervised by an experienced bariatric surgeon during the early “learning curve.” It is also important that these surgeries be performed in facilities that are appropriately qualified to support peri-operative and post-op services by an appropriately trained, multi-disciplinary team to ensure maximal success.
+Definitions
+Adjustable Gastric Banding (AGB): A gastric restrictive procedure in which a gastric band which holds fluid is placed around the exterior of the stomach. Common complications may include slippage of the external band, band erosion, vomiting and ineffective weight loss.
+ADA evidence-grading system for Standards of Care in Diabetes:
+Supportive evidence from a well-conducted case-control study
+Level of evidence
+Description
+A
+Clear evidence from well-conducted, generalizable randomized controlled trials that are adequately powered, including:
+• Evidence from a well-conducted multicenter trial
+• Evidence from a meta-analysis that incorporated quality ratings in the analysis
+Supportive evidence from well-conducted randomized controlled trials that are adequately powered, including:
+• Evidence from a well-conducted trial at one or more institutions
+• Evidence from a meta-analysis that incorporated quality ratings in the analysis
+B
+Supportive evidence from well-conducted cohort studies, including:
+• Evidence from a well-conducted prospective cohort study or registry
+• Evidence from a well-conducted meta-analysis of cohort studies
+Supportive evidence from a well-conducted case-control study
+C
+Supportive evidence from poorly controlled or uncontrolled studies, including:
+• Evidence from randomized clinical trials with one or more major or three or more minor methodological flaws that could invalidate the results
+• Evidence from observational studies with high potential for bias (such as case series with comparison with historical controls)
+• Evidence from case series or case reports
+Conflicting evidence with the weight of evidence supporting the recommendation
+D
+Expert consensus or clinical experience
+From: American Diabetes Association Professional Practice Committee. Introduction and methodology: standards of care in diabetes-2025. Diabetes Care. 2025; 48(1 Suppl 1):S1-S5.
+Biliopancreatic Bypass Procedure (also known as the Scopinaro procedure) BPB: A malabsorptive procedure, which consists of a subtotal gastrectomy and diversion of the biliopancreatic juices into the small intestine long Roux-en-Y procedure. Potential complications in iron deficiency anemia, protein malnutrition, hypocalcemia, and bone demineralization.
+Biliopancreatic Bypass with Duodenal Switch (BPD/DS): A variant of the biliopancreatic bypass in which a sleeve gastrectomy is performed instead of a distal gastrectomy.
+Body mass index (BMI): The key index for relating body weight to height. The BMI is a person's weight in kilograms (kg) divided by their height in meters (m) squared. To convert pounds to kilograms; multiply pounds by 0.45; to convert inches to meters, multiply inches by 0.0254. (See the definition below for obesity for further information).
+Classifications of Obesity: Adults; children (respectively)
+• BMI of 30 to < 35; BMI ≥ 95 th percentile
+• BMI of 35 to < 40; BMI ≥ 120% percentile
+• BMI of 40 or higher; BMI ≥ 140% percentile
+Endoscopic gastric remodeling: Also known as endoscopic sleeve gastroplasty, involves placing a series of stitches in the stomach wall to reduce stomach size and volume. The procedure does not remove any gastric tissue and is considered reversible and repeatable.
+Excess body weight: This term refers to the difference between an individual’s actual (measured) and ideal body weight. Ideal body weight ranges are established based on height, body frame, gender and age; an example is available from the National Heart Lung and Blood Institute [NHLBI] at: http://www.nhlbi.nih.gov/guidelines/obesity/bmi_tbl.htm .  Accessed on October 19, 2025.
+Gastric balloon (Gastric bubble): This device is inserted into the stomach to reduce the stomach’s capacity and produce early satiety. It was generally considered obsolete and was originally intended for temporary use as an adjunct to diet and behavior modification to assist with weight loss.
+Gastric banding: This surgical procedure is intended to help a person lose weight. A band is placed around the upper part of the stomach, creating a small pouch that can hold only a small amount of food. The narrowed opening between the stomach pouch and the rest of the stomach controls how quickly food passes from the pouch to the lower part of the stomach. This system helps the person to eat less by limiting the amount of food that can be eaten at one time and increasing the time it takes for food to be digested.
+Gastroesophageal Reflux Disease (GERD): Reflux of gastric contents into the upper structures (such as the esophagus, oral cavity, larynx or lung) which causes symptoms or complications. GERD in which there are symptoms without erosions present is further classified as nonerosive disease or NERD. GERD with damage or erosions present on endoscopic exam is classified as erosions present or ERD. The diagnosis of GERD is made using some combination of symptom presentation, objective testing with endoscopy, ambulatory reflux monitoring, and response to antisecretory therapy. Objective documentation of GERD is by confirmed by the presence of erosive reflux disease on endoscopy and or abnormal pH monitoring.
+Gastroplasty: A surgical procedure that decreases the size of the stomach.
+Laparoscopic gastric plication (laparoscopic greater curvature plication [LGCP]): A gastric restrictive bariatric procedure, which is performed alone or in combination with adjustable gastric banding, where the stomach’s volume is reduced by dissecting the greater omentum and short gastric vessels, and the greater curvature is invaginated using multiple rows of non-absorbable sutures performed over a bougie or endoscope to ensure a patent lumen.
+Long Limb Gastric Bypass (i.e., greater than 150 cm): A malabsorptive procedure in which the stomach is bypassed, either by resection or stapling along the horizontal or vertical axis, and the jejunum functions as the alimentary limb. Potential complications are similar to other malabsorptive procedures.
+Obesity: The state of being well above one’s normal weight, which is measured and determined by the Body Mass Index (BMI). Severe obesity is defined by the NIH as a BMI of 40 kg/m 2 or greater, or a BMI of 35 kg/m 2 or greater along with other medical complications. The NIH defines obesity as a BMI of greater than or equal to 30 kg/m 2 and considers a person overweight with a BMI of 25 to 29.9 kg/m 2 .
+Roux-en-Y Gastric bypass (RYGB): A restrictive and malabsorptive procedure reduces the stomach capacity and diverts partially digested food from the duodenum to the jejunum (section of the small intestine extending from the duodenum). Often associated with the dumping syndrome in which a large portion of partially digested food is delivered directly to part of the small intestine from the stomach and can cause nausea, weakness, sweating, faintness, abdominal pain and vomiting. This procedure requires that individuals take vitamin and mineral supplements due to decreased ability to absorb nutrients. Complications can include leakage and stomal stricture.
+Sleep apnea: The temporary stoppage of breathing during sleep, often resulting in daytime sleepiness.
+Sleeve Gastrectomy (SG): Surgical alternative to gastrectomy which involves resection of the greater curvature of the stomach resulting in a sleeve or tube-shaped stomach remnant. Can be performed alone with followed by a malabsorptive procedure.
+Surgical conversion or revision: Surgery to switch from the initial procedure to a different procedure.
+Surgical correction or repair: Surgery to correct problems, which are the result of the initial procedure, such as complications or incomplete treatment effect.
+Surgical reversal: Surgery that restores the original anatomy of an individual.
+Vertical Banded Gastroplasty (VBG): A gastric restrictive procedure in which the stomach is divided vertically, and a band is stapled around the top portion of the stomach to decrease its size. Common complications of this procedure include esophageal reflux, as well as either widening or blockage of the narrow portion of the stomach, which may require reoperation.
+References
+Peer Reviewed Publications:
+• Abbatini F, Capoccia D, Casella G, et al. Type 2 diabetes in obese patients with body mass index of 30-35 kg/m 2 : sleeve gastrectomy versus medical treatment. Surg Obes Relat Dis. 2012; 8(1):20-24.
+• Abu-Abeid S, Gavert N, Klausner JM, Szold A. Bariatric surgery in adolescents. J Pediatr Surg. 2003; 38(9):1379-1382.
+• Abu-Abeid S, Keidar A, Gavert N, et al. The clinical spectrum of band erosion following laparoscopic adjustable silicone gastric banding for morbid obesity. Surg Endosc. 2003; 17(6):861-863.
+• Abu Dayyeh BK, Bazerbachi F, Vargas EJ, et al. Endoscopic sleeve gastroplasty for treatment of class 1 and 2 obesity (MERIT): a prospective, multicentre, randomised trial. Lancet. 2022; 400(10350):441-451.
+• Adams TD. In teens with severe obesity, can bariatric surgery wait until adulthood? N Engl J Med. 2019; 380(22):2175-2177.
+• Adams TD, Davidson LE, Litwin SE, et al. Health benefits of gastric bypass surgery after 6 years. JAMA. 2012; 308(11):1122-1131.
+• Adams TD, Gress RE, Smith SC, et al. Long-term mortality after gastric bypass surgery. N Engl J Med. 2007; 357(8):753-761.
+• Agren G, Narbro K, Näslund I, et al. Long-term effects of weight loss on pharmaceutical costs in obese subjects. A report from the SOS intervention study. In J Obes Relat Metab Disord. 2002; 26(2):184-192.
+• Alami RS, Morton JM, Schuster R, et al. Is there a benefit to preoperative weight loss in gastric bypass patients? A prospective randomized trial. Surg Obes Relat Dis. 2007; 3(2):141-145; discussion 145-146.
+• Albert M, Spanos C, Shikora S. Morbid obesity: the value of surgical intervention. Clin Fam Pract. 2002; 4(2):447-461.
+• Ali MR, Baucom-Pro S, Broderick-Villa GA, et al. Weight loss before gastric bypass: feasibility and effect on postoperative weight loss and weight loss maintenance. Surg Obes Relat Dis. 2007; 3(5):515-520.
+• Aminian A, Al-Kurd A, Wilson R, et al. Association of bariatric surgery with major adverse liver and cardiovascular outcomes in patients with biopsy-proven nonalcoholic steatohepatitis. JAMA. 2021; 326(20):2031-2042.
+• Angrisani L, Furbetta F, Doldi SB, et al. Lap-Band adjustable gastric banding system: the Italian experience with 1863 patients operated on 6 years. Surg Endosc. 2003; 17(3):409-412.
+• Angrisani L, Lorenzo M, Borrelli V. Laparoscopic adjustable gastric banding versus Roux-en-Y gastric bypass: 5-year results of a prospective randomized trial. Surg Obes Relat Dis. 2007; 3(2):127-132; discussion 132-133.
+• Anthone GJ, Lord RV, DeMeester TR, Crookes PF. The duodenal switch operation for the treatment of morbid obesity. Ann Surg. 2003; 238(4):618-628.
+• Apovian CM, Shah SN, Wolfe BM, et al. Two-year outcomes of vagal nerve blocking (vBloc) for the treatment of obesity in the ReCharge trial. Obes Surg. 2017; 27(1):169-176.
+• Arias E, Martinez PR, Ka Ming V, et al. Mid-term follow-up after sleeve gastrectomy as a final approach for morbid obesity. Obes Surg. 2009; 19(5):544-548.
+• Arterburn D, Maggard MA. Revisiting the 2011 FDA decision on laparoscopic adjustable gastric banding. Obesity (Silver Spring). 2013; 21(11):2204.
+• Arterburn D, Powers JD, Toh S, et al. Comparative effectiveness of laparoscopic adjustable gastric banding vs laparoscopic gastric bypass. JAMA Surg. 2014; 149(12):1279-1287.
+• Ashrafian H, le Roux CW, Darzi A, Athanasiou T. Effects of bariatric surgery on cardiovascular function. Circulation. 2008; 118(20):2091-2102.
+• Bashah M, Aleter A, Baazaoui J, et al. Single Anastomosis Duodeno-ileostomy (SADI-S) versus One Anastomosis Gastric Bypass (OAGB-MGB) as revisional procedures for patients with weight recidivism after sleeve gastrectomy: a comparative Analysis of Efficacy and Outcomes. Obes Surg. 2020; 30(12):4715-4723.
+• Belachew M, Zimmermann JM. Evolution of paradigm for laparoscopic adjustable gastric banding. Am J Surg. 2002; 184(6 Suppl 2):S21-S25.
+• Benotti PN, Still CD, Wood GC, et al. Preoperative weight loss before bariatric surgery. Arch Surg. 2009; 144(12):1150-1155.
+• Biertho L, Steffen R, Ricklin T, et al. Laparoscopic gastric bypass versus laparoscopic adjustable gastric banding: a comparative study of 1,200 cases. J Am Coll Surg. 2003; 197(4):536-547.
+• Birkmeyer NJ, Dimick JB, Share D, et al. Hospital complication rates with bariatric surgery in Michigan. JAMA. 2010; 304(4):435-442.
+• Bohdjalian A, Langer FB, Shakeri-Leidenmuhler S, et al. Sleeve gastrectomy as sole and definitive bariatric procedure: 5-year results for weight loss and ghrelin. Obes Surg. 2010; 20(5):535-540.
+• Bowne WB, Julliard K, Castro AE, et al. Laparoscopic gastric bypass is superior to adjustable gastric band in super morbidly obese patients. Arch Surg. 2006; 141(7):683-689.
+• Bray GA. The missing link - lose weight, live longer. N Engl J Med. 2007; 357(8):818-820.
+• Brito JP, Montori VM, Davis AM. Metabolic surgery in the treatment algorithm for type 2 diabetes: a joint statement by international diabetes organizations. JAMA. 2017; 317(6):635-636.
+• Brolin RE. Results of obesity surgery. Gastrointestinal Clin N Am. 1987; 16(2):317-335.
+• Brolin RE, La Marca LB, Kenler HA, Cody RP. Malabsorptive gastric bypass in patients with superobesity. J Gastrointest Surg. 2002; 6(2):195-205.
+• Brunaldi VO, Jirapinyo P, de Moura DTH, et al. Endoscopic treatment of weight regain following Roux-En-Y gastric bypass: a systematic review and meta-analysis. Obes Surg. 2018; 28(1):266-276.
+• Brunaldi VO, Stier C. ESG should be judged on its own merits. Lancet. 2022; 400(10350):410-411.
+• Buchwald H, Avidor Y, Braunwald E, et al. Bariatric surgery: a systematic review and meta-analysis. JAMA. 2004; 292(14):1724-1737.
+• Buchwald H, Estok R, Fahrbach K, et al. Weight and type 2 diabetes after bariatric surgery: systematic review and meta-analysis. Am J Med. 2009; 122(3):248-256. e5.
+• Bult MJ, van Dalen T, Muller AF. Surgical treatment of obesity. Eur J Endocrin. 2008; 158(2):135-145.
+• Busetto L, Segato G, De Luca M, et al. Preoperative weight loss by intragastric balloon in super-obese patients treated with laparoscopic gastric banding: a case-control study. Obes Surg. 2004; 14(5):671-676.
+• Cameron NA, Petito LC, McCabe M, et al. Quantifying the sex-race/ethnicity-specific burden of obesity on incident diabetes mellitus in the United States, 2001 to 2016: MESA and NHANES. J Am Heart Assoc. 2021; 10(4):e018799.
+• Carlsson LM, Peltonen M, Ahlin S, et al. Bariatric surgery and prevention of type 2 diabetes in Swedish obese subjects. N Engl J Med. 2012; 367(8):695-704.
+• Catalano MF, Rudic G, Anderson AJ, Chua TY. Weight gain after bariatric surgery as a result of a large gastric stoma: endotherapy with sodium morrhuate may prevent the need for surgical revision. Gastrointest Endosc. 2007; 66(2):240-245.
+• Ceelen W, Walder J, Cardon J, et al. Surgical treatment of severe obesity with a low-pressure adjustable gastric band: experimental data and clinical results in 625 patients. Ann Surg. 2003; 237(1):10-16.
+• Chapman AE, Kiroff G, Game P, et al. Laparoscopic adjustable gastric banding in the treatment of obesity: a systematic literature review. Surgery. 2004; 135(3):326-351.
+• Choban PS, Flancbaum L. The effect of Roux limb lengths on outcome after Roux-en-Y gastric bypass; a prospective, randomized clinical trial. Obes Surg. 2002; 12(4):540-545.
+• Choi J, Digiorgi M, Milone L, et al. Outcomes of laparoscopic adjustable gastric banding in patients with low body mass index. Surg Obes Relat Dis. 2010; 6(4):367-371.
+• Clapp B, Cottam S, Salame M, et al. Comparative analysis of sleeve conversions of the Metabolic and Bariatric Surgery Accreditation and Quality Improvement Program 2020 Database. Surg Obes Relat Dis. 2024; 20(1):47-52.
+• Consensus Development Conference Panel. Gastrointestinal surgery for severe obesity. Ann Int Med. 1991; 115(12):956-961.
+• Courcoulas AP, Christian NJ, Belle SH, et al.; Longitudinal Assessment of Bariatric Surgery (LABS) Consortium. Weight change and health outcomes at 3 years after bariatric surgery among individuals with severe obesity. JAMA. 2013; 310(22):2416-2425.
+• Courcoulas AP, Christian NJ, O'Rourke RW, et al. Preoperative factors and 3-year weight change in the Longitudinal Assessment of Bariatric Surgery (LABS) consortium. Surg Obes Relat Dis. 2015; 11(5):1109-1118.
+• Courcoulas AP, Goodpaster BH, Eagleton JK, et al. Surgical vs medical treatments for type 2 diabetes mellitus: a randomized clinical trial. JAMA Surg. 2014; 149(7):707-715.
+• Crossan K, Sheer AJ. Intragastric Balloon. 2022. In: StatPearls [Internet]. Treasure Island (FL): StatPearls Publishing; 2022 Jan.
+• Dang JT, Switzer NJ, Sun WYL, et al. Evaluating the safety of intragastric balloon: an analysis of the metabolic and bariatric surgery accreditation and quality improvement program. Surg Obes Relat Dis. 2018; 14(9):1340-1347.
+• DeMaria EJ, Winegar DA, Pate VW, et al. Early postoperative outcomes of metabolic surgery to treat diabetes from sites participating in the ASMBS bariatric surgery center of excellence program as reported in the bariatric outcomes longitudinal database. Ann Surg. 2010; 252(3):559-566; discussion 566-567.
+• Deveney CW, MacCabee D, Marlink K, et al. Roux-en-Y divided gastric bypass results in the same weight loss as duodenal switch for morbid obesity. Am J Surg. 2004; 187(5):655-659.
+• Dhindsa BS, Saghir SM, Naga Y, et al. Efficacy of transoral outlet reduction in Roux-en-Y gastric bypass patients to promote weight loss: a systematic review and meta-analysis. Endosc Int Open. 2020; 8(10):E1332-E1340.
+• Dietz WH, Robinson TN. Overweight children and adolescents. N Engl J Med. 2005; 352(20):2100-2109.
+• Dixon JB, O’Brien PE, Playfair J, et al. Adjustable gastric banding and conventional therapy for type 2 diabetes: a randomized controlled trial. JAMA. 2008; 299(3):316-323.
+• Dogan K, Betzel B, Homan J, et al. Long-term effects of laparoscopic Roux-en-Y gastric bypass on diabetes mellitus, hypertension and dyslipidaemia in morbidly obese patients. Obes Surg. 2014; 24(11):1835-1842.
+• Dolan K, Hatzifotis M, Newbury L, Fielding G. A comparison of laparoscopic adjustable gastric banding and biliopancreatic diversion in superobesity. Obes Surg. 2004; 14(2):165-169.
+• Dolan RD, Jirapinyo P, Thompson CC. Endoscopic versus surgical gastrojejunal revision for weight regain in Roux-en-Y gastric bypass patients: 5-year safety and efficacy comparison. Gastrointest Endosc. 2021: S0016-5107(21)01434-6.
+• Ece İ, Yılmaz H, Şahin M. Migration of mesh into gastric lumen: a rare complication of vertical banded gastroplasty. Ulus Cerrahi Derg. 2015; 32(3):212-213.
+• Encinosa WE, Bernard DM, Du D, Steiner CA. Recent improvements in bariatric surgery outcomes. Med Care. 2009; 47(5):531-535.
+• Enochs P, Bull J, Surve A, et al. Comparative analysis of the single-anastomosis duodenal-ileal bypass with sleeve gastrectomy (SADI-S) to established bariatric procedures: an assessment of 2-year postoperative data illustrating weight loss, type 2 diabetes, and nutritional status in a single US center. Surg Obes Relat Dis. 2020; 16(1):24-33.
+• Esquivel MM, Azagury D. Preoperative weight loss before bariatric surgery-the debate continues. JAMA Netw Open. 2020; 3(5):e204994.
+• Evans JD, Scott MH, Brown AS, Rogers J. Laparoscopic adjustable gastric banding for the treatment of morbid obesity. Am J Surg. 2002; 184(2):97-102.
+• Farrell TM, Haggerty SP, Overby DW, et al. Clinical application of laparoscopic bariatric surgery: an evidence-based review. Surg Endosc. 2009; 23(5):930-949.
+• Fielding GA, Allen JW. A step-by-step guide to placement of the LAP-BAND adjustable gastric banding system. Am J Surg. 2002; 184(6 Suppl 2):S26-S30.
+• Fielding GA, Ren CJ. Laparoscopic adjustable gastric band. Surg Clin N Am. 2005; 85(1):129-140.
+• Finno P, Osorio J, García-Ruiz-de-Gordejuela A, et al. Single versus double-anastomosis duodenal switch: single-site comparative cohort study in 440 consecutive patients. Obes Surg. 2020; 30(9):3309-3316.
+• Flores L, Krause C, Pokala B, et al. Novel therapies for gastroesophageal reflux disease. Curr Probl Surg. 2019; 56(12):100692.
+• Fox SR, Fox KM, Srikanth MS, Rumbaut R. The Lap-Band system in a North American population. Obes Surg. 2003; 13(2):275-280.
+• Frachetti KJ, Goldfine AB. Bariatric surgery for diabetes management. Curr Opin Endocrinol Diabetes Obes. 2009; 16(2):119-124.
+• Franken RJ, Franken J, Sluiter NR, et al. Efficacy and safety of revisional treatments for weight regain or insufficient weight loss after Roux-en-Y gastric bypass: a systematic review and meta-analysis. Obes Rev. 2023; 24(10):e13607.
+• Fuks D, Verhaeghe P, Brehant O, et al. Results of laparoscopic sleeve gastrectomy: a prospective study in 135 patients with morbid obesity. Surgery. 2009; 145(1):106-113.
+• Gallo AS, DuCoin CG, Berducci MA, et al. Endoscopic revision of gastric bypass: holy grail or epic fail? Surg Endosc. 2016; 30(9):3922-3927.
+• Gandsas A, Li C, Tan M, et al. Initial outcomes following laparoscopic sleeve gastrectomy in 292 patients as a single-stage procedure for morbid obesity. Bariatric Times. 2010; 7(2):11-13.
+• Gangemi A, Russel S, Patel K, et al. Conversion to laparoscopic sleeve gastrectomy after failure of laparoscopic gastric band: a systematic review of the literature and cost considerations. Obes Res Clin Pract. 2018; 12(5):416-420.
+• Gracia JA, Martínez M, Elia M, et al. Obesity surgery results depending on technique performed: long-term outcome. Obes Surg. 2009; 19(4):432-438.
+• Garcia VF. Letters to the Editor: Adolescent bariatric surgery: treatment delayed may be treatment denied. Pediatrics. 2005; 115(3):822-823.
+• Garcia VF, Langford L, Inge TH. Application of laparoscopy for bariatric surgery in adolescents. Curr Opin Peds. 2003; 15(3):248-255.
+• Griggs CL, Perez NP Jr, Goldstone RN, et al. National trends in the use of metabolic and bariatric surgery among pediatric patients with severe obesity. JAMA Pediatr. 2018; 172(12):1191-1192.
+• Grubnik VV, Ospanov OB, Namaeva KA, et al. Randomized controlled trial comparing laparoscopic greater curvature plication versus laparoscopic sleeve gastrectomy. Surg Endosc. 2016; 30(6):2186-2191.
+• Herron DM, Birkett DH, Thompson CC, et al. Gastric bypass pouch and stoma reduction using a transoral endoscopic anchor placement system: a feasibility study. Surg Endosc. 2008; 22(4):1093-1099.
+• Himpens J, Dapri G, Cadière GB. A prospective randomized study between laparoscopic gastric banding and laparoscopic isolated sleeve gastrectomy: results after 1 and 3 years. Obes Surg. 2006; 16(11):1450-1456.
+• Himpens J, Dobbeleir J, Peters G. Long-term results of laparoscopic sleeve gastrectomy for obesity. Ann Surg. 2010; 252(2):319-324.
+• Holloway JA, Forney GA, Gould DE. The Lap-Band is an effective tool for weight loss even in the United States. Am J Surg. 2004; 188(6):659-662.
+• Husemann B. Open-surgery management of morbid obesity: old experience-new techniques. Langenbecks Arch Surg. 2003; 388(6):385-391.
+• Hutter MM, Schirmer BD, Jones DB, et al. First report from the American College of Surgeons Bariatric Surgery Center Network: laparoscopic sleeve gastrectomy has morbidity and effectiveness positioned between the band and the bypass. Ann Surg. 2011; 254(3):410-422.
+• Iannelli A, Dainese R, Piche T, et al. Laparoscopic sleeve gastrectomy for morbid obesity. World J Gastroenterol. 2008; 14(6):821-827.
+• Ikramuddin S, Blackstone RP, Brancatisano A, et al. Effect of reversible intermittent intra-abdominal vagal nerve blockade on morbid obesity: the ReCharge randomized clinical trial. JAMA. 2014; 312(9):915-922.
+• Inabnet WB, Quinn T, Gagner M, et al. Laparoscopic Roux-en-Y gastric bypass in patients with BMI < 50: a prospective randomized trial comparing short and long limb lengths. Obes Surg. 2005; 15(1):51-57.
+• Inge TH, Courcoulas AP, Jenkins TM, et al.; Teen-LABS Consortium. Five-year outcomes of gastric bypass in adolescents as compared with adults. N Engl J Med. 2019; 380(22):2136-2145.
+• Inge TH, Garcia V, Daniels S, et al. A multidisciplinary approach to the adolescent bariatric surgery patient. J Ped Surg. 2004; 39(3):442-447.
+• Inge TH, Krebs NF, Garcia VF, et al. Bariatric surgery for severely overweight adolescents: concerns and recommendations. Pediatrics. 2004; 114(1):217-223.
+• Inge TH, Zeller MH, Jenkins TM, et al.; Teen-LABS Consortium. Perioperative outcomes of adolescents undergoing bariatric surgery: the Teen-Longitudinal Assessment of Bariatric Surgery (Teen-LABS) study. JAMA Pediatr. 2014; 168(1):47-53.
+• Jakobsen GS, Småstuen MC, Sandbu R, et al. Association of bariatric surgery vs medical obesity treatment with long-term medical complications and obesity-related comorbidities. JAMA. 2018; 319(3):291-301
+• Jamal MK, DeMaria EJ, Johnson JM, et al. Impact of major co-morbidities on mortality and complications after gastric bypass. Surg Obes Relat Dis. 2005; 1(6):511-516.
+• Jan FC, Hong D, Pereira N, et al. Laparoscopic adjustable gastric banding versus laparoscopic gastric bypass for morbid obesity: a single institution comparison study of early results. J Gastrointest Surg. 2005; 9(1):30-41.
+• Jih J, Mukherjea A, Vittinghoff E, et al. Using appropriate body mass index cut points for overweight and obesity among Asian Americans. Prev Med. 2014; 65:1-6.
+• Jirapinyo P, de Moura DTH, Horton LC, Thompson CC. Effect of aspiration therapy on obesity-related comorbidities: systematic review and meta-analysis. Clin Endosc. 2020; 53(6):686-697.
+• Jirapinyo P, de Moura DTH, Thompson CC. Endoscopic submucosal dissection with suturing for the treatment of weight regain after gastric bypass: outcomes and comparison with traditional transoral outlet reduction (with video). Gastrointest Endosc. 2020; 91(6):1282-1288.
+• Jirapinyo P, Kröner PT, Thompson CC. Purse-string transoral outlet reduction (TORe) is effective at inducing weight loss and improvement in metabolic comorbidities after Roux-en-Y gastric bypass. Endoscopy. 2018; 50(4):371-377.
+• Jossart GH, Cirangle PT. Laparoscopic sleeve gastrectomy: mid-term weight loss results. Bariatric Times. 2009; S10-11.
+• Karamanakos SN, Vagenas K, Kalfarentzos F, Alexandrikes TK. Weight loss, appetite suppression, and changes in fasting and postprandial ghrelin and peptide-YY levels after Roux-en-Y gastric bypass and sleeve gastrectomy: a prospective, double blind study. Ann Surg. 2008; 247(3):401-407.
+• Kim JJ. Evidence base for optimal preoperative preparation for bariatric surgery: does mandatory weight loss make a difference? Curr Obes Rep. 2017; 6(3):238-245.
+• Kim SH. Comparison of laparoscopic single-anastomosis duodenal-jejunal bypass with sleeve gastrectomy and laparoscopic roux-en-y gastric bypass on short-term outcomes in patients with obesity. J Metab Bariatr Surg. 2025; 14(1):43-52.
+• Korenkov M, Kneist W, Heintz A, Junginger T. Laparoscopic gastric banding as a universal method for the treatment of patients with morbid obesity. Obes Surg. 2004; 14(8):1123-1127.
+• Krishnan A, Hadi Y, Alqahtani SA, et al. Cardiovascular outcomes and mortality after bariatric surgery in patients with nonalcoholic fatty liver disease and obesity. JAMA Netw Open. 2023; 6(4):e237188.
+• Lalor PF, Tucker ON, Szomstein S, Rosenthal RJ. Complications after laparoscopic sleeve gastrectomy. Surg Obes Reatl Dis. 2008; 4(1):33-38.
+• Langer FB, Bohdjalian A, Felberbauer FX, et al. Does gastric dilatation limit the success of sleeve gastrectomy as sole operation for morbid obesity? Obes Surg. 2006; 16(2):166-171.
+• Laursen TL, Hagemann CA, Wei C, et al. Bariatric surgery in patients with non-alcoholic fatty liver disease - from pathophysiology to clinical effects. World J Hepatol. 2019; 11(2):138-149.
+• Lawson ML, Kirk S, Mitchell T, et al. One-year outcomes of Roux-en-Y gastric bypass for morbidly obese adolescents: a multicenter study from the Pediatric Bariatric Study Group. J Pediatr Surg. 2006; 41(1):137-143.
+• Lee CM, Cirangle PT, Jossart GH. Vertical gastrectomy for morbid obesity in 216 patients: report of two-year results. Surg Endosc. 2007; 21(10):1810-1816.
+• Lee Y, Doumouras AG, Yu J, et al. Complete resolution of nonalcoholic fatty liver disease after bariatric surgery: a systematic review and meta-analysis. Clin Gastroenterol Hepatol. 2019; 17(6):1040-1060.e11.
+• Lee WJ, Yu PJ, Wang W, et al. Laparoscopic Roux-en-Y versus mini-gastric bypass for the treatment of morbid obesity: a prospective randomized controlled clinical trial. Ann Surg. 2005; 242(1):20-28.
+• Livhits M, Mercado C, Yermilov I, et al. Preoperative predictors of weight loss following bariatric surgery: systematic review. Obes Surg. 2012; 22(1):70-89.
+• Lyass S, Cunneen SA, Hagiike M, et al. Device-related reoperations after laparoscopic adjustable gastric banding. Am Surg. 2005; 71(9):738-743.
+• Meyer L, Rohr S, Becker J, et al. Retrospective study of laparoscopic adjustable silicone gastric banding for the treatment of morbid obesity: results and complications in 127 patients. Diabetes Metab. 2004; 30(1):53-60.
+• Michaelson R, Murphy DK, Gross TM, et al; LAP-BAND Lower BMI Study Group. LAP-BAND for lower BMI: 2-year results from the multicenter pivotal study. Obesity (Silver Spring). 2013; 21(6):1148-1158.
+• Miller K, Pump A, Hell E. Vertical banded gastroplasty versus adjustable gastric banding: prospective long-term follow-up study. Surg Obes Relat Dis. 2007; 3(1):84-90.
+• Mingrone G, Panunzi S, De Gaetano A, et al. Bariatric surgery versus conventional medical therapy for type 2 diabetes. N Engl J Med. 2012; 366(17):1577-1585.
+• Mognol P, Chosidow D, Marmuse JP. Laparoscopic gastric bypass versus laparoscopic adjustable gastric banding in the super-obese: a comparative study of 290 patients. Obes Surg. 2005; 15(1):76-81.
+• Mognol P, Chosidow D, Marmuse JP. Laparoscopic sleeve gastrectomy as an initial bariatric procedure for high risk patients: initial results in 10 patients. Obes Surg. 2005; 15(7):1030-1033.
+• Mokdad AH, Ford ES, Bowman BA, et al. Prevalence of obesity, diabetes, and obesity-related health risk factors, 2001. JAMA. 2003; 289(1):76-79.
+• Möller F, Hedberg J, Skogar M, Sundbom M. Long-term follow-up 15 years after duodenal switch or gastric bypass for super obesity: a randomized controlled trial. Obes Surg. 2023; 33(10):2981-2990.
+• Montgomery KF, Watkins BM, Ahroni JH, et al. Outpatient laparoscopic adjustable gastric banding in super-obese patients. Obes Surg. 2007; 17(6):711-716.
+• Moon HS, Kim WW, Oh JH. Results of laparoscopic sleeve gastrectomy (LSG) at 1 year in morbidly obese Korean patients. Obes Surg. 2005; 15(10):1469-1475.
+• Morino M, Toppino M, Bonnet G, del Genio G. Laparoscopic adjustable silicone gastric banding versus vertical banded gastroplasty in morbidly obese patients: a prospective randomized controlled clinical trial. Ann Surg. 2003; 238(6):835-842.
+• Morris L, Beketaev I, Barrios R, Reardon P. Colon adenocarcinoma after jejunoileal bypass for morbid obesity. J Surg Case Rep. 2017; 2017(11):rjx214.
+• Mortelé KJ, Pattijn P, Mollet P, et al. The Swedish laparoscopic adjustable gastric banding for morbid obesity: radiologic findings in 218 patients. AJR Am J Roentgenol. 2001; 177(1):77-84.
+• Morton JM. Weight gain after bariatric surgery as a result of large gastric stoma: endotherapy with sodium morrhuate to induce stomal stenosis may prevent the need for surgical revision (editorial). Gastrointest Endosc. 2007; 66(2):246-247.
+• Moszkowicz D, Mariano G, Soliman H, et al. Roux-en-Y gastric bypass as a salvage solution for severe and refractory gastroparesis in malnourished patients. Surg Obes Relat Dis. 2022;1 8(5):577-580.
+• Mui P, Hill SE, Thorpe RJ Jr. Overweight and obesity differences across ethnically diverse subgroups of asian american men. Am J Mens Health. 2018; 12(6):1958-1965.
+• Mullady DK, Lautz DB, Thompson CC. Treatment of weight regain after gastric bypass surgery when using a new endoscopic platform: initial experience and early outcomes (with video). Gastrointest Endosc. 2009; 70(3):440-444.
+• Murr MM, Balsiger BM, Kennedy FP, et al. Malabsorptive procedures for severe obesity: comparison of pancreaticobiliary bypass and very long limb Roux-en-Y gastric bypass. J Gastrointest Surg. 1999; 3(6):607-612.
+• Myers JA, Sarker S, Shayani V. Treatment of massive super-obesity with laparoscopic adjustable gastric banding. Surg Obes Relat Dis. 2006; 2(1):37-40.
+• Nakanishi H, Matar RH, Vahibe A, et al. Single versus double anastomosis duodenal switch in the management of obesity: a meta-analysis and systematic review. Surg Laparosc Endosc Percutan Tech. 2022; 32(5):595-605.
+• Neovius M, Narbro K, Keating C, et al. Health care use during 20 years following bariatric surgery. JAMA. 2012; 308(11):1132-1141.
+• Nocca D, Krawezykowsky D, Bomans B, et al. A prospective multicenter study of 163 sleeve gastrectomies: results at 1 and 2 years. Obes Surg. 2008; 18(5):560-565.
+• O’Brien PE, Dixon JB, Brown W, et al. The laparoscopic adjustable gastric band (Lap-Band): a prospective study of medium-term effects on weight, health and quality of life. Obes Surg. 2002; 12(5):652-660.
+• O’Brien PE, Dixon JB, Laurie C, et al. Treatment of mild to moderate obesity with laparoscopic adjustable gastric banding or an intensive medical program. Ann Intern Med. 2006; 144(9):625-633.
+• O’Brien PE, Dixon JB. Laparoscopic adjustable gastric banding in the treatment of morbid obesity. Arch Surg. 2003; 138(4):376-382.
+• O’Brien PE, Dixon JB. Lap-Band: outcomes and results. J Laparoendosc Adv Surg Tech A. 2003; 13(4):265-270.
+• O’Brien PE, Dixon JB. Weight loss and early and late complications—the international experience. Am J Surg. 2002; 184(6 Suppl 2):S42-S45.
+• O'Brien PE, Sawyer SM, Laurie C, et al. Laparoscopic adjustable gastric banding in severely obese adolescents: a randomized trial. JAMA. 2010; 303(6):519-526.
+• Papasavas PK, Ng JS, Stone AM, et al. Gastric bypass surgery as treatment of recalcitrant gastroparesis. Surg Obes Relat Dis. 2014; 10(5):795-799.
+• Parikh MS, Ayoung-Chee P, Romanos E, et al. Comparison of rates of resolution of diabetes mellitus after gastric banding, gastric bypass, and biliopancreatic diversion. J Am Coll Surg. 2007; 205(5):631-635.
+• Parikh M, Duncombe J, Fielding GA. Laparoscopic adjustable gastric banding for patients with body mass index of < or = 35 kg/m 2 . Surg Obes Relat Dis. 2006; 2(5):518-522.
+• Parikh MS, Laker S, Weiner H, et al. Objective comparison of complications resulting from laparoscopic bariatric procedures. J Am Coll Surg. 2006; 202(2):252-261.
+• Parikh MS, Shen R, Weiner M, et al. Laparoscopic bariatric surgery in super-obese patients (BMI>50) is safe and effective: a review of 332 patients. Obes Surg. 2005; 15(6):858-863.
+• Peterli R, Wölnerhanssen BK, Peters T, et al. Effect of laparoscopic sleeve gastrectomy vs laparoscopic Roux-en-Y gastric bypass on weight loss in patients with morbid obesity: the SM-BOSS randomized clinical trial. JAMA. 2018; 319(3):255-265.
+• Prachand VN, Davee RT, Alverdy JC. Duodenal switch provides superior weight loss in the superobese (BMI > or =50 kg/m2) compared with gastric bypass. Ann Surg. 2006; 244(4):611-619.
+• Pratt JS, Lenders CM, Dionne EA, et al. Best practice updates for pediatric/adolescent weight loss surgery. Obesity. 2009; 17(5):901-910.
+• Puzziferri N, Roshek TB 3 rd , Mayo HG, et al. Long-term follow-up after bariatric surgery: a systematic review. JAMA. 2014; 312(9):934-942.
+• Ramos A, Galvao Neto M, Galvao M, et al. Laparoscopic greater curvature plication: initial results of an alternative restrictive bariatric procedure. Obes Surg. 2010; 20(70):913-918.
+• Rao WS, Shan CX, Zhang W, et al. A meta-analysis of short-term outcomes of patients with type 2 diabetes mellitus and BMI ≤ 35 kg/m2 undergoing Roux-en-Y gastric bypass. World J Surg. 2015; 39(1):223-230.
+• Regan JP, Inabnet WB, Gagner M, Pomp A. Early experience with two-stage laparoscopic Roux-en-Y gastric bypass as an alternative in the super-super obese patient. Obes Surg. 2003; 13(6):861-864.
+• Ren CJ. Controversies in bariatric surgery: evidence-based discussions on laparoscopic adjustable gastric banding. J Gastrointest Surg. 2004; 8(4):396-397.
+• Ren CJ, Horgan S, Ponce J. US experience with the LAP-BAND system. Am J Surg. 2002; 184(6 Suppl 2):S46-S50.
+• Risstad H, Søvik TT, Engström M, et al. Five-year outcomes after laparoscopic gastric bypass and laparoscopic duodenal switch in patients with body mass index of 50 to 60: a randomized clinical trial. JAMA Surg. 2015; 150(4):352-361.
+• Robert M, Espalieu P, Pelascini E, et al. Efficacy and safety of one anastomosis gastric bypass versus Roux-en-Y gastric bypass for obesity (YOMEGA): a multicentre, randomised, open-label, non-inferiority trial. Lancet. 2019; 393(10178):1299-1309.
+• Robert M, Poghosyan T, Romain-Scelle N, et al.; SADISLEEVE Collaborative Group. Efficacy and safety of single-anastomosis duodeno-ileal bypass with sleeve gastrectomy versus Roux-en-Y gastric bypass in France (SADISLEEVE): results of a randomised, open-label, superiority trial at 2 years of follow-up. Lancet. 2025; 406(10505):846-859.
+• Romy S, Donadini A, Giusti V, Suter M. Roux-en-Y gastric bypass vs. gastric banding for morbid obesity: a case matched study of 442 patients. Arch Surg. 2012; 147(5):460-466.
+• Rubenstein RB. Laparoscopic adjustable gastric banding at a U.S. center with up to 3-year follow-up. Obes Surg. 2002; 12(3):380-384.
+• Rubin M, Spivak H. Prospective study of 250 patients undergoing laparoscopic gastric banding using the two-step technique: a technique to prevent postoperative slippage. Surg Endosc. 2003; 17(6):857-860.
+• Rubin M, Yehoshua RT, Stein M, et al. Laparoscopic sleeve gastrectomy with minimal morbidity. Early results in 120 morbidly obese patients. Obes Surg. 2008; 18(12):1567-1570.
+• Ruiz-Tovar J, Carbajo MA, Jimenez JM, et al. Long-term follow-up after sleeve gastrectomy versus Roux-en-Y gastric bypass versus one-anastomosis gastric bypass: a prospective randomized comparative study of weight loss and remission of comorbidities. Surg Endosc. 2019; 33(2):401-410.
+• Sabatella L, Aliseda Jover D, et al. Comparison between single anastomosis duodeno-ileal bypass with sleeve gastrectomy (SADI-S) and Roux-En-Y gastric bypass (RYGB) in terms of weight loss, associated medical problems remission, and complications: a systematic review with meta-analysis. Obes Surg. 2025.
+• Salminen P, Grönroos S, Helmiö M, et al. Effect of laparoscopic sleeve gastrectomy vs Roux-en-Y gastric bypass on weight loss, comorbidities, and reflux at 10 years in adult patients with obesity: the SLEEVEPASS randomized clinical trial. JAMA Surg. 2022; 157(8):656-666.
+• Sanchez-Santos R, Masdevall C, Baltasar A, et al. Short- and mid-term outcomes of sleeve gastrectomy for morbid obesity: the experience of the Spanish National Registry. Obes Surg. 2009; 19(9):1203-1210.
+• Santoro G, Alfred J, Rehman A, et al. Revisional bariatric surgery following sleeve gastrectomy: a meta-analysis comparing Roux-en-Y gastric bypass and one anastomosis gastric bypass. Ann R Coll Surg Engl. 2025; 107(3):180-187.
+• Sarr MG, Billington CJ, Brancatisano R, et al. The EMPOWER study: randomized, prospective, double-blind, multicenter trial of vagal blockade to induce weight loss in morbid obesity. Obes Surg. 2012; 22(11):1771-1782.
+• Sarwer DB, Allison KC, Wadden TA, et al. Psychopathology, disordered eating, and impulsivity as predictors of outcomes of bariatric surgery. Surg Obes Relat Dis. 2019; 15(4):650-655.
+• Schauer PR, Bhatt DL, Kirwan JP, et al.; STAMPEDE Investigators. Bariatric surgery versus intensive medical therapy for diabetes - 5-year outcomes. N Engl J Med. 2017; 376(7):641-651.
+• Schauer PR, Kashyap SR, Wolski K, et al. Bariatric surgery versus intensive medical therapy in obese patients with diabetes. N Engl J Med. 2012; 366(17):1567-1576.
+• Scopinaro N, Adami GF, Marinari GM, et al. Biliopancreatic diversion. World J Surg. 1998; 22(9):936-946.
+• Scopinaro N, Gianetta E, Adami GF, et al. Biliopancreatic diversion for obesity at eighteen years. Surgery. 1996; 119(3):261-268.
+• Scopinaro N, Papadia F, Marinari G, et al. Long-term control of type 2 diabetes mellitus and the other major components of the metabolic syndrome after biliopancreatic diversion in patients with BMI < 35 kg/m2. Obes Surg. 2007; 17(2):185-192.
+• Seki Y, Kasama K, Haruta H, et al. Five-year-results of laparoscopic sleeve gastrectomy with duodenojejunal bypass for weight loss and type 2 diabetes mellitus. Obes Surg. 2017; 27(3):795-801.
+• Shah SS, Todkar JS, Shah PS, Cummings DE. Diabetes remission and reduced cardiovascular risk after gastric bypass in Asian Indians with body mass index <35 kg/m(2). Surg Obes Relat Dis. 2010; 6(4):332-338.
+• Shoar S, Mahmoudzadeh H, Naderan M, et al. Long-term outcome of bariatric surgery in morbidly obese adolescents: a systematic review and meta-analysis of 950 patients with a minimum of 3 years follow-up. Obes Surg. 2017; 27(12):3110-3117.
+• Shoar S, Saber AA. Long-term and midterm outcomes of laparoscopic sleeve gastrectomy versus Roux-en-Y gastric bypass: a systematic review and meta-analysis of comparative studies. Surg Obes Relat Dis. 2017; 13(2):170-180.
+• Silecchia G, Rizzello M, Casella G, et al. Two-stage laparoscopic biliopancreatic diversion with duodenal switch as treatment of high-risk super-obese patients: analysis of complications. Surg Endosc. 2009; 23(5):1032-1037.
+• Sjöström L, Peltonen M, Jacobson P, et al. Bariatric surgery and long-term cardiovascular events. JAMA. 2012; 307(1):56-65.
+• Sjöström L, Narbro K, Sjöström CD, et al. Effects of bariatric surgery on mortality in Swedish obese subjects. N Engl J Med. 2007; 357(8):741-752.
+• Sjöström L, Peltonen M, Jacobson P, et al. Association of bariatric surgery with long-term remission of type 2 diabetes and with microvascular and macrovascular complications. JAMA. 2014; 311(22):2297-2304.
+• Skinner AC, Ravanbakht SN, Skelton JA, et al. Prevalence of obesity and severe obesity in US children, 1999-2016. Pediatrics. 2018; 141(3):e20173459.
+• Skroubis G, Sakellaropoulas G, Pouggouras K, et al. Comparison of nutritional deficiencies after Roux-en-Y gastric bypass and after biliopancreatic diversion with Roux-en-Y gastric bypass. Obes Surg. 2002; 12(4):551-558.
+• Solouki A, Kermansaravi M, Davarpanah Jazi AH, et al. One-anastomosis gastric bypass as an alternative procedure of choice in morbidly obese patients. J Res Med Sci. 2018; 23:84.
+• Spinos D, Skarentzos K, Esagian SM, et al. The effectiveness of single-anastomosis duodenoileal bypass with sleeve gastrectomy/one anastomosis duodenal switch (SADI-S/OADS): an updated systematic review. Obes Surg. 2021; 31(4):1790-1800.
+• Spivak H, Beltran OR, Slavchev P, Wilson EB. Laparoscopic revision from LAP-BAND to gastric bypass. Surg Endosc. 2007; 21(8):1388-1392.
+• Spivak H, Hewitt MF, Onn A, Half EE. Weight loss and improvement of obesity-related illness in 500 U.S. patients following laparoscopic adjustable gastric banding procedure. Am J Surg. 2005; 189(1):27-32.
+• Stanford A, Glascock JM, Eid GM, et al. Laparoscopic Roux-en-Y gastric bypass in morbidly obese adolescents. J Pediatr Surg. 2003; 38(3):430-433.
+• Strain GW, Gagner M, Pomp A, et al. Comparison of weight loss and body composition changes with four surgical procedures. Surg Obes Relat Dis. 2009; 5(5):582-587.
+• Strauss RS, Bradley LJ, Brolin RE. Gastric bypass in adolescents with morbid obesity. J Pediatr. 2001; 138(4):499-504.
+•  Sultan S, Parikh M, Youn H, et al. Early U.S. outcomes after laparoscopic adjustable gastric banding in patients with a body mass index less than 35 kg/m 2 . Surg Endosc. 2009; 23(7):1569-1573.
+• Sun Y, Liu B, Smith JK, et al. Association of preoperative body weight and weight loss with risk of death after bariatric surgery. JAMA Netw Open. 2020; 3(5):e204803.
+• Surve A, Cottam D, Belnap L, et al. Long-term (> 6 years) outcomes of duodenal switch (DS) versus single-anastomosis duodeno-ileostomy with sleeve gastrectomy (SADI-S): a matched cohort study. Obes Surg. 2021a;31(12):5117-5126
+• Surve A, Cottam D, Richards C, et al. A matched cohort comparison of long-term outcomes of Roux-en-Y gastric bypass (RYGB) versus single-anastomosis duodeno-ileostomy with sleeve gastrectomy (SADI-S). Obes Surg. 2021b; 31(4):1438-1448.
+• Switzer NJ, Karmali S, Gill RS, Sherman V. Revisional bariatric surgery. Surg Clin North Am. 2016; 96(4):827-842.
+• Tang Y, Tang S, Hu S. Comparative efficacy and safety of laparoscopic greater curvature plication and laparoscopic sleeve gastrectomy: a meta-analysis. Obes Surg. 2015; 25(11):2169-2175.
+• Tate CM, Geliebter A. Intragastric balloon treatment for obesity: review of recent studies. Adv Ther. 2017; 34(8):1859-1875.
+• Thompson CC, Abu Dayyeh BK, Kushner R, et al. Percutaneous gastrostomy device for the treatment of Class II and Class III obesity: results of a randomized controlled trial. Am J Gastroenterol. 2017; 112(3):447-457.
+• Thompson CC, Abu Dayyeh BK, Kushnir V, et al. Aspiration therapy for the treatment of obesity: 4-year results of a multicenter randomized controlled trial. Surg Obes Relat Dis. 2019; 15(8):1348-1354.
+• Thompson CC, Slattery J, Bundga ME, Lautz DB. Perioral endoscopic reduction of dilated gastrojejunal anastomoses after Roux-en-Y gastric bypass: a possible new option for patients with weight regain. Surg Endosc. 2006; 20(11):1744-1748.
+• Tran DD, Nwokeabia ID, Purnell S, et al. Revision of Roux-en-Y gastric bypass for weight regain: a systematic review of techniques and outcomes. Obes Surg. 2016; 26(7):1627-1634.
+• Treadwell JR, Sun F, Schoelles K. Systematic review and meta-analysis of bariatric surgery for pediatric obesity. Ann Surg. 2008; 248(5):763-776.
+• Turner P. Slimming down for safer surgery. Arch Surg. 2009; 144(12):1155-1156.
+• Vargas EJ, Bazerbachi F, Rizk M, et al. Transoral outlet reduction with full thickness endoscopic suturing for weight regain after gastric bypass: a large multicenter international experience and meta-analysis. Surg Endosc. 2018;3 2(1):252-259.
+• Verhoeff K, Mocanu V, Zalasky A, et al. Evaluation of metabolic outcomes following SADI-S: a systematic review and meta-analysis. Obes Surg. 2022; 32(4):1049-1063.
+• Wang FG, Yan WM, Yan M, Song MM. Outcomes of mini vs Roux-en-Y gastric bypass: a meta-analysis and systematic review. Int J Surg. 2018; 56:7-14.
+• Ye Q, Chen Y, Zhan X, et al. Comparison of laparoscopic sleeve gastrectomy and laparoscopic greater curvature plication regarding efficacy and safety: a meta-analysis. Obes Surg. 2017; 27(5):1358-1364.
+• Yu J, Zhou X, Li L, et al. The long-term effects of bariatric surgery for type 2 diabetes: systematic review and meta-analysis of randomized and non-randomized evidence. Obes Surg. 2015; 25(1):143-158.
+• Zehetner J, Holzinger F, Triaca H, Klaiber CH. A 6-year experience with the Swedish adjustable gastric band: prospective long-term audit of laparoscopic gastric banding. Surg Endosc. 2005; 19(1):21-28.
+Government Agency, Medical Society, and Other Authoritative Publications:
+• Allurion Technologies. A prospective, open-label, multi-center, randomized, pivotal safety and efficacy study of the allurion gastric balloon system + moderate intensity lifestyle modification therapy program vs. moderate intensity lifestyle modification therapy program for the treatment of adults with obesity. NLM Identifier: NCT05368259. Last updated on October 26, 2024. https://clinicaltrials.gov/study/NCT05368259 . Accessed on February 25, 2026.
+• American College of Cardiology/American Heart Association (ACC/AHA) and the Obesity Society (OS). Executive summary: Guidelines (2013) for the management of overweight and obesity in adults: a report of the ACC/AHA Task Force on Practice Guidelines and the OS. Based on a systematic review from the Obesity Expert Panel, 2013. Obesity (Silver Spring). 2014; 22 Suppl 2:S5-39.
+• American Diabetes Association Professional Practice Committee.
+• Introduction and Methodology: Standards of Care in Diabetes-2025. Diabetes Care. 2025; 48(1 Suppl 1):S1-S5.
+• Obesity and Weight Management for the Prevention and Treatment of Type 2 Diabetes: Standards of Care in Diabetes-2025. Diabetes Care. 2025; 48(1 Suppl 1):S167-S180.
+• American Gastroenterological Association. American Gastroenterological Association medical position statement on obesity. Gastroenterology. 2002; 123(3):879-881.
+• American Society for Metabolic and Bariatric Surgery (ASMBS). Resources & Support. Available at: https://asmbs.org/search/?_audience=for-healthcare-professionals&_resource_category=guidelines . Accessed on October 19, 2025.
+• ASMBS Policy Statement on Gastric Plication. October 6, 2011.
+• ASMBS Updated Position Statement on Preoperative Supervised Weight Loss Requirements. April 16, 2016.
+• Estimate of Bariatric Surgery Numbers, 2011-2020. Published June 2022.
+• Aminian A, Chang J, Brethauer SA, Kim JJ; American Society for Metabolic and Bariatric Surgery Clinical Issues Committee. ASMBS updated position statement on bariatric surgery in class I obesity (BMI 30-35 kg/m 2 ). Surg Obes Relat Dis. 2018; 14(8):1071-1087.
+• Armstrong SC, Bolling CF, et al.; Section on Obesity, Section on Surgery. Pediatric metabolic and bariatric surgery: Evidence, barriers, and best practices. Pediatrics. 2019; 144(6):e20193223.
+• August GP, Caprio S, Fennoy I, et al. Prevention and treatment of pediatric obesity: an Endocrine Society clinical practice guideline based on expert opinion. J Clin Endocrinol Metab. 2008; 93(12):4576-4599.
+• Baker S, Barlow S, Cochran W, et al. Overweight children and adolescents: a clinical report of the North American Society for Pediatric Gastroenterology, Hepatology and Nutrition. J Pediatr Gastroenterol Nutr. 2005; 40(5):533-543.
+• Brethauer SA, Kothari S, Sudan R, et al. Systematic review on reoperative bariatric surgery: American Society for Metabolic and Bariatric Surgery Revision Task Force. Surg Obes Relat Dis. 2014;10(5):952-972.
+• Buckwald H. American Society for Bariatric Surgery (ASBS). Consensus Conference Panel Consensus Statement: bariatric surgery for morbid obesity: health implications for patients, health professionals and third-party payers. J Am Coll Surg. 2005; 200(4):593-604.
+• Carter J, Chang J, Birriel TJ, et al. ASMBS position statement on preoperative patient optimization before metabolic and bariatric surgery. Surg Obes Relat Dis. 2021; 17(12):1956-1976.
+• Centers for Medicare and Medicaid Services (CMS). National coverage determinations for bariatric surgery for treatments of morbid obesity. NCD #100.1. Effective September 24, 2013. Available at: https://www.cms.gov/medicare-coverage-database/view/ncd.aspx?ncdid=57&ncdver=5&bc=0 . Accessed on October 19, 2025.
+• Chavez-Tapia NC, Tellez-Avila FI, Barrientos‐Gutierrez T, et al. Bariatric surgery for non-alcoholic steatohepatitis in obese patients. Cochrane Database Syst Rev. 2010;(1):CD007340.
+• Colquitt JL, Pickett K, Loveman E, et al. Surgery for weight loss in adults. Cochrane Database Syst Rev. 2014; (8):CD003641.
+• Dayyeh BKA, Stier C, Alqahtani A, et al. IFSO bariatric endoscopy committee evidence-based review and position statement on endoscopic sleeve gastroplasty for obesity management. Obes Surg. 2024; 34(12):4318-4348.
+• Dixon JB, Zimmet P, Alberti KG, Rubino F.; International Diabetes Federation Taskforce on Epidemiology and Prevention. Bariatric surgery: an IDF statement for obese Type 2 diabetes. Diabet Med. 2011; 28(6):628-642.
+• Eisenberg D, Shikora SA, Aarts E, et al. 2022 American Society of Metabolic and Bariatric Surgery (ASMBS) and International Federation for the Surgery of Obesity and Metabolic Disorders (IFSO) indications for metabolic and bariatric surgery. Obes Surg. 2023; 33(1):3-14.
+• Ells LJ, Mead E, Atkinson G, et al. Surgery for the treatment of obesity in children and adolescents. Cochrane Database Syst Rev. 2015;(6):CD011740.
+• Fernandes M, Atallah ÁN, Soares BG, et al. Intragastric balloon for obesity. Cochrane Database Syst Rev. 2007;(1):CD004931.
+• Garvey WT, Mechanick JI, Brett EM, et al.; Reviewers of the AACE/ACE Obesity Clinical Practice Guidelines. American Association of Clinical Endocrinologists and American College of Endocrinology comprehensive clinical practice guidelines for medical care of patients with obesity. Endocr Pract. 2016; 22(Suppl 3):1-203.
+• Goh YM, James NE, Goh EL, Khanna A. The use of endoluminal techniques in the revision of primary bariatric surgery procedures: a systematic review. Surg Endosc. 2020; 34(6):2410-2428.
+• Hampl SE, Hassink SG, Skinner AC, et al. Clinical practice guideline for the evaluation and treatment of children and adolescents with obesity. Pediatrics. 2023: e2022060640.
+• Hsu WC, Araneta MR, Kanaya AM, et al. BMI cut points to identify at-risk Asian Americans for type 2 diabetes screening. Diabetes Care. 2015; 38(1):150-158.
+• Jensen MD, Ryan DH, Apovian CM, et al. 2013 AHA/ACC/TOS guideline for the management of overweight and obesity in adults: a report of the American College of Cardiology/American Heart Association Task Force on Practice Guidelines and The Obesity Society. Circulation. 2014; 129(25 Suppl 2):S102-138.
+• Jirapinyo P, Hadefi A, Thompson CC, et al. American Society for Gastrointestinal Endoscopy-European Society of Gastrointestinal Endoscopy guideline on primary endoscopic bariatric and metabolic therapies for adults with obesity. Endoscopy. 2024; 56(6):437-456.
+• Kallies K, Rogers AM.; American Society for Metabolic and Bariatric Surgery Clinical Issues Committee. American Society for Metabolic and Bariatric Surgery updated statement on single-anastomosis duodenal switch. Surg Obes Relat Dis. 2020; 16(7):825-830.
+• Katz PO, Gerson LB, Vela MF. Guidelines for the diagnosis and management of gastroesophageal reflux disease. Am J Gastroenterol. 2013; 108(3):308-328; quiz 329.
+• Kelly AS, Barlow SE, Rao G, et al.; American Heart Association Atherosclerosis, Hypertension, and Obesity in the Young Committee of the Council on Cardiovascular Disease in the Young, Council on Nutrition, Physical Activity and Metabolism, and Council on Clinical Cardiology. Severe obesity in children and adolescents: identification, associated health risks, and treatment approaches: a scientific statement from the American Heart Association. Circulation. 2013; 128(15):1689-1712.
+• LeBlanc ES, Patnode CD, Webber EM, et al. Behavioral and pharmacotherapy weight loss interventions to prevent obesity-related morbidity and mortality in adults: updated evidence report and systematic review for the US Preventive Services Task Force. JAMA. 2018; 320(11):1172-1191.
+• Longitudinal Assessment of Bariatric Surgery (LABS) Consortium; Flum DR, Belle SH, King WC, et al. Perioperative safety in the longitudinal assessment of bariatric surgery. N Engl J Med. 2009; 361(5):445-454.
+• Mazzini GS, Augustin T, Noria S, et al. ASMBS position statement on the impact of metabolic and bariatric surgery on nonalcoholic steatohepatitis. Surg Obes Relat Dis. 2022;18(3):314-325.
+• Mechanick JI, Apovian C, Brethauer S, et al. Clinical practice guidelines for the perioperative nutrition, metabolic, and nonsurgical support of patients undergoing bariatric procedures - 2019 update: cosponsored by American Association of Clinical Endocrinologists/American College of Endocrinology, the Obesity Society, American Society for Metabolic & Bariatric Surgery, Obesity Medicine Association, and American Society of Anesthesiologists - executive summary. Endocr Pract. 2019; 2 5(12):1346-1359.
+• Mechanick JI, Youdim A, Jones DB, et al. American Association of Clinical Endocrinologists, the Obesity Society, and American Society for Metabolic & Bariatric Surgery (AACE/TOS/ASMBS) practice guidelines for the perioperative nutritional, metabolic, and nonsurgical support of the bariatric surgery patient—2013 Update. Surg Obes Rel Dis. 2013; 9(2):159-191.
+• National Institutes of Health (NIH). National Heart Lung and Blood Institute (NHLBI). Accessed on October 19, 2025.
+• Clinical Guidelines on the Identification, Evaluation, and Treatment of Overweight and Obesity in Adults. The Evidence Report. NIH Pub. No. 98-4083; 1998. Updated Pub. No. 00-4084. Available at http://www.ncbi.nlm.nih.gov/books/NBK2003/ .
+• Poirier P, Cornier MA, Mazzone T, et al. Bariatric surgery and cardiovascular risk factors: a scientific statement from the American Heart Association. Circulation. 2011; 123(15):1683-1701.
+• Pratt JSA, Browne A, Browne NT, et al. ASMBS pediatric metabolic and bariatric surgery guidelines, 2018. Surg Obes Relat Dis. 2018; 14(7):882-901.
+• Quak SH, Furnes R, Lavine J, et al. Obesity in children and adolescents. J Pediatr Gastroenterol Nutr. 2008; 47(2):254-259.
+• Sauerland S, Angrisani L, Belachew M, et al. Obesity surgery: evidence-based guidelines of the European Association for Endoscopic Surgery (EAES). Surg Endosc. 2005; 19(2):200-221.
+• Segal JB, Clark JM, Shore AD, et al. Prompt reduction in use of medications for comorbid conditions after bariatric surgery. Obes Surg. 2009; 19(12):1646-1656.
+• Snow V, Barry P, Fitterman N, et al. Pharmacologic and surgical management of obesity in primary care: a clinical practice guideline from the American College of Physicians. Ann Intern Med. 2005; 142(7):525-531.
+• Society of American Gastrointestinal Endoscopic Surgeons (SAGES). Guidelines for the clinical application of laparoscopic bariatric surgery. 2003. Updated: Surg Endosc. 2008; 22(10):2281-300.
+• Spear BA, Barlow SE, Ervin C, et al.; American Academy of Pediatrics (AAP). Recommendations for treatment of child and adolescent overweight and obesity. Pediatrics. 2007; 120(4):S254-S288.
+• Styne DM, Arslanian SA, Connor EL, et al. Pediatric obesity-assessment, treatment, and prevention: an Endocrine Society clinical practice guideline. J Clin Endocrinol Metab. 2017; 102(3):709-757.
+• Treadwell J, Sun F, Bruening W, et al. Bariatric surgery. Health Technology Assessment and additional guidance information. Prepared for the WSHA Health Technology Assessment Program by the ECRI Institute. Olympia, WA: Washington State Healthcare Authority (WSHA); August 20, 2007; updated in 2024. Available at: https://www.hca.wa.gov/about-hca/health-technology-assessment/bariatric-surgery . Accessed on October 19, 2025.
+• U.S. Food and Drug Administration. Medical Device Safety. UPDATE: potential risks with liquid-filled intragastric balloons -letter to health care providers. April 27, 2020. Available at: https://www.fda.gov/medical-devices/letters-health-care-providers/fda-alerts-health-care-providers-about-potential-risks-liquid-filled-intragastric-balloons . Accessed on October 19, 2025.
+• U.S. Food and Drug Administration Premarket Approval Database. Accessed on February 25, 2026.
+• Allurion ™ Gastric Balloon System. Summary of Safety and Effectiveness. No. P250023. Rockville, MD: FDA. February 20, 2026. Available at: https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpma/pma.cfm?id=P250023 .
+• AspireAssist ® . Summary of Safety and Effectiveness. No P150024. Rockville, MD: FDA. June 14, 2016. Available at: https://www.accessdata.fda.gov/cdrh_docs/pdf15/p150024b.pdf .
+• LapBand ® Adjustable Gastric Banding (LAGB) System. Summary of safety and effectiveness and labeling information. No. P000008/S017. Rockville, MD: FDA. February 16, 2011. Available at: https://www.accessdata.fda.gov/cdrh_docs/pdf/P000008S017b.pdf .
+• ORBERA ™ Intragastric Balloon System. Summary of safety and effectiveness. No. P14008. Rockville, MD: FDA. August 5, 2015. Available at: https://www.accessdata.fda.gov/cdrh_docs/pdf14/P140008a.pdf .
+• Spatz3 Adjustable Balloon System. Summary of safety and effectiveness. No. P190012. Rockville, MD: FDA. October 15, 2021. Available at: https://www.accessdata.fda.gov/cdrh_docs/pdf19/P190012B.pdf .
+• TransPyloric Shuttle/TransPyloric Shuttle Delivery Device. Summary of safety and effectiveness. No.P180024. Rockville, MD. April 16, 2019. Available at: https://www.accessdata.fda.gov/cdrh_docs/pdf18/P180024B.pdf .
+• United States Preventive Services Task Force (USPSTF). Weight loss to prevent obesity-related morbidity and mortality in adults: behavioral interventions. September 18, 2018. Available at: https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/obesity-in-adults-interventions . Accessed on October 19, 2025.
+Websites for Additional Information
+• National Heart, Lung, and Blood Institute (NHLBI). Assessing your weight and health risk. Last updated on March 24, 2022. Available at: https://www.nhlbi.nih.gov/health/heart-healthy-living/healthy-weight .  Accessed on October 19, 2025.
+• National Institute of Diabetes and Digestive and Kidney Diseases (NIDDK). Weight-loss (Bariatric) Surgery. Available at: https://www.niddk.nih.gov/health-information/weight-management/bariatric-surgery . Accessed on October 19, 2025.
+• Obesity Action Coalition. Benefits of 5-10 Percent Weight-loss. Fall 2013. Available at: https://www.obesityaction.org/resources/benefits-of-5-10-percent-weight-loss . Accessed on September 9, 2025.
+• U.S. Food & Drug Administration (FDA). Medical Devices for weight loss and weight management: what to know. Updated on October 27, 2022. Available at: https://www.fda.gov/consumers/consumer-updates/medical-devices-weight-loss-and-weight-management-what-know . Accessed on October 19, 2025.
+Index
+Adjustable Gastric Banding Adjustable Silicone Gastric Banding AspireAssist Bariatric Surgery Biliopancreatic Bypass, with Duodenal Switch Clinically Severe Obesity Duodenal Switch Procedure Endoscopic sleeve gastroplasty (ESG) or Accordion Procedure Gastric Banding Gastric Bypass Gastric Restrictive Procedures Gastric Stapling Jejunoileal Bypass Lap-Band Laparoscopic gastric plication Laparoscopic greater curvature plication [LGCP] Long Limb Gastric Bypass Malabsorptive Procedures Mini-Gastric Bypass Morbid Obesity, Surgical Treatment of Obalon ORBERA Intragastric Balloon System Scopinaro Procedure Sleeve Gastrectomy Spatz3 Stomach intestinal pylorus-sparing surgery (SIPS) Stomach Stapling StomaphyX Swedish Adjustable Gastric Band TransPyloric Shuttle Delivery Device Vertical Banded Gastroplasty
+The use of specific product names is illustrative only. It is not intended to be a recommendation of one product over another, and is not intended to represent a complete listing of all products available.
+History
+Status
+Date
+Action
+04/15/2026
+Updated Discussion and References section, adding the FDA approval of the Allurion Gastric Balloon System.
+Revised
+11/06/2025
+Medical Policy & Technology Assessment Committee (MPTAC) review. Revised the MN statement to add endoscopic sleeve gastroplasty, single anastomosis duodenal-ileal bypass with sleeve gastrectomy(SADI-S) and duodenal jejunal bypass with gastric sleeve (DJB-SG). Moved vertical banded gastroplasty from the MN section to the NMN section. Added examples to the NMN list. Revised Discussion and References sections. Revised Coding section to include 01/01/2026 CPT changes to add 43889.
+Revised
+05/08/2025
+MPTAC review. Revised Clinical Indications section to reformat MN criteria for initial surgery and remove bariatric arterial embolization from the NMN statement. Revised Discussion and References sections. Revised Coding section, removed 37242, 04L23DZ, 04L23ZZ no longer addressed.
+Revised
+11/14/2024
+MPTAC review. Added endoluminal reoperative bariatric procedure NMN statement. Revised Discussion and References sections.
+10/01/2024
+Updated Coding section with 10/01/2024 ICD-10-CM changes; added E88.82, E66.811-E66.89 replacing E66.8, and Z68.56 to end of range.
+Reviewed
+11/09/2023
+Medical Policy & Technology Assessment Committee (MPTAC) review. Updated Discussion and References sections. Updated Coding section with 01/01/2024 CPT changes to add 0813T; also added CPT NOC code 44238.
+Revised
+08/10/2023
+MPTAC review. Added criteria regarding BMI parameters, pre-operative evaluations and education and treatment plans and removed criteria regarding % weight loss amounts and compliance evaluation for revision/conversion indications. Removed NMN statement regarding stomach stretching and overeating. Updated References section.
+06/28/2023
+Updated Coding section with 07/01/2023 HCPCS changes; added C9784, C9785.
+Reviewed
+02/16/2023
+MPTAC review. Updated Discussion and References sections.
+Revised
+11/10/2022
+MPTAC review. Revised reference to children and adolescent section to reflect name of section. Updated Discussion and References sections. Updated Coding section with 01/01/2023 CPT changes; added 43290, 43291 and added 64999 NOC replacing 0312T-0317T deleted 12/31/2022; also removed CPT 00797 associated anesthesia.
+Reviewed
+08/11/2022
+MPTAC review. Updated Discussion and References sections.
+11/17/2021
+Updated Discussion and References sections, adding a section NAFLD as an independent risk factor in individuals.
+Reviewed
+08/12/2021
+MPTAC review. Updated Discussion and References sections.
+11/30/2020
+Updated the Background/Discussion section to clarify that there is sufficient evidence to support the use of BPD/DS in clinically severe obesity.
+Revised
+08/13/2020
+MPTAC review. Revised criteria requiring participation of at least 6 months in a weight reduction program. Revised not medically necessary indications to remove examples of devices which are no longer available. Updated Discussion and References sections. Reformatted Coding section.
+Revised
+08/22/2019
+MPTAC review. Revised “gastric bypass, using a Billroth II type of anastomosis (also known as a “mini gastric bypass”)” to “One anastomosis gastric bypass, also known as mini gastric bypass”. Added TransPyloric Shuttle and bariatric arterial embolization as not medically necessary indications. Updated Description, Clinical Indications, References, Websites and Index sections. Updated Coding section; added CPT 37242; added ICD-10-PCS 04L23DZ, 04L23ZZ.
+02/27/2019
+Added related guideline CG-SURG-92 to the description section.
+Revised
+01/24/2019
+MPTAC review. Revised Medically Necessary indications to simplify criteria regarding preoperative and postoperative documentation and reformatted criteria without a change in intent. Revised criteria regarding reoperations/repeat surgery to clarify the types of surgery. Included additional examples of potential complications. Added Not Medically Necessary statement when medically necessary indications are not met. Reformatted Not Medically Necessary section without change in intent.
+New
+07/26/2018
+MPTAC review. Initial document development. Moved contents of SURG.00024 Bariatric Surgery and Other Treatments for Clinically Severe Obesity to clinical utilization management guideline document with the same title.
+Federal and State law, as well as contract language, and Medical Policy take precedence over Clinical UM Guidelines. We reserve the right to review and update Clinical UM Guidelines periodically. Clinical guidelines approved by the Medical Policy & Technology Assessment Committee are available for general adoption by plans or lines of business for consistent review of the medical necessity of services related to the clinical guideline when the plan performs utilization review for the subject. Due to variances in utilization patterns, each plan may choose whether to adopt a particular Clinical UM Guideline. To determine if review is required for this Clinical UM Guideline, please contact the customer service number on the member's card.
+Alternatively, commercial or FEP plans or lines of business which determine there is not a need to adopt the guideline to review services generally across all providers delivering services to Plan’s or line of business’s members may instead use the clinical guideline for provider education and/or to review the medical necessity of services for any provider who has been notified that his/her/its claims will be reviewed for medical necessity due to billing practices or claims that are not consistent with other providers, in terms of frequency or in some other manner.
+No part of this publication may be reproduced, stored in a retrieval system or transmitted, in any form or by any means, electronic, mechanical, photocopying, or otherwise, without permission from the health plan.
+© CPT Only - American Medical Association
