@@ -1988,6 +1988,11 @@ def _seed_bariatric_case():
 
 _seed_bariatric_case()
 
+# Regular-claim showcase for the demo walk-through (E-AUTH-004 units-exhausted → partial pay).
+REG_SHOWCASE_ICN = "ICN-2026-4858"
+if REG_SHOWCASE_ICN in claims_index:
+    claims_index[REG_SHOWCASE_ICN]["is_featured"] = True
+
 def _pended_line_from(claim):
     """Build a pended service-line dict from a pend record (primary or bundled secondary)."""
     return {
@@ -2308,6 +2313,9 @@ def _featured_ordered():
     for i, c in enumerate(result):  # pin the bariatric medical-necessity showcase claim upfront
         if c.get("icn") == "ICN-2026-MN-BAR1":
             result.insert(0, result.pop(i)); break
+    for i, c in enumerate(result):  # pin the E-AUTH-004 regular-claim showcase right after Daniel
+        if c.get("icn") == REG_SHOWCASE_ICN:
+            result.insert(1, result.pop(i)); break
     _FEATURED_ORDER = result
     return result
 
