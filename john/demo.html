@@ -2125,7 +2125,17 @@ async function startProcessing() {
   }
   processing = false;
   processed = true;   // outcomes are now real — the Process Flow may show them
+  pinShowcaseRows();  // keep the demo walk-through claims at the top after live processing
   document.getElementById('start-btn').disabled = false;
+}
+// Rows stream newest-on-top, which buries the first-processed claims. Pin the showcase
+// claims (Daniel Carter, then Elizabeth Ramirez) to the top so they're upfront on stage.
+function pinShowcaseRows(){
+  const tb = document.getElementById('queue-tbody'); if(!tb) return;
+  ['ICN-2026-4858','ICN-2026-MN-BAR1'].forEach(icn => {   // reverse order → MN-BAR1 ends on top
+    const row = document.getElementById('row-'+icn);
+    if(row) tb.insertBefore(row, tb.firstChild);
+  });
 }
 
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
