@@ -2581,7 +2581,9 @@ def api_claim_lines(icn):
             resolutions.append(r)
             # Units-exhausted lines (E-AUTH-004): a real auth exists but units_remaining = 0. The
             # examiner's genuine two-step is Update auth units -> Approve; stage the real numbers.
-            if ln.get("pended") and ln.get("edit_code") == "E-AUTH-004":
+            # (Joseph Williams HD-5059 is the high-dollar showcase — keep it to a clean Approve/Deny/
+            # Escalate examiner decision, so skip the auth-units two-step there.)
+            if ln.get("pended") and ln.get("edit_code") == "E-AUTH-004" and icn != "ICN-2026-HD-5059":
                 an = claim.get("auth_number")
                 auth = authorizations.get(an) if an else None
                 if auth:
