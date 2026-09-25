@@ -2461,17 +2461,20 @@ function renderMultiEditPanel(ctx){
   const edits = ctx.edit_resolutions||[];
   const cc = ctx.combined_color||'gray';
   const editCards = edits.map((e,i)=>{
-    const steps = (e.sop_steps||[]).slice(0,3).map(s=>`<li style="font-size:.72rem;color:#334155;margin:2px 0">${s}</li>`).join('');
-    const dbs = (e.dbs_queried||[]).map(db=>`<span style="background:#eef2f7;color:#1d4ed8;font-size:.62rem;padding:1px 6px;border-radius:5px;margin:2px 3px 0 0;display:inline-block">✓ ${db}</span>`).join('');
-    return `<div style="border:1px solid #e2e8f0;border-left:4px solid ${['#991b1b','#9a3412','#1e3a5f'][i]||'#334155'};border-radius:8px;padding:10px 12px;margin-bottom:8px">
+    const steps = (e.sop_steps||[]).map((s,si)=>`<li class="sop-step" style="font-size:.72rem;color:#334155;margin:3px 0"><span class="step-num">${si+1}</span>${s}</li>`).join('');
+    const dbs = (e.dbs_queried||[]).map(db=>`<span style="background:#eef2f7;color:#1d4ed8;font-size:.62rem;padding:2px 7px;border-radius:5px;margin:2px 3px 0 0;display:inline-block">✓ ${db}</span>`).join('');
+    const kg = (e.kg_rules||[]).map(k=>`<div style="border-left:3px solid #7c3aed;background:#faf5ff;border-radius:0 6px 6px 0;padding:5px 9px;margin-top:5px"><div style="font-size:.68rem;font-weight:700;color:#6d28d9">${k.rule_id} · ${k.check}</div><div style="font-size:.68rem;color:#334155;line-height:1.45">${k.text}</div>${k.source?`<div style="font-size:.6rem;color:#64748b;font-style:italic;margin-top:1px">📖 ${k.source}</div>`:''}</div>`).join('');
+    return `<div style="border:1px solid #e2e8f0;border-left:4px solid ${['#991b1b','#9a3412','#1e3a5f'][i]||'#334155'};border-radius:8px;padding:11px 13px;margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
         <div style="font-size:.6rem;color:#64748b;text-transform:uppercase;letter-spacing:.5px">Edit ${i+1} of ${edits.length}</div>
         <div><span class="badge-outcome ${e.outcome_color||'gray'}">${e.recommendation||e.outcome_label}</span> ${_confBadge(e.confidence)}</div>
       </div>
       <div style="margin-top:3px"><span style="font-family:monospace;font-weight:700;color:#0f172a">${e.edit_code}</span> <span class="badge-cat">${e.edit_category}</span></div>
       <div style="font-size:.72rem;color:#64748b;margin-top:3px">${e.edit_description||''}</div>
-      ${steps?`<ul style="margin:6px 0 0;padding-left:16px">${steps}</ul>`:''}
-      ${dbs?`<div style="margin-top:6px">${dbs}</div>`:''}
+      ${steps?`<div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#64748b;margin:7px 0 2px">SOP execution</div><ol style="list-style:none;margin:0;padding:0">${steps}</ol>`:''}
+      ${kg?`<div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#64748b;margin:7px 0 2px">Knowledge-graph rules</div>${kg}`:''}
+      ${dbs?`<div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#64748b;margin:7px 0 3px">Databases queried</div>${dbs}`:''}
+      ${(e.carc||e.rarc)?`<div style="font-size:.64rem;color:#64748b;margin-top:5px">CARC/RARC <strong style="font-family:monospace;color:#b45309">${e.carc||'—'}/${e.rarc||'—'}</strong></div>`:''}
     </div>`;
   }).join('');
   return `
